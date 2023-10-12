@@ -24,7 +24,12 @@
                 </div>
 
                 <!-- ADD ICONS FOR UID AND PASSWORD -->
-                <form class="mt-10">
+                <form
+                    id="login-form"
+                    class="mt-10"
+                    @submit="checkForm"
+                    novalidate="true"
+                >
                     <Textbox
                         placeholder="ID No."
                         inputType="text"
@@ -37,16 +42,33 @@
                         isPassword
                         v-model="user.pw"
                     />
+
+                    <div v-if="errors.length" class="text-left text-red mt-1">
+                        <b class="text-sm"
+                            >Please correct the following error(s):</b
+                        >
+                        <div
+                            v-for="item in errors"
+                            :key="item.id"
+                            class="text-xs"
+                        >
+                            * {{ item }}
+                        </div>
+                    </div>
+                    <div v-if="errors.length" class="mt-1"></div>
+
+                    <!-- Add TYPE SUBMIT HERE -->
                     <Button
                         title="LOGIN"
-                        class="mt-8"
-                        customClass="bg-gradient-to-r from-cool/70 to-violet text-white "
+                        customClass="bg-gradient-to-r from-cool/70 to-violet
+                    text-white "
+                        submit
                         large
                     />
                 </form>
 
                 <!-- Seperate line -->
-                <div class="mt-10 flex justify-center items-center">
+                <div class="mt-6 flex justify-center items-center">
                     <hr class="grow" />
                     <div class="w-1/4">Other</div>
                     <hr class="grow" />
@@ -55,12 +77,12 @@
                 <Button
                     title="REGISTER"
                     medium
-                    customClass="mt-3 bg-white hover:bg-cool hover:text-white"
+                    customClass="mt-4 bg-white hover:bg-cool hover:text-white"
                 />
                 <Button
                     title="FORGOT PASSWORD"
                     medium
-                    customClass="mt-3 bg-black text-white hover:bg-red"
+                    customClass="mt-2 bg-black text-white hover:bg-red"
                 />
             </div>
         </div>
@@ -93,9 +115,25 @@ export default {
                 id: null,
                 pw: null,
             },
+            errors: [],
         };
+    },
+    methods: {
+        checkForm(e) {
+            this.errors = [];
+            if (this.user.id && this.user.pw) return true;
+
+            if (!this.user.id) this.errors.push("ID Required");
+            if (!this.user.pw) this.errors.push("Password Required");
+
+            e.preventDefault();
+        },
     },
 };
 </script>
 
-<style></style>
+<style>
+* {
+    user-select: none;
+}
+</style>
