@@ -3,6 +3,9 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import App from "./App.vue";
 import Login from "./pages/Login.vue";
+import Button from "./components/Button.vue";
+import Textbox from "./components/Textbox.vue";
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [{ path: "/login", component: Login }],
@@ -11,5 +14,7 @@ const router = createRouter({
 const app = createApp(App);
 
 app.use(router);
+app.component("Button", Button);
+app.component("Textbox", Textbox);
 
 app.mount("#app");

@@ -1,46 +1,75 @@
 <template>
+    <!-- < Medium Screen Size -->
     <div
-        class="font-serif overflow-hidden h-screen flex justify-center items-center md:grid grid-cols-2 p-5 m:p-0 md:bg-tranparent bg-gradient-to-br from-cool to-violet"
+        class="md:hidden font-serif overflow-hidden h-screen flex justify-center items-center p-5 bg-tranparent bg-gradient-to-br from-cool to-violet"
     >
         <!-- Login Side -->
         <div
-            class="p-5 md:p-0 flex justify-center items-center bg-white/30 rounded-2xl w-4/5 h-4/5 backdrop-blur-sm shadow-lg"
+            class="p-5 px-10 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-4/5 h-[600px] backdrop-blur-sm shadow-lg"
         >
             <!-- Main panel -->
             <div class="w-full h-full text-center">
                 <!-- Title -->
-                <div class="mt-10">
+                <div class="mt-8">
                     <!-- DO SOMETHING HERE LATER -->
-                    <div class="">HEALTHIE</div>
-                    <p class="italic text-sm">All Connected.</p>
+                    <!-- <div class="">HEALTHIE</div> -->
+                    <img
+                        src="../assets/app_logo_bgrm.png"
+                        class="w-[250px] m-auto"
+                    />
+                    <p class="italic text-sm text-black/80 mt-2">
+                        Integrated Healthcare Information <br />
+                        Exchange System
+                    </p>
                 </div>
 
+                <!-- ADD ICONS FOR UID AND PASSWORD -->
                 <form class="mt-10">
-                    <input
-                        type="text"
-                        class="placeholder:text-black/70 text-center w-full h-14 bg-transparent rounded-3xl outline-none p-3 border-y-2 shadow-lg"
-                        placeholder="ID Number"
+                    <Textbox
+                        placeholder="ID No."
+                        inputType="text"
+                        v-model="user.id"
                     />
-                    <input
-                        type="password"
-                        class="placeholder:text-black/70 text-center w-full h-14 mt-2 bg-transparent rounded-3xl outline-none p-3 border-y-2 shadow-lg"
+                    <Textbox
                         placeholder="Password"
+                        inputType="password"
+                        class="mt-3"
+                        isPassword
+                        v-model="user.pw"
                     />
-                    <button
-                        type="submit"
-                        class="mt-8 bg-white text-xl text-black w-full py-4 rounded-3xl shadow-xl"
-                    >
-                        LOGIN
-                    </button>
+                    <Button
+                        title="LOGIN"
+                        class="mt-8"
+                        customClass="bg-gradient-to-r from-cool/70 to-violet text-white "
+                        large
+                    />
                 </form>
 
+                <!-- Seperate line -->
                 <div class="mt-10 flex justify-center items-center">
-                    <hr class="w-1/3" />
-                    <div class="w-1/3">Registered?</div>
-                    <hr class="w-1/3" />
+                    <hr class="grow" />
+                    <div class="w-1/4">Other</div>
+                    <hr class="grow" />
                 </div>
+
+                <Button
+                    title="REGISTER"
+                    medium
+                    customClass="mt-3 bg-white hover:bg-cool hover:text-white"
+                />
+                <Button
+                    title="FORGOT PASSWORD"
+                    medium
+                    customClass="mt-3 bg-black text-white hover:bg-red"
+                />
             </div>
         </div>
+    </div>
+
+    <!-- >= Medium Screen Size -->
+    <div class="hidden md:grid grid-cols-2">
+        <!-- Login Side -->
+        <div></div>
 
         <!-- Cover -->
         <div class="p-5 hidden md:block">
@@ -57,7 +86,16 @@
 </template>
 
 <script>
-export default {};
+export default {
+    data() {
+        return {
+            user: {
+                id: null,
+                pw: null,
+            },
+        };
+    },
+};
 </script>
 
 <style></style>
