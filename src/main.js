@@ -13,10 +13,8 @@ const router = createRouter({
 
 const app = createApp(App);
 
-// Use Plugins
 app.use(router);
 
-// Attach Component vue file
 app.component("Button", Button);
 app.component("Textbox", Textbox);
 

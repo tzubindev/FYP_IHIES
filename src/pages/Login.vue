@@ -120,8 +120,6 @@
 </template>
 
 <script>
-import res from "express/lib/response";
-
 export default {
     data() {
         return {
@@ -136,10 +134,6 @@ export default {
         login(e) {
             this.errors = [];
             if (this.user.id && this.user.pw) {
-                // this.axios.get(this.api).then((res) => {
-                //     console.log(res.data);
-                // });
-
                 return true;
             }
 
