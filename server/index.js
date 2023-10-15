@@ -1,6 +1,7 @@
 const express = require("express");
 const mongodb = require("mongodb");
 const FormattedResponse = require("./formattedJsonData");
+const authentication = require("./authentication");
 
 require("dotenv").config();
 
@@ -41,32 +42,12 @@ app.listen(PORT, () => {
     console.log("Server Listening on PORT:", PORT);
 });
 
+// Login end point
 app.post("/login", async (request, response) => {
     try {
         // Get request data
         const requestData = request.body;
-
-        // Connection to mongodb and send query
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll = db.collection("Authentication");
-        const cursor = coll.find({ "user.id": requestData.id });
-
-        // Get query result from mongodb
-        const data = await cursor.toArray();
-
-        // check uid, if no, respond
-        if (!data.length) {
-            response.send({});
-        }
-
-        // only one uid will be matched
-        const salt = data[0].user.salt;
-
-        // get salted -> hash request password
-        // -> compare with fetched password
-
-        response.send(FormattedResponse.errorMsg("something", "asd"));
+        response.send(await authentication.authenticate(client, requestData));
     } catch (e) {
         response.send(
             FormattedResponse.errorMsg("Authentication Error", "/login")
