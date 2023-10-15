@@ -111,11 +111,11 @@
             </div>
         </div>
 
-        <div
+        <!-- <div
             class="absolute bottom-0 w-full text-center p-2 bg-transparent text-black"
         >
             &copy; 2023 -HEALTHIE-
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -128,12 +128,16 @@ export default {
                 pw: null,
             },
             errors: [],
+            api_url: "http://127.0.0.1:3000/login",
         };
     },
     methods: {
         login(e) {
             this.errors = [];
             if (this.user.id && this.user.pw) {
+                this.axios.post(this.api_url, this.user).then((response) => {
+                    console.log(response.data);
+                });
                 return true;
             }
 
