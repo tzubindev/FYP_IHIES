@@ -1,34 +1,49 @@
 <template>
     <div>
+        <!-- Normal Textbox -->
         <div
             v-if="!isPassword"
-            class="px-3 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl p-3 border-y-2 shadow-lg"
+            class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
         >
             <div v-if="hasIcon">
                 <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
             </div>
-            <input
-                :type="inputType"
-                :placeholder="placeholder"
-                class="pl-4 outline-none bg-transparent w-full placeholder:text-black/70"
-                :value="modelValue"
-                @input="$emit('update:modelValue', $event.target.value)"
-            />
+            <div class="form">
+                <input
+                    type="text"
+                    autocomplete="off"
+                    required
+                    class="pl-4 text-lg outline-none bg-transparent w-full placeholder:text-black/70"
+                    :value="modelValue"
+                    @input="$emit('update:modelValue', $event.target.value)"
+                />
+                <label class="label-name">
+                    <span class="content-name"> {{ placeholder }} </span>
+                </label>
+            </div>
         </div>
+
+        <!-- Password Textbox -->
         <div
             v-if="isPassword"
-            class="px-3 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl p-3 border-y-2 shadow-lg"
+            class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
         >
             <div v-if="hasIcon">
                 <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
             </div>
-            <input
-                :type="currentType"
-                :placeholder="placeholder"
-                class="pl-4 outline-none bg-transparent w-full placeholder:text-black/70"
-                :value="modelValue"
-                @input="$emit('update:modelValue', $event.target.value)"
-            />
+            <div class="form">
+                <input
+                    :type="currentType"
+                    autocomplete="off"
+                    required
+                    class="pl-4 text-lg outline-none bg-transparent w-full placeholder:text-black/70"
+                    :value="modelValue"
+                    @input="$emit('update:modelValue', $event.target.value)"
+                />
+                <label class="label-name">
+                    <span class="content-name"> {{ placeholder }} </span>
+                </label>
+            </div>
 
             <!-- Eyes icon -->
             <div>
@@ -55,11 +70,45 @@
     </div>
 </template>
 
+<style>
+.form {
+    width: 100%;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.form input {
+    width: 100%;
+    height: 100%;
+    color: black;
+    border: none;
+    background: transparent;
+    text-align: center;
+}
+
+.content-name {
+    position: absolute;
+    bottom: 10%;
+    left: calc(50% - 2rem);
+    padding-bottom: 5px;
+    transition: all 0.6s ease;
+}
+.form input:focus {
+    outline: none;
+}
+.form input:focus + .label-name .content-name,
+.form input:valid + .label-name .content-name {
+    transform: translateY(-50%);
+    font-size: 14px;
+    left: 10px;
+}
+</style>
+
 <script>
 export default {
     props: {
         placeholder: String,
-        inputType: String,
         isPassword: {
             type: Boolean,
             default: false,

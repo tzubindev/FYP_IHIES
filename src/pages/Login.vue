@@ -2,7 +2,7 @@
     <div class="min-h-screen relative">
         <!-- < Small Screen Size -->
         <div
-            class="md:hidden font-serif overflow-hidden h-screen flex justify-center items-center p-1 bg-tranparent bg-gradient-to-br from-cool to-violet"
+            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-tranparent bg-gradient-to-br from-cool to-violet"
         >
             <!-- Login Side -->
             <div
@@ -33,14 +33,12 @@
                     >
                         <Textbox
                             placeholder="ID No."
-                            inputType="text"
                             v-model="user.id"
                             hasIcon
                             iconSrc="../assets/uid.svg"
                         />
                         <Textbox
                             placeholder="Password"
-                            inputType="password"
                             class="mt-3"
                             isPassword
                             v-model="user.pw"
