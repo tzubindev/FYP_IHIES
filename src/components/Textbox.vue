@@ -13,7 +13,7 @@
                     type="text"
                     autocomplete="off"
                     required
-                    class="pl-4 text-lg outline-none bg-transparent w-full placeholder:text-black/70"
+                    class="pl-4 text-lg cursor-pointer outline-none bg-transparent w-full placeholder:text-black/70"
                     :value="modelValue"
                     @input="$emit('update:modelValue', $event.target.value)"
                 />
@@ -36,7 +36,7 @@
                     :type="currentType"
                     autocomplete="off"
                     required
-                    class="pl-4 text-lg outline-none bg-transparent w-full placeholder:text-black/70"
+                    class="pl-4 text-lg outline-none cursor-pointer bg-transparent w-full placeholder:text-black/70"
                     :value="modelValue"
                     @input="$emit('update:modelValue', $event.target.value)"
                 />

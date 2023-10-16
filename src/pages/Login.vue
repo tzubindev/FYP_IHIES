@@ -63,7 +63,7 @@
                         <!-- Add TYPE SUBMIT HERE -->
                         <Button
                             title="LOGIN"
-                            customClass="mt-2 bg-gradient-to-r from-cool/70 to-violet
+                            customClass="hover:rounded-md mt-2 bg-gradient-to-r from-cool/70 to-violet
                     text-white "
                             submit
                             large
@@ -108,12 +108,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div
-            class="absolute bottom-0 w-full text-center p-2 bg-transparent text-black"
-        >
-            &copy; 2023 -HEALTHIE-
-        </div> -->
     </div>
 </template>
 

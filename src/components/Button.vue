@@ -1,6 +1,6 @@
 <template>
     <div
-        class="text-black transition cursor-pointer w-full rounded-3xl shadow-xl"
+        class="text-black button transition cursor-pointer w-full rounded-3xl shadow-xl"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -12,7 +12,7 @@
     </div>
 
     <button
-        class="text-black transition cursor-pointer w-full rounded-3xl shadow-xl"
+        class="text-black button transition cursor-pointer w-full rounded-3xl shadow-xl"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -25,6 +25,12 @@
         {{ title }}
     </button>
 </template>
+
+<style>
+.button {
+    transition: border-radius 0.3s;
+}
+</style>
 
 <script>
 export default {
