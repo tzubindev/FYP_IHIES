@@ -55,4 +55,6 @@ async function authenticate(client, requestData) {
     }
 }
 
+async function two_factor_authenticate(uid) {}
+
 module.exports = { authenticate };
