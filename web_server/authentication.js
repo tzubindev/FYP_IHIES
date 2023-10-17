@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
-const FormattedResponse = require("./formattedJsonData");
+const formattedResponse = require("./formattedJsonData");
+const emailHandler = require("./emailHandler");
 
 async function authenticate(client, requestData) {
     try {
@@ -14,7 +15,7 @@ async function authenticate(client, requestData) {
 
         // check if uid exists
         if (!data.length) {
-            return FormattedResponse.errorMsg(
+            return formattedResponse.errorMsg(
                 "Authentication Failed",
                 "/login",
                 "User Id does not exist."
@@ -42,9 +43,9 @@ async function authenticate(client, requestData) {
             ? { authentication: isAuthenticated, role: role }
             : { authentication: isAuthenticated };
 
-        return FormattedResponse.successMsg(result);
+        return formattedResponse.successMsg(result);
     } catch (error) {
-        return FormattedResponse.errorMsg(
+        return formattedResponse.errorMsg(
             "Authentication Error",
             "/login",
             error.message
@@ -55,6 +56,42 @@ async function authenticate(client, requestData) {
     }
 }
 
-async function two_factor_authenticate(uid) {}
+async function two_factor_authenticate(client, requestData) {
+    try {
+        // Connection to mongodb and send query
+        await client.connect();
+        const db = client.db("FYP-IHIES");
+        const coll = db.collection("Authentication");
+        const cursor = coll.find({ "user.id": requestData.id });
 
-module.exports = { authenticate };
+        // Get query result from mongodb
+        const data = await cursor.toArray();
+
+        // check if uid exists
+        if (!data.length) {
+            return formattedResponse.errorMsg(
+                "Authentication Failed",
+                "/login",
+                "User Id does not exist."
+            );
+        }
+
+        // only one uid will be matched
+        const email = data[0].user.email;
+        emailHandler.sendOTP(email, "test-123456");
+        const result = { response: "otp is sent." };
+
+        return formattedResponse.successMsg(result);
+    } catch (error) {
+        return formattedResponse.errorMsg(
+            "Two-Factor Authentication Error",
+            "/login",
+            error.message
+        );
+    } finally {
+        // Ensure that the client will close when you finish/error
+        await client.close();
+    }
+}
+
+module.exports = { authenticate, two_factor_authenticate };

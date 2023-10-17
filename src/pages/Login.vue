@@ -86,6 +86,7 @@
                         title="FORGOT PASSWORD"
                         medium
                         customClass="mt-2 bg-black text-white hover:bg-red"
+                        @click="sendOTP"
                     />
                 </div>
             </div>
@@ -120,16 +121,18 @@ export default {
                 pw: null,
             },
             errors: [],
-            api_url: "http://127.0.0.1:3000/login",
+            api_url: "http://127.0.0.1:3000",
         };
     },
     methods: {
         login(e) {
             this.errors = [];
             if (this.user.id && this.user.pw) {
-                this.axios.post(this.api_url, this.user).then((response) => {
-                    console.log(response.data);
-                });
+                this.axios
+                    .post(`${this.api_url}/login`, this.user)
+                    .then((response) => {
+                        console.log(response.data);
+                    });
                 return true;
             }
 
@@ -137,6 +140,15 @@ export default {
             if (!this.user.pw) this.errors.push("Password Required");
 
             e.preventDefault();
+        },
+        sendOTP() {
+            console.log("Sending otp");
+            this.axios
+                .post(`${this.api_url}/otp`, { id: "012345678910" })
+                .then((response) => {
+                    console.log(response.data);
+                });
+            return true;
         },
     },
 };

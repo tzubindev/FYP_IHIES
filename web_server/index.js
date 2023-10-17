@@ -1,6 +1,6 @@
 const express = require("express");
 const mongodb = require("mongodb");
-const FormattedResponse = require("./formattedJsonData");
+const formattedResponse = require("./formattedJsonData");
 const authentication = require("./authentication");
 
 require("dotenv").config();
@@ -50,7 +50,25 @@ app.post("/login", async (request, response) => {
         response.send(await authentication.authenticate(client, requestData));
     } catch (e) {
         response.send(
-            FormattedResponse.errorMsg("Authentication Error", "/login")
+            formattedResponse.errorMsg("Authentication Error", "/login")
+        );
+    } finally {
+        // Ensures that the client will close when you finish/error
+        await client.close();
+    }
+});
+
+// Two factor authentication
+app.post("/otp", async (request, response) => {
+    try {
+        // Get request data
+        const requestData = request.body;
+        response.send(
+            await authentication.two_factor_authenticate(client, requestData)
+        );
+    } catch (e) {
+        response.send(
+            formattedResponse.errorMsg("Authentication Error", "/login")
         );
     } finally {
         // Ensures that the client will close when you finish/error

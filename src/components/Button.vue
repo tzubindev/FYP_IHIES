@@ -7,6 +7,7 @@
             customClass,
         ]"
         v-if="!submit"
+        @click="click"
     >
         {{ title }}
     </div>
@@ -53,12 +54,18 @@ export default {
             type: Boolean,
             default: false,
         },
+        onClick: Function,
     },
     data() {
         return {
             mediumClass: "text-sm py-2",
             largeClass: "text-xl py-3",
         };
+    },
+    methods: {
+        click() {
+            this.$emit("click");
+        },
     },
 };
 </script>
