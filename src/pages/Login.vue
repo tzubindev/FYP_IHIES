@@ -86,7 +86,7 @@
                         title="FORGOT PASSWORD"
                         medium
                         customClass="mt-2 bg-black text-white hover:bg-red"
-                        @click="sendOTP"
+                        @click="openModal"
                     />
                 </div>
             </div>
@@ -109,6 +109,10 @@
                 </div>
             </div>
         </div>
+
+        <Modal v-model="show" title="Hello World!" @confirm="confirm">
+            <p>The content of the modal</p>
+        </Modal>
     </div>
 </template>
 
@@ -121,6 +125,8 @@ export default {
                 pw: null,
             },
             errors: [],
+            modalTitle: "Custom Modal",
+            show: false,
             api_url: "http://127.0.0.1:3000",
         };
     },
@@ -149,6 +155,13 @@ export default {
                     console.log(response.data);
                 });
             return true;
+        },
+        confirm() {
+            this.sendOTP();
+            this.show = false;
+        },
+        openModal() {
+            this.show = true;
         },
     },
 };

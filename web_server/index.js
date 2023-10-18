@@ -61,6 +61,7 @@ app.post("/login", async (request, response) => {
 // Two factor authentication
 app.post("/otp", async (request, response) => {
     try {
+        console.log("Sending OTP");
         // Get request data
         const requestData = request.body;
         response.send(
