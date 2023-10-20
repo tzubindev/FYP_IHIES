@@ -1,19 +1,38 @@
 <template>
     <VueFinalModal
         class="abs-centre flex justify-center items-center"
-        content-class="flex flex-col max-w-xl mx-4 p-4 bg-cool text-white shadow-lg rounded-lg space-y-2"
+        content-class="min-w-[400px] min-h-[280px] flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
         @update:model-value="(val) => emit('update:modelValue', val)"
     >
-        <h1 class="text-xl">
-            {{ title }}
-        </h1>
-        <slot />
-        <button
-            class="mt-1 ml-auto px-3 py-1 bg-white text-cool font-bold hover:bg-red hover:text-white transition rounded-lg"
-            @click="confirm"
+        <div
+            class="flex justify-center items-center p-2 rounded-full shadow-xl mb-4"
+            :class="{
+                'bg-green text-gray': modalType == 'info',
+                'bg-red text-white': modalType == 'error',
+                'bg-yellow text-gray': modalType == 'warning',
+            }"
         >
-            Confirm
-        </button>
+            <h1 class="text-xl font-extrabold">
+                {{ title }}
+            </h1>
+        </div>
+        <div class="grow">
+            <slot />
+        </div>
+        <div v-if="!noPresetButton" class="flex justify-end">
+            <button
+                class="px-3 py-1 mr-2 text-white font-bold hover:underline hover:text-red transition-all rounded-lg"
+                @click="cancel"
+            >
+                Cancel
+            </button>
+            <button
+                class="px-3 py-1 bg-white text-cool font-bold hover:bg-cool hover:text-white transition rounded-lg"
+                @click="confirm"
+            >
+                Confirm
+            </button>
+        </div>
     </VueFinalModal>
 </template>
 <style>
@@ -31,6 +50,14 @@ import { VueFinalModal } from "vue-final-modal";
 export default {
     props: {
         title: String,
+        modalType: {
+            type: String,
+            default: "info", // info, error, warning
+        },
+        noPresetButton: {
+            type: Boolean,
+            default: false,
+        },
     },
     components: {
         VueFinalModal,
@@ -41,6 +68,9 @@ export default {
         },
         confirm() {
             this.$emit("confirm");
+        },
+        cancel() {
+            this.$emit("cancel");
         },
     },
 };

@@ -4,6 +4,8 @@ import { createVfm } from "vue-final-modal";
 
 import App from "./App.vue";
 import Login from "./pages/Login.vue";
+import Register from "./pages/Register.vue";
+
 import Button from "./components/Button.vue";
 import Textbox from "./components/Textbox.vue";
 import Modal from "./components/Modal.vue";
@@ -15,7 +17,10 @@ import VueAxios from "vue-axios";
 
 const router = createRouter({
     history: createWebHistory(),
-    routes: [{ path: "/login", component: Login }],
+    routes: [
+        { path: "/login", component: Login },
+        { path: "/register", component: Register },
+    ],
 });
 
 const app = createApp(App);

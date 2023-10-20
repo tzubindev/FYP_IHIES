@@ -2,11 +2,11 @@
     <div class="min-h-screen relative">
         <!-- < Small Screen Size -->
         <div
-            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-tranparent bg-gradient-to-br from-cool to-violet"
+            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-tranparent bg-gradient-to-br from-teal to-violet/60"
         >
             <!-- Login Side -->
             <div
-                class="p-5 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-11/12 h-[580px] backdrop-blur-sm shadow-lg"
+                class="p-5 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-11/12 h-[600px] backdrop-blur-sm shadow-lg"
             >
                 <!-- Main panel -->
                 <div class="w-full h-full text-center">
@@ -63,7 +63,7 @@
                         <!-- Add TYPE SUBMIT HERE -->
                         <Button
                             title="LOGIN"
-                            customClass="hover:rounded-md mt-2 bg-gradient-to-r from-cool/70 to-violet
+                            customClass="hover:rounded-md mt-2 bg-gradient-to-r from-teal to-violet
                     text-white "
                             submit
                             large
@@ -81,6 +81,7 @@
                         title="REGISTER"
                         medium
                         customClass="mt-4 bg-white hover:bg-cool hover:text-white"
+                        @click="leadTo('Register')"
                     />
                     <Button
                         title="FORGOT PASSWORD"
@@ -110,8 +111,19 @@
             </div>
         </div>
 
-        <Modal v-model="show" title="Hello World!" @confirm="confirm">
-            <p>The content of the modal</p>
+        <Modal
+            v-model="show"
+            title="Forget Password"
+            @confirm="confirm"
+            @cancel="cancel"
+            modalType="error"
+        >
+            <div class="mb-2">Please Type In Your ID Number</div>
+            <Textbox
+                placeholder="ID No."
+                colour="white"
+                v-model="forgetPassword_id"
+            />
         </Modal>
     </div>
 </template>
@@ -124,6 +136,7 @@ export default {
                 id: null,
                 pw: null,
             },
+            forgetPassword_id: null,
             errors: [],
             modalTitle: "Custom Modal",
             show: false,
@@ -150,7 +163,7 @@ export default {
         sendOTP() {
             console.log("Sending otp");
             this.axios
-                .post(`${this.api_url}/otp`, { id: "012345678910" })
+                .post(`${this.api_url}/otp`, { id: this.forgetPassword_id })
                 .then((response) => {
                     console.log(response.data);
                 });
@@ -158,10 +171,22 @@ export default {
         },
         confirm() {
             this.sendOTP();
+            this.forgetPassword_id = null;
             this.show = false;
         },
         openModal() {
             this.show = true;
+        },
+        cancel() {
+            this.show = false;
+        },
+        leadTo(targetPage) {
+            switch (targetPage) {
+                case "Register":
+                    console.log(`Redirect to ${targetPage}.`);
+                    this.$router.push("./register");
+                    break;
+            }
         },
     },
 };

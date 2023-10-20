@@ -13,12 +13,15 @@
                     type="text"
                     autocomplete="off"
                     required
-                    class="pl-4 text-lg cursor-pointer outline-none bg-transparent w-full placeholder:text-black/70"
+                    class="pl-4 text-lg cursor-pointer outline-none bg-transparent w-full"
                     :value="modelValue"
+                    :style="{ color: colour }"
                     @input="$emit('update:modelValue', $event.target.value)"
                 />
                 <label class="label-name">
-                    <span class="content-name"> {{ placeholder }} </span>
+                    <span class="content-name" :style="{ color: colour }">
+                        {{ placeholder }}
+                    </span>
                 </label>
             </div>
         </div>
@@ -36,12 +39,15 @@
                     :type="currentType"
                     autocomplete="off"
                     required
-                    class="pl-4 text-lg outline-none cursor-pointer bg-transparent w-full placeholder:text-black/70"
+                    class="pl-4 text-lg outline-none cursor-pointer bg-transparent w-full"
                     :value="modelValue"
+                    :style="{ color: colour }"
                     @input="$emit('update:modelValue', $event.target.value)"
                 />
                 <label class="label-name">
-                    <span class="content-name"> {{ placeholder }} </span>
+                    <span class="content-name" :style="{ color: colour }">
+                        {{ placeholder }}
+                    </span>
                 </label>
             </div>
 
@@ -113,10 +119,13 @@ export default {
             type: Boolean,
             default: false,
         },
-        customClass: String,
         modelValue: String,
         hasIcon: Boolean,
         iconSrc: String,
+        colour: {
+            type: String,
+            default: "black",
+        },
     },
     data() {
         return {

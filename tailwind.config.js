@@ -20,6 +20,7 @@ export default {
             cool: "#5a7683",
             white: "#ffffff",
             black: "#000000",
+            gray: "#474540",
         },
         extend: {},
     },
