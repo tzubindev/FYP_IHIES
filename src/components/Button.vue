@@ -1,6 +1,6 @@
 <template>
     <div
-        class="text-black button transition cursor-pointer w-full rounded-3xl shadow-xl"
+        class="text-black button transition-all cursor-pointer w-full rounded-lg shadow-xl"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -13,7 +13,7 @@
     </div>
 
     <button
-        class="text-black button transition cursor-pointer w-full rounded-3xl shadow-xl"
+        class="text-black button transition-all cursor-pointer w-full rounded-lg shadow-xl"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -29,7 +29,7 @@
 
 <style>
 .button {
-    transition: border-radius 0.3s;
+    transition: background-color 0.3s;
 }
 </style>
 

@@ -1,11 +1,11 @@
 <template>
     <VueFinalModal
         class="abs-centre flex justify-center items-center"
-        content-class="min-w-[400px] min-h-[280px] flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
+        content-class="min-w-[280px] min-h-[280px] flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
         @update:model-value="(val) => emit('update:modelValue', val)"
     >
         <div
-            class="flex justify-center items-center p-2 rounded-full shadow-xl mb-4"
+            class="flex justify-center items-center p-2 rounded-xl shadow-xl mb-4"
             :class="{
                 'bg-green text-gray': modalType == 'info',
                 'bg-red text-white': modalType == 'error',

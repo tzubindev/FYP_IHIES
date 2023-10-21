@@ -21,6 +21,7 @@ export default {
             white: "#ffffff",
             black: "#000000",
             gray: "#474540",
+            mintage: "#7BC1B7",
         },
         extend: {},
     },

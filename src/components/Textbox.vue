@@ -4,6 +4,7 @@
         <div
             v-if="!isPassword"
             class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
+            :class="[customClass]"
         >
             <div v-if="hasIcon">
                 <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
@@ -30,6 +31,7 @@
         <div
             v-if="isPassword"
             class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
+            :class="[customClass]"
         >
             <div v-if="hasIcon">
                 <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
@@ -126,6 +128,7 @@ export default {
             type: String,
             default: "black",
         },
+        customClass: String,
     },
     data() {
         return {

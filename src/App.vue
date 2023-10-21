@@ -7,6 +7,7 @@
     >
         &copy; 2023 -HEALTHIE-
     </div>
+    <notifications />
 </template>
 
 <style>

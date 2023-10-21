@@ -56,7 +56,16 @@ async function authenticate(client, requestData) {
     }
 }
 
-async function two_factor_authenticate(client, requestData) {
+// type: [
+//      forgetPassword,
+//      login,
+// ]
+// mode: [
+//      receive,
+//      send
+// ]
+
+async function two_factor_authenticate(client, requestData, type) {
     try {
         // Connection to mongodb and send query
         await client.connect();
@@ -78,8 +87,9 @@ async function two_factor_authenticate(client, requestData) {
 
         // only one uid will be matched
         const email = data[0].user.email;
-        emailHandler.sendOTP(email, "test-123456");
-        const result = { response: "otp is sent." };
+        const otp = OTP_generator();
+        await emailHandler.sendOTP(email, `${otp.id}-${otp.code}`);
+        const result = { id: otp.id };
 
         return formattedResponse.successMsg(result);
     } catch (error) {
@@ -92,6 +102,23 @@ async function two_factor_authenticate(client, requestData) {
         // Ensure that the client will close when you finish/error
         await client.close();
     }
+}
+
+function OTP_generator() {
+    // Define a list of alphabet characters to randomize for ID
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let generatedID = "";
+
+    // Generate a random 3-character ID
+    for (let i = 0; i < 3; i++) {
+        const randomIndex = Math.floor(Math.random() * alphabet.length);
+        generatedID += alphabet[randomIndex];
+    }
+
+    // Generate a random 7-digit code
+    const generatedCode = Math.floor(1000000 + Math.random() * 9000000);
+
+    return { id: generatedID, code: generatedCode };
 }
 
 module.exports = { authenticate, two_factor_authenticate };

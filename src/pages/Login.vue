@@ -1,8 +1,11 @@
 <template>
     <div class="min-h-screen relative">
+        <!-- NOTE -->
+        <!-- 1) gradient theme: bg-gradient-to-br from-teal to-violet/60 -->
+
         <!-- < Small Screen Size -->
         <div
-            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-tranparent bg-gradient-to-br from-teal to-violet/60"
+            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-gradient-to-br from-mintage to-violet/50"
         >
             <!-- Login Side -->
             <div
@@ -11,23 +14,24 @@
                 <!-- Main panel -->
                 <div class="w-full h-full text-center">
                     <!-- Title -->
-                    <div class="mt-8">
+                    <div class="mt-5">
                         <!-- DO SOMETHING HERE LATER -->
                         <!-- <div class="">HEALTHIE</div> -->
                         <img
-                            src="../assets/app_logo_bgrm.png"
-                            class="w-[250px] m-auto"
+                            src="../assets/app_logo.png"
+                            class="w-[80px] m-auto"
                         />
-                        <p class="italic text-sm text-black/80 mt-2">
-                            Integrated Healthcare Information <br />
-                            Exchange System
-                        </p>
+                        <h2
+                            class="mt-3 text-center text-2xl font-bold leading-9 tracking-tight text-gray"
+                        >
+                            Sign in to your account
+                        </h2>
                     </div>
 
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
-                        class="mt-10"
+                        class="mt-8"
                         @submit.prevent="login"
                         novalidate="true"
                     >
@@ -63,8 +67,7 @@
                         <!-- Add TYPE SUBMIT HERE -->
                         <Button
                             title="LOGIN"
-                            customClass="hover:rounded-md mt-2 bg-gradient-to-r from-teal to-violet
-                    text-white "
+                            customClass="mt-2 bg-mintage hover:bg-gray/30 text-white"
                             submit
                             large
                         />
@@ -73,7 +76,7 @@
                     <!-- Seperate line -->
                     <div class="mt-6 flex justify-center items-center">
                         <hr class="grow" />
-                        <div class="w-1/4">Other</div>
+                        <div class="w-1/6">OR</div>
                         <hr class="grow" />
                     </div>
 
@@ -86,7 +89,7 @@
                     <Button
                         title="FORGOT PASSWORD"
                         medium
-                        customClass="mt-2 bg-black text-white hover:bg-red"
+                        customClass="mt-2 bg-gray/70 text-white hover:bg-red "
                         @click="openModal"
                     />
                 </div>
@@ -111,6 +114,7 @@
             </div>
         </div>
 
+        <!-- Forget Password Modal -->
         <Modal
             v-model="show"
             title="Forget Password"
@@ -122,8 +126,35 @@
             <Textbox
                 placeholder="ID No."
                 colour="white"
-                v-model="forgetPassword_id"
+                v-model="forgetPassword.id"
             />
+            <div class="mb-2 mt-4" v-if="isOTPSent">
+                Please Type In Your OTP
+            </div>
+            <div class="mb-4">
+                <!-- OTP Span -->
+                <div class="grid grid-cols-5 h-[40px]" v-if="isOTPSent">
+                    <input
+                        v-model="forgetPassword.otp_id"
+                        readonly
+                        class="bg-transparent outline-none text-center"
+                    />
+                    <input
+                        type="text"
+                        v-model="forgetPassword.otp"
+                        class="w-full col-span-4 bg-transparent border-b-2 outline-none text-center"
+                    />
+                </div>
+                <div class="flex justify-end mt-4">
+                    <Button
+                        medium
+                        title="Send OTP"
+                        customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2 "
+                        @click="sendOTP"
+                        v-if="!isOTPSent"
+                    />
+                </div>
+            </div>
         </Modal>
     </div>
 </template>
@@ -136,7 +167,13 @@ export default {
                 id: null,
                 pw: null,
             },
-            forgetPassword_id: null,
+
+            forgetPassword: {
+                id: null,
+                otp_id: null,
+                otp: null,
+            },
+            isOTPSent: false,
             errors: [],
             modalTitle: "Custom Modal",
             show: false,
@@ -151,6 +188,14 @@ export default {
                     .post(`${this.api_url}/login`, this.user)
                     .then((response) => {
                         console.log(response.data);
+                        if (
+                            response.data.type === "Error" &&
+                            response.data.message === "Authentication Failed"
+                        )
+                            this.errors.push(response.data.description);
+
+                        if (!response.data.message.authentication)
+                            this.errors.push("Wrong Password.");
                     });
                 return true;
             }
@@ -160,17 +205,30 @@ export default {
 
             e.preventDefault();
         },
-        sendOTP() {
+        async sendOTP() {
+            if (!this.forgetPassword.id) {
+                this.notify(
+                    "Invalid Input!",
+                    "Please type in your ID No.",
+                    "error"
+                );
+                return;
+            }
+
             console.log("Sending otp");
-            this.axios
-                .post(`${this.api_url}/otp`, { id: this.forgetPassword_id })
+            let responseData;
+            await this.axios
+                .post(`${this.api_url}/otp`, { id: this.forgetPassword.id })
                 .then((response) => {
-                    console.log(response.data);
+                    responseData = response.data;
                 });
-            return true;
+            console.log(responseData);
+            this.forgetPassword.otp_id = responseData.message.id + " - ";
+            this.isOTPSent = true;
         },
         confirm() {
-            this.sendOTP();
+            // verify the otp code
+            // Need a function here
             this.forgetPassword_id = null;
             this.show = false;
         },
@@ -179,6 +237,10 @@ export default {
         },
         cancel() {
             this.show = false;
+            this.forgetPassword.id = null;
+            this.forgetPassword.otp_id = null;
+            this.forgetPassword.otp = null;
+            this.isOTPSent = false;
         },
         leadTo(targetPage) {
             switch (targetPage) {
@@ -187,6 +249,13 @@ export default {
                     this.$router.push("./register");
                     break;
             }
+        },
+        notify(title, msg, type) {
+            this.$notify({
+                title: title,
+                text: msg,
+                type: type,
+            });
         },
     },
 };

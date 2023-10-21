@@ -3,9 +3,13 @@ import { createRouter, createWebHistory } from "vue-router";
 import { createVfm } from "vue-final-modal";
 
 import App from "./App.vue";
+import Notifications from "@kyvg/vue3-notification";
+
+// Pages
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
 
+// Components
 import Button from "./components/Button.vue";
 import Textbox from "./components/Textbox.vue";
 import Modal from "./components/Modal.vue";
@@ -29,6 +33,7 @@ const vfm = createVfm();
 app.use(router);
 app.use(VueAxios, axios);
 app.use(vfm);
+app.use(Notifications);
 
 app.component("Button", Button);
 app.component("Textbox", Textbox);
