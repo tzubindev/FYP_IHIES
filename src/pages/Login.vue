@@ -149,7 +149,7 @@
                     <Button
                         medium
                         title="Send OTP"
-                        customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2 "
+                        customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
                         @click="sendOTP"
                         v-if="!isOTPSent"
                     />
@@ -218,7 +218,11 @@ export default {
             console.log("Sending otp");
             let responseData;
             await this.axios
-                .post(`${this.api_url}/otp`, { id: this.forgetPassword.id })
+                .post(`${this.api_url}/otp`, {
+                    id: this.forgetPassword.id,
+                    type: "forgetPassword",
+                    mode: "send",
+                })
                 .then((response) => {
                     responseData = response.data;
                 });

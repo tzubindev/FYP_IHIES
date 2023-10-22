@@ -65,33 +65,40 @@ async function authenticate(client, requestData) {
 //      send
 // ]
 
-async function two_factor_authenticate(client, requestData, type) {
+async function two_factor_authenticate(client, requestData) {
     try {
         // Connection to mongodb and send query
         await client.connect();
         const db = client.db("FYP-IHIES");
         const coll = db.collection("Authentication");
-        const cursor = coll.find({ "user.id": requestData.id });
 
-        // Get query result from mongodb
-        const data = await cursor.toArray();
+        if (
+            (requestData.type === "forgetPassword" ||
+                requestData.type === "login") &
+            (requestData.mode === "send")
+        ) {
+            const cursor = coll.find({ "user.id": requestData.id });
 
-        // check if uid exists
-        if (!data.length) {
-            return formattedResponse.errorMsg(
-                "Authentication Failed",
-                "/login",
-                "User Id does not exist."
-            );
+            // Get query result from mongodb
+            const data = await cursor.toArray();
+
+            // check if uid exists
+            if (!data.length) {
+                return formattedResponse.errorMsg(
+                    "Authentication Failed",
+                    "/login",
+                    "User Id does not exist."
+                );
+            }
+
+            // only one uid will be matched
+            const email = data[0].user.email;
+            const otp = OTP_generator();
+            await emailHandler.sendOTP(email, `${otp.id}-${otp.code}`);
+            const result = { id: otp.id };
+
+            return formattedResponse.successMsg(result);
         }
-
-        // only one uid will be matched
-        const email = data[0].user.email;
-        const otp = OTP_generator();
-        await emailHandler.sendOTP(email, `${otp.id}-${otp.code}`);
-        const result = { id: otp.id };
-
-        return formattedResponse.successMsg(result);
     } catch (error) {
         return formattedResponse.errorMsg(
             "Two-Factor Authentication Error",

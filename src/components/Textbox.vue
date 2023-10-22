@@ -9,7 +9,7 @@
             <div v-if="hasIcon">
                 <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
             </div>
-            <div class="form">
+            <div class="form mr-6">
                 <input
                     type="text"
                     autocomplete="off"
@@ -98,7 +98,8 @@
 .content-name {
     position: absolute;
     bottom: 10%;
-    left: calc(50% - 2rem);
+    left: 50%;
+    transform: translateX(-50%);
     padding-bottom: 5px;
     transition: all 0.6s ease;
 }
