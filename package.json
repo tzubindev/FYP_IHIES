@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@kyvg/vue3-notification": "^3.0.2",
     "axios": "^1.5.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -17,7 +16,8 @@
     "vue": "^3.3.4",
     "vue-axios": "^3.5.2",
     "vue-final-modal": "^4.4.5",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

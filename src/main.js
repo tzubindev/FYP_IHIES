@@ -3,8 +3,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import { createVfm } from "vue-final-modal";
 
 import App from "./App.vue";
-import Notifications from "@kyvg/vue3-notification";
-
+import VueSweetalert2 from "vue-sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 // Pages
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
@@ -13,6 +13,7 @@ import Register from "./pages/Register.vue";
 import Button from "./components/Button.vue";
 import Textbox from "./components/Textbox.vue";
 import Modal from "./components/Modal.vue";
+import Loader from "./components/Loader.vue";
 
 // Handling http req
 import * as Vue from "vue"; // in Vue 3
@@ -33,10 +34,11 @@ const vfm = createVfm();
 app.use(router);
 app.use(VueAxios, axios);
 app.use(vfm);
-app.use(Notifications);
+app.use(VueSweetalert2);
 
 app.component("Button", Button);
 app.component("Textbox", Textbox);
 app.component("Modal", Modal);
+app.component("Loader", Loader);
 
 app.mount("#app");

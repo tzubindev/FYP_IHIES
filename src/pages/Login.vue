@@ -9,7 +9,7 @@
         >
             <!-- Login Side -->
             <div
-                class="p-5 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-11/12 h-[600px] backdrop-blur-sm shadow-lg"
+                class="p-5 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-11/12 backdrop-blur-sm shadow-lg"
             >
                 <!-- Main panel -->
                 <div class="w-full h-full text-center">
@@ -128,21 +128,22 @@
                 colour="white"
                 v-model="forgetPassword.id"
             />
+            <!-- Hidden part, will be shown after the otp is sent -->
             <div class="mb-2 mt-4" v-if="isOTPSent">
                 Please Type In Your OTP
             </div>
             <div class="mb-4">
                 <!-- OTP Span -->
-                <div class="grid grid-cols-5 h-[40px]" v-if="isOTPSent">
+                <div class="flex h-[40px]" v-if="isOTPSent">
                     <input
                         v-model="forgetPassword.otp_id"
                         readonly
-                        class="bg-transparent outline-none text-center"
+                        class="w-full p-1 bg-transparent outline-none text-center"
                     />
                     <input
                         type="text"
                         v-model="forgetPassword.otp"
-                        class="w-full col-span-4 bg-transparent border-b-2 outline-none text-center"
+                        class="max-w-[150px] bg-transparent border-b-2 outline-none text-center"
                     />
                 </div>
                 <div class="flex justify-end mt-4">
@@ -156,6 +157,9 @@
                 </div>
             </div>
         </Modal>
+
+        <!-- Loader -->
+        <Loader :loading="isLoading"></Loader>
     </div>
 </template>
 
@@ -178,25 +182,27 @@ export default {
             modalTitle: "Custom Modal",
             show: false,
             api_url: "http://127.0.0.1:3000",
+            isLoading: false,
         };
     },
     methods: {
         login(e) {
             this.errors = [];
             if (this.user.id && this.user.pw) {
-                this.axios
-                    .post(`${this.api_url}/login`, this.user)
-                    .then((response) => {
-                        console.log(response.data);
-                        if (
-                            response.data.type === "Error" &&
-                            response.data.message === "Authentication Failed"
-                        )
-                            this.errors.push(response.data.description);
+                // this.axios
+                //     .post(`${this.api_url}/login`, this.user)
+                //     .then((response) => {
+                //         console.log(response.data);
+                //         if (
+                //             response.data.type === "Error" &&
+                //             response.data.message === "Authentication Failed"
+                //         )
+                //             this.errors.push(response.data.description);
 
-                        if (!response.data.message.authentication)
-                            this.errors.push("Wrong Password.");
-                    });
+                //         if (!response.data.message.authentication)
+                //             this.errors.push("Wrong Password.");
+                //     });
+                this.isLoading = true;
                 return true;
             }
 
@@ -207,11 +213,11 @@ export default {
         },
         async sendOTP() {
             if (!this.forgetPassword.id) {
-                this.notify(
-                    "Invalid Input!",
-                    "Please type in your ID No.",
-                    "error"
-                );
+                this.$swal({
+                    title: "Invalid Input!",
+                    text: "Please type in your ID No.",
+                    icon: "error",
+                });
                 return;
             }
 
@@ -229,6 +235,13 @@ export default {
             console.log(responseData);
             this.forgetPassword.otp_id = responseData.message.id + " - ";
             this.isOTPSent = true;
+            this.$swal({
+                title: "OTP",
+                text: "Please check OTP in your mail.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500,
+            });
         },
         confirm() {
             // verify the otp code
@@ -253,13 +266,6 @@ export default {
                     this.$router.push("./register");
                     break;
             }
-        },
-        notify(title, msg, type) {
-            this.$notify({
-                title: title,
-                text: msg,
-                type: type,
-            });
         },
     },
 };
