@@ -1,7 +1,7 @@
 <template>
     <VueFinalModal
-        class="abs-centre flex justify-center items-center"
-        content-class="min-w-[280px] min-h-[280px] flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
+        class="abs-centre flex justify-center items-center w-4/5"
+        content-class="w-full  flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
         @update:model-value="(val) => emit('update:modelValue', val)"
     >
         <div
@@ -12,11 +12,11 @@
                 'bg-yellow text-gray': modalType == 'warning',
             }"
         >
-            <h1 class="text-xl font-extrabold">
+            <h1 class="text-md font-extrabold">
                 {{ title }}
             </h1>
         </div>
-        <div class="grow">
+        <div class="">
             <slot />
         </div>
         <div v-if="!noPresetButton" class="flex justify-end">
@@ -35,12 +35,17 @@
         </div>
     </VueFinalModal>
 </template>
+
 <style>
 .abs-centre {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+
+body {
+    padding-right: 0px;
 }
 </style>
 

@@ -90,7 +90,7 @@
                         title="FORGOT PASSWORD"
                         medium
                         customClass="mt-2 bg-gray/70 text-white hover:bg-red "
-                        @click="openModal"
+                        @click="openModal('FORGOT PASSOWRD')"
                     />
                 </div>
             </div>
@@ -117,49 +117,68 @@
         <!-- Forget Password Modal -->
         <Modal
             v-model="show"
-            title="Forget Password"
-            @confirm="confirm"
+            :title="modal_title"
+            @confirm="handleOTP('receive')"
             @cancel="cancel"
             modalType="error"
         >
-            <div class="mb-2">Please Type In Your ID Number</div>
+            <div class="mb-2" v-if="!is_auth">
+                Please Type In Your ID Number
+            </div>
             <Textbox
                 placeholder="ID No."
                 colour="white"
-                v-model="forgetPassword.id"
+                v-model="forget_password_id"
+                v-if="!is_auth"
+                class="mb-4"
             />
             <!-- Hidden part, will be shown after the otp is sent -->
-            <div class="mb-2 mt-4" v-if="isOTPSent">
+            <div class="mb-2" v-if="is_otp_sent || is_auth">
                 Please Type In Your OTP
             </div>
             <div class="mb-4">
                 <!-- OTP Span -->
-                <div class="flex h-[40px]" v-if="isOTPSent">
-                    <input
-                        v-model="forgetPassword.otp_id"
-                        readonly
-                        class="w-full p-1 bg-transparent outline-none text-center"
-                    />
-                    <input
-                        type="text"
-                        v-model="forgetPassword.otp"
-                        class="max-w-[150px] bg-transparent border-b-2 outline-none text-center"
-                    />
+                <div
+                    class="w-full p-2 pr-4 bg-orange/30 rounded-3xl shadow-md"
+                    v-if="is_otp_sent"
+                >
+                    <div class="flex justify-start items-center">
+                        <input
+                            v-model="otp.id"
+                            readonly
+                            class="max-w-[80px] p-1 bg-transparent outline-none text-center"
+                        />
+                        <input
+                            type="text"
+                            v-model="otp.code"
+                            class="w-full bg-gray rounded-2xl p-2 border-y-2 outline-none text-center"
+                        />
+                    </div>
                 </div>
                 <div class="flex justify-end mt-4">
                     <Button
                         medium
                         title="Send OTP"
                         customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
-                        @click="sendOTP"
-                        v-if="!isOTPSent"
+                        @click="handleOTP('send')"
+                        v-if="!is_otp_sent && !is_auth"
                     />
+
+                    <!-- Loading animation -->
+                    <div
+                        class="animate-pulse bg-white/20 shadow rounded-md p-4 max-w-sm w-full mx-auto"
+                        v-if="!otp.id && is_auth"
+                    >
+                        <div class="flex justify-center items-center">
+                            <p>Sending OTP...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Modal>
 
         <!-- Loader -->
-        <Loader :loading="isLoading"></Loader>
+        <Loader :loading="is_loading" class="w-4/5"></Loader>
     </div>
 </template>
 
@@ -171,48 +190,66 @@ export default {
                 id: null,
                 pw: null,
             },
-
-            forgetPassword: {
+            forget_password_id: null,
+            otp: {
                 id: null,
-                otp_id: null,
-                otp: null,
+                code: null,
             },
-            isOTPSent: false,
+            is_otp_sent: false,
             errors: [],
-            modalTitle: "Custom Modal",
+            modal_title: null,
             show: false,
             api_url: "http://127.0.0.1:3000",
-            isLoading: false,
+            is_loading: false,
+            is_auth: false,
+            has_error: false,
         };
     },
     methods: {
-        login(e) {
+        async login(e) {
             this.errors = [];
             if (this.user.id && this.user.pw) {
-                // this.axios
-                //     .post(`${this.api_url}/login`, this.user)
-                //     .then((response) => {
-                //         console.log(response.data);
-                //         if (
-                //             response.data.type === "Error" &&
-                //             response.data.message === "Authentication Failed"
-                //         )
-                //             this.errors.push(response.data.description);
+                this.is_loading = true;
+                this.is_auth = true;
+                await this.axios
+                    .post(`${this.api_url}/login`, this.user)
+                    .then((response) => {
+                        this.show = false;
 
-                //         if (!response.data.message.authentication)
-                //             this.errors.push("Wrong Password.");
-                //     });
-                this.isLoading = true;
-                return true;
+                        console.log(response.data);
+                        if (
+                            response.data.type === "Error" &&
+                            response.data.message === "Authentication Failed"
+                        ) {
+                            this.errors.push(response.data.description);
+                            this.has_error;
+                        }
+
+                        if (!response.data.message.authentication) {
+                            this.$swal({
+                                title: "Authentication Failed",
+                                text: "Unmatched ID No. and password.",
+                                icon: "error",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        }
+                    });
             }
 
+            if (this.is_auth && !this.has_error) {
+                this.show = true;
+                this.modal_title = "LOGIN";
+                await this.handleOTP("send");
+                this.is_loading = false;
+            }
             if (!this.user.id) this.errors.push("ID No. Required");
             if (!this.user.pw) this.errors.push("Password Required");
 
             e.preventDefault();
         },
-        async sendOTP() {
-            if (!this.forgetPassword.id) {
+        async sendOTP(otp_uid, otp_type) {
+            if (!otp_uid) {
                 this.$swal({
                     title: "Invalid Input!",
                     text: "Please type in your ID No.",
@@ -222,19 +259,20 @@ export default {
             }
 
             console.log("Sending otp");
-            let responseData;
+            let response_data;
             await this.axios
                 .post(`${this.api_url}/otp`, {
-                    id: this.forgetPassword.id,
-                    type: "forgetPassword",
+                    id: otp_uid,
+                    type: otp_type,
                     mode: "send",
                 })
                 .then((response) => {
-                    responseData = response.data;
+                    response_data = response.data;
                 });
-            console.log(responseData);
-            this.forgetPassword.otp_id = responseData.message.id + " - ";
-            this.isOTPSent = true;
+
+            console.log(response_data);
+            this.otp.id = response_data.message.id + " - ";
+            this.is_otp_sent = true;
             this.$swal({
                 title: "OTP",
                 text: "Please check OTP in your mail.",
@@ -242,22 +280,68 @@ export default {
                 showConfirmButton: false,
                 timer: 1500,
             });
+            return response_data;
         },
-        confirm() {
-            // verify the otp code
-            // Need a function here
-            this.forgetPassword_id = null;
-            this.show = false;
+        async receiveOTP(otp_uid, otp_type) {
+            if (!otp_uid) {
+                this.$swal({
+                    title: "Invalid Input!",
+                    text: "Please type in your ID No.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            console.log("Verifying otp");
+            let response_data;
+            await this.axios
+                .post(`${this.api_url}/otp`, {
+                    id: otp_uid,
+                    type: otp_type,
+                    mode: "receive",
+                    otp: this.otp,
+                })
+                .then((response) => {
+                    response_data = response.data;
+                });
+            return response_data;
         },
-        openModal() {
+        async handleOTP(mode) {
+            if (mode === "send") {
+                if (this.is_auth) {
+                    this.sendOTP(this.user.id, "login");
+                } else {
+                    this.sendOTP(this.forget_password_id, "forgetPassword");
+                }
+            }
+            if (mode === "receive") {
+                if (this.is_auth) {
+                    console.log("Login: ", this.user.id);
+                    await this.receiveOTP(this.user.id, "login");
+                } else {
+                    // await this.receiveOTP();
+                    console.log("Forget Password: ", this.forget_password_id);
+                    await this.receiveOTP(
+                        this.forget_password_id,
+                        "forgetPassword"
+                    );
+                    this.forget_password_id = null;
+                    this.show = false;
+                }
+                this.cancel();
+            }
+        },
+        openModal(title) {
+            this.modal_title = title;
             this.show = true;
         },
         cancel() {
             this.show = false;
-            this.forgetPassword.id = null;
-            this.forgetPassword.otp_id = null;
-            this.forgetPassword.otp = null;
-            this.isOTPSent = false;
+            this.forget_password_id = null;
+            this.otp.id = null;
+            this.otp.code = null;
+            this.is_otp_sent = false;
+            this.is_auth = false;
         },
         leadTo(targetPage) {
             switch (targetPage) {

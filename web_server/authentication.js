@@ -74,8 +74,8 @@ async function two_factor_authenticate(client, requestData) {
 
         if (
             (requestData.type === "forgetPassword" ||
-                requestData.type === "login") &
-            (requestData.mode === "send")
+                requestData.type === "login") &&
+            requestData.mode === "send"
         ) {
             const cursor = coll.find({ "user.id": requestData.id });
 
@@ -98,6 +98,14 @@ async function two_factor_authenticate(client, requestData) {
             const result = { id: otp.id };
 
             return formattedResponse.successMsg(result);
+        }
+
+        if (requestData.mode === "receive") {
+            // Verify otp and take action correspondingly
+            if (requestData.type === "login") {
+            }
+            if (requestData.type === "forgetPassword") {
+            }
         }
     } catch (error) {
         return formattedResponse.errorMsg(

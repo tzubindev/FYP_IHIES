@@ -10,7 +10,7 @@ const forgetPasswordText = baseText.replace(
 const loginText = baseText.replace("XXX", "login.");
 
 module.exports = {
-    sendOTP(recipientEmail, otp) {
+    async sendOTP(recipientEmail, otp) {
         const transporter = nodemailer.createTransport({
             service: "Gmail", // You can use other email services
             auth: {
@@ -73,7 +73,7 @@ module.exports = {
         `,
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
+        await transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("Error sending email:", error);
             } else {
