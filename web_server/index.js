@@ -36,7 +36,14 @@ app.use(function (req, res, next) {
 });
 
 const MongoClient = mongodb.MongoClient;
-const client = new MongoClient(process.env.MONGODB_URI, {});
+const ServerApiVersion = mongodb.ServerApiVersion;
+const client = new MongoClient(process.env.MONGODB_URI, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    },
+});
 
 app.listen(PORT, () => {
     console.log("Server Listening on PORT:", PORT);
@@ -61,7 +68,21 @@ app.post("/login", async (request, response) => {
 // Two factor authentication
 app.post("/otp", async (request, response) => {
     try {
-        console.log("Sending OTP");
+        // Get Request Details
+        console.log(
+            "\n[OTP REQUEST]",
+            `
+IP                ${request.ip}
+Method            ${request.method}
+Query Params      ${JSON.stringify(request.query)}
+Cookies           ${JSON.stringify(request.cookies)}
+URL               ${request.url}
+Path              ${request.path}
+Host Name         ${request.hostname}
+Protocol          ${request.protocol}
+            `
+        );
+
         // Get request data
         const requestData = request.body;
 

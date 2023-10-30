@@ -2,12 +2,15 @@ import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { createVfm } from "vue-final-modal";
 
+// Packages
 import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+
 // Pages
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
+import PatientDashboard from "./pages/PatientDashboard.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -25,6 +28,7 @@ const router = createRouter({
     routes: [
         { path: "/login", component: Login },
         { path: "/register", component: Register },
+        { path: "/patient", component: PatientDashboard },
     ],
 });
 

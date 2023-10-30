@@ -3,7 +3,7 @@
         <router-view></router-view>
     </div>
     <div
-        class="absolute bottom-0 w-full text-center p-1 bg-black/30 text-white"
+        class="absolute bottom-0 w-full text-center p-1 text-xs bg-black/30 text-white"
     >
         &copy; 2023 -HEALTHIE-
     </div>

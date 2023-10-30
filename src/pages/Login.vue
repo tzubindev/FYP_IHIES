@@ -161,13 +161,13 @@
                         title="Send OTP"
                         customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
                         @click="handleOTP('send')"
-                        v-if="!is_otp_sent && !is_auth"
+                        v-if="!is_otp_sent && !is_auth && !is_sending_otp"
                     />
 
                     <!-- Loading animation -->
                     <div
                         class="animate-pulse bg-white/20 shadow rounded-md p-4 max-w-sm w-full mx-auto"
-                        v-if="!otp.id && is_auth"
+                        v-if="(!otp.id && is_auth) || is_sending_otp"
                     >
                         <div class="flex justify-center items-center">
                             <p>Sending OTP...</p>
@@ -203,19 +203,28 @@ export default {
             is_loading: false,
             is_auth: false,
             has_error: false,
+            is_sending_otp: false,
         };
     },
     methods: {
         async login(e) {
+            // Temp dev purpose
+            // this.leadTo("Patient");
+            // return;
+
+            // End here
+
             this.errors = [];
+
             if (this.user.id && this.user.pw) {
                 this.is_loading = true;
                 this.is_auth = true;
+
                 await this.axios
                     .post(`${this.api_url}/login`, this.user)
                     .then((response) => {
+                        console.log("start auth");
                         this.show = false;
-
                         console.log(response.data);
                         if (
                             response.data.type === "Error" &&
@@ -233,18 +242,23 @@ export default {
                                 showConfirmButton: false,
                                 timer: 1500,
                             });
+                            this.has_error = true;
                         }
                     });
             }
+            console.log("finish auth");
 
             if (this.is_auth && !this.has_error) {
                 this.show = true;
                 this.modal_title = "LOGIN";
                 await this.handleOTP("send");
                 this.is_loading = false;
+            } else {
+                this.is_auth = false;
+                this.has_error = false;
+                if (!this.user.id) this.errors.push("ID No. Required");
+                if (!this.user.pw) this.errors.push("Password Required");
             }
-            if (!this.user.id) this.errors.push("ID No. Required");
-            if (!this.user.pw) this.errors.push("Password Required");
 
             e.preventDefault();
         },
@@ -294,6 +308,12 @@ export default {
 
             console.log("Verifying otp");
             let response_data;
+
+            // Clean up data
+            this.otp.id = this.otp.id.substring(0, 3);
+            this.otp.code = this.otp.code.trim();
+
+            // Send req
             await this.axios
                 .post(`${this.api_url}/otp`, {
                     id: otp_uid,
@@ -308,18 +328,23 @@ export default {
         },
         async handleOTP(mode) {
             if (mode === "send") {
+                this.is_sending_otp = true;
                 if (this.is_auth) {
-                    this.sendOTP(this.user.id, "login");
+                    await this.sendOTP(this.user.id, "login");
                 } else {
-                    this.sendOTP(this.forget_password_id, "forgetPassword");
+                    await this.sendOTP(
+                        this.forget_password_id,
+                        "forgetPassword"
+                    );
                 }
+                this.is_sending_otp = false;
             }
             if (mode === "receive") {
                 if (this.is_auth) {
                     console.log("Login: ", this.user.id);
-                    await this.receiveOTP(this.user.id, "login");
+                    const msg = await this.receiveOTP(this.user.id, "login");
+                    console.log("Two-Factor Auth:", msg);
                 } else {
-                    // await this.receiveOTP();
                     console.log("Forget Password: ", this.forget_password_id);
                     await this.receiveOTP(
                         this.forget_password_id,
@@ -349,6 +374,9 @@ export default {
                     console.log(`Redirect to ${targetPage}.`);
                     this.$router.push("./register");
                     break;
+                case "Patient":
+                    console.log(`Redirect to ${targetPage} Dashboard.`);
+                    this.$router.push("./patient");
             }
         },
     },
