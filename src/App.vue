@@ -40,8 +40,5 @@
 export default {
     computed: {},
     methods: {},
-    mounted() {
-        this.$router.push("./login");
-    },
 };
 </script>

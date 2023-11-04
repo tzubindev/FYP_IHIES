@@ -1,8 +1,6 @@
 const bcrypt = require("bcrypt");
 const formattedResponse = require("./formattedJsonData");
 const emailHandler = require("./emailHandler");
-const fs_p = require("fs/promises");
-const fs = require("fs");
 
 async function authenticate(client, requestData) {
     try {
@@ -29,16 +27,11 @@ async function authenticate(client, requestData) {
         const role = data[0].user.role;
         const salt = data[0].user.salt;
 
-        function comparePasswordsAsync(userEnteredPassword, hashedPassword) {
-            return new Promise((resolve, reject) => {
-                bcrypt.hash(userEnteredPassword, salt, function (err, hash) {
-                    if (err) reject(err);
-                    else resolve(hash === hashedPassword);
-                });
-            });
-        }
-
-        const isAuthenticated = await comparePasswordsAsync(requestData.pw, pw);
+        const isAuthenticated = await compare_passwords_async(
+            requestData.pw,
+            pw,
+            salt
+        );
 
         // Add role into result
         const result = isAuthenticated
@@ -74,6 +67,7 @@ async function two_factor_authenticate(client, requestData) {
         const db = client.db("FYP-IHIES");
         const coll_auth = db.collection("Authentication");
         const coll_otp = db.collection("OTP");
+        const coll_passcode = db.collection("Passcode");
 
         // SEND
         if (
@@ -106,6 +100,7 @@ async function two_factor_authenticate(client, requestData) {
 
             // Store otp to database
             // The otp will be valid for 5 mins
+
             const otpData = {
                 expired: Date.now() + 1 * 60 * 1000,
                 id: otp.id,
@@ -142,7 +137,10 @@ async function two_factor_authenticate(client, requestData) {
         // }
         if (requestData.mode === "receive") {
             // Verify otp and take action correspondingly
-            if (requestData.type === "login") {
+            if (
+                requestData.type === "login" ||
+                requestData.type === "forgetPassword"
+            ) {
                 // Query the OTP data from the MongoDB collection
                 const keyToFind = requestData.id;
                 const filter = { [keyToFind]: { $exists: true } };
@@ -150,7 +148,6 @@ async function two_factor_authenticate(client, requestData) {
 
                 // Convert the cursor results to an array
                 const otpDataArray = await otpDataCursor.toArray();
-                console.log(otpDataArray);
 
                 // Verification
                 let result;
@@ -163,6 +160,28 @@ async function two_factor_authenticate(client, requestData) {
                         target.code == requestData.otp.code
                     ) {
                         result = "VER_SUCCESS";
+                        const passcode = random_password_generator();
+                        const filter = { [requestData.id]: { $exists: true } };
+                        const updateData = {
+                            $set: {
+                                [requestData.id]: passcode,
+                            },
+                        };
+
+                        const updateResult = await coll_passcode.updateOne(
+                            filter,
+                            updateData,
+                            {
+                                upsert: true,
+                            }
+                        );
+
+                        if (
+                            updateResult.modifiedCount === 1 ||
+                            updateResult.upsertedCount === 1
+                        ) {
+                            result += "|" + passcode;
+                        }
                     } else {
                         result = "VER_FAILED";
                     }
@@ -170,18 +189,69 @@ async function two_factor_authenticate(client, requestData) {
                     result = "VER_FAILED";
                 }
 
+                // If it is forgetPassword req, additional actions needed
+                if (requestData.type === "forgetPassword") {
+                    // 1. verify otp DONE
+
+                    // 3. store rand pw into the specific user's data
+                    // 4. send email encompassing the rand pw to the user
+                    // 5. return VER_SUCCESS / VER_FAILED
+
+                    // 2. generate rand pw
+                    const randomPassword = random_password_generator();
+
+                    console.log(random_password_generator());
+                    return formattedResponse.successMsg({
+                        msgType: "forgetPassword",
+                    });
+                }
+
                 return formattedResponse.successMsg(result);
-            }
-            if (requestData.type === "forgetPassword") {
-                return formattedResponse.successMsg({
-                    msgType: "forgetPassword",
-                });
             }
         }
     } catch (error) {
         return formattedResponse.errorMsg(
             "Two-Factor Authentication Error",
             "/login",
+            error.message
+        );
+    } finally {
+        // Ensure that the client will close when you finish/error
+        await client.close();
+    }
+}
+
+async function check_passcode(client, requestData) {
+    try {
+        // Connection to mongodb and send query
+        await client.connect();
+        const db = client.db("FYP-IHIES");
+        const coll_passcode = db.collection("Passcode");
+        const keyToFind = requestData.id;
+        const filter = { [keyToFind]: { $exists: true } };
+        const passcodeDataCursor = await coll_passcode.find(filter);
+
+        // Get query result from mongodb
+        const data = await passcodeDataCursor.toArray();
+
+        // check if uid exists
+        if (!data.length) {
+            return formattedResponse.errorMsg(
+                "Verification Failed",
+                "/username",
+                "Unmatched passcode."
+            );
+        }
+        const result = {
+            passcode_verification:
+                data[0][requestData.id] === requestData.passcode,
+        };
+
+        return formattedResponse.successMsg(result);
+    } catch (error) {
+        return formattedResponse.errorMsg(
+            "Verification Error",
+            "/username",
             error.message
         );
     } finally {
@@ -207,4 +277,69 @@ function OTP_generator() {
     return { id: generatedID, code: generatedCode };
 }
 
-module.exports = { authenticate, two_factor_authenticate };
+function random_password_generator() {
+    const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+    const digitChars = "0123456789";
+    const specialChars = "!@#$%^&*()_-+=<>?/";
+
+    // Ensure at least one character from each category
+    const randomUppercase =
+        uppercaseChars[Math.floor(Math.random() * uppercaseChars.length)];
+    const randomLowercase =
+        lowercaseChars[Math.floor(Math.random() * lowercaseChars.length)];
+    const randomDigit =
+        digitChars[Math.floor(Math.random() * digitChars.length)];
+    const randomSpecialChar =
+        specialChars[Math.floor(Math.random() * specialChars.length)];
+
+    // Combine characters from all categories and shuffle
+    const combinedChars =
+        uppercaseChars + lowercaseChars + digitChars + specialChars;
+    let password =
+        randomUppercase + randomLowercase + randomDigit + randomSpecialChar;
+
+    while (password.length < 12) {
+        const randomChar =
+            combinedChars[Math.floor(Math.random() * combinedChars.length)];
+        password += randomChar;
+    }
+
+    // Shuffle the password
+    password = password.split("");
+    for (let i = password.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [password[i], password[j]] = [password[j], password[i]];
+    }
+
+    return password.join("");
+}
+
+async function compare_passwords_async(
+    userEnteredPassword,
+    hashedPassword,
+    salt
+) {
+    try {
+        const userEnteredHash = await hash(userEnteredPassword, salt);
+        return userEnteredHash === hashedPassword;
+    } catch (err) {
+        throw err; // Handle the error as needed
+    }
+}
+
+async function hash(target, salt) {
+    try {
+        const hash = await new Promise((resolve, reject) => {
+            bcrypt.hash(target, salt, (err, hash) => {
+                if (err) reject(err);
+                else resolve(hash);
+            });
+        });
+        return hash;
+    } catch (err) {
+        throw err; // Handle the error as needed
+    }
+}
+
+module.exports = { authenticate, two_factor_authenticate, check_passcode };

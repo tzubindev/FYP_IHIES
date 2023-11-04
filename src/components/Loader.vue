@@ -2,10 +2,10 @@
     <Transition name="slide-fade">
         <div
             v-if="loading"
-            class="absolute h-screen w-full top-0 left-0 bg-gray/70"
+            class="flex justify-center items-center h-screen w-full top-0 left-0 bg-gray/70 z-50"
         >
             <div
-                class="mt-[60%] mx-auto bg-mintage w-[200px] h-[200px] rounded-full flex items-center justify-center"
+                class="bg-mintage w-[200px] h-[200px] rounded-full flex items-center justify-center"
             >
                 <svg
                     role="img"

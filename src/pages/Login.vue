@@ -178,7 +178,7 @@
         </Modal>
 
         <!-- Loader -->
-        <Loader :loading="is_loading" class="w-4/5"></Loader>
+        <Loader :loading="is_loading && !show" class="w-4/5"></Loader>
     </div>
 </template>
 
@@ -232,6 +232,7 @@ export default {
                         ) {
                             this.errors.push(response.data.description);
                             this.has_error;
+                            this.is_loading = false;
                         }
 
                         if (!response.data.message.authentication) {
@@ -250,10 +251,12 @@ export default {
 
             if (this.is_auth && !this.has_error) {
                 this.show = true;
+
                 this.modal_title = "LOGIN";
                 await this.handleOTP("send");
                 this.is_loading = false;
             } else {
+                this.is_loading = false;
                 this.is_auth = false;
                 this.has_error = false;
                 if (!this.user.id) this.errors.push("ID No. Required");
@@ -344,6 +347,12 @@ export default {
                     console.log("Login: ", this.user.id);
                     const msg = await this.receiveOTP(this.user.id, "login");
                     console.log("Two-Factor Auth:", msg);
+                    console.log(msg.message === "VER_SUCCESS");
+                    if (msg.message.split("|")[0] === "VER_SUCCESS") {
+                        this.leadTo("Patient", {
+                            passcode: msg.message.split("|")[1],
+                        });
+                    }
                 } else {
                     console.log("Forget Password: ", this.forget_password_id);
                     await this.receiveOTP(
@@ -368,15 +377,19 @@ export default {
             this.is_otp_sent = false;
             this.is_auth = false;
         },
-        leadTo(targetPage) {
+        leadTo(targetPage, params) {
             switch (targetPage) {
                 case "Register":
                     console.log(`Redirect to ${targetPage}.`);
-                    this.$router.push("./register");
+                    this.$router.push("/register");
                     break;
                 case "Patient":
                     console.log(`Redirect to ${targetPage} Dashboard.`);
-                    this.$router.push("./patient");
+                    this.$router.push({
+                        path: `/patient/${this.user.id}`,
+                        query: { passcode: params.passcode },
+                    });
+                    break;
             }
         },
     },

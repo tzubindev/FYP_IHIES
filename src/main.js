@@ -19,16 +19,17 @@ import Modal from "./components/Modal.vue";
 import Loader from "./components/Loader.vue";
 
 // Handling http req
-import * as Vue from "vue"; // in Vue 3
+
 import axios from "axios";
 import VueAxios from "vue-axios";
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
+        { path: "/", component: Login },
         { path: "/login", component: Login },
         { path: "/register", component: Register },
-        { path: "/patient", component: PatientDashboard },
+        { path: "/patient/:id", component: PatientDashboard },
     ],
 });
 

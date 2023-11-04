@@ -2,6 +2,7 @@ const express = require("express");
 const mongodb = require("mongodb");
 const formattedResponse = require("./formattedJsonData");
 const authentication = require("./authentication");
+const { ProfileController } = require("./profileController");
 
 require("dotenv").config();
 
@@ -43,10 +44,6 @@ const client = new MongoClient(process.env.MONGODB_URI, {
         strict: true,
         deprecationErrors: true,
     },
-});
-
-app.listen(PORT, () => {
-    console.log("Server Listening on PORT:", PORT);
 });
 
 // Login end point
@@ -97,4 +94,33 @@ Protocol          ${request.protocol}
         // Ensures that the client will close when you finish/error
         await client.close();
     }
+});
+
+app.post("/username", async (request, response) => {
+    try {
+        // Get request data
+        const requestData = request.body;
+        const passcode_check = await authentication.check_passcode(
+            client,
+            requestData
+        );
+
+        if (passcode_check.message.passcode_verification) {
+            response.send(
+                await new ProfileController().get_name(client, requestData)
+            );
+        } else response.send(passcode_check);
+    } catch (e) {
+        response.send(
+            formattedResponse.errorMsg("Get Info Error", "/patient/:id/query?")
+        );
+    } finally {
+        // Ensures that the client will close when you finish/error
+        await client.close();
+    }
+});
+
+// Listener
+app.listen(PORT, () => {
+    console.log("Server Listening on PORT:", PORT);
 });
