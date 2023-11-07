@@ -5,33 +5,35 @@
 
         <!-- < Small Screen Size -->
         <div
-            class="md:hidden font-serif overflow-x-hidden h-screen flex justify-center items-center p-1 bg-gradient-to-br from-mintage to-violet/50"
+            class="sm:hidden flex-wrap font-serif overflow-hidden h-screen flex justify-center items-end bg-gray/5"
         >
-            <!-- Login Side -->
-            <div
-                class="p-5 md:p-0 flex justify-center items-center bg-white/70 rounded-2xl w-11/12 backdrop-blur-sm shadow-lg"
+            <h1
+                class="absolute top-0 pt-4 font-extrabold text-2xl text-gray w-full text-center"
             >
-                <!-- Main panel -->
-                <div class="w-full h-full text-center">
-                    <!-- Title -->
-                    <div class="mt-5">
-                        <!-- DO SOMETHING HERE LATER -->
-                        <!-- <div class="">HEALTHIE</div> -->
-                        <img
-                            src="../assets/app_logo.png"
-                            class="w-[80px] m-auto"
-                        />
-                        <h2
-                            class="mt-3 text-center text-2xl font-bold leading-9 tracking-tight text-gray"
-                        >
-                            Sign in to your account
-                        </h2>
-                    </div>
+                HEALTHIE
+            </h1>
+            <!-- Upper -->
+            <div class="w-full h-1/3 flex justify-center items-end">
+                <img src="../assets/login_cover_mobile.svg" class="h-full" />
+            </div>
 
+            <!-- Lower -->
+            <!-- bg-[#4063cd] -->
+            <div
+                class="flex-wrap bg-gray p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
+            >
+                <h2
+                    class="w-full mb-3 text-left text-2xl font-bold leading-9 tracking-tight text-white"
+                >
+                    Sign in to your account
+                </h2>
+
+                <!-- Main panel -->
+                <div class="w-full text-center">
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
-                        class="mt-8"
+                        class=""
                         @submit.prevent="login"
                         novalidate="true"
                     >
@@ -40,57 +42,42 @@
                             v-model="user.id"
                             hasIcon
                             iconSrc="../assets/uid.svg"
+                            customClass="border-white/60"
+                            colour="white"
                         />
                         <Textbox
                             placeholder="Password"
-                            class="mt-3"
+                            class="mt-5"
                             isPassword
                             v-model="user.pw"
                             hasIcon
                             iconSrc="../assets/pw.svg"
+                            customClass="border-white/60"
+                            colour="white"
                         />
-
-                        <div
-                            v-if="errors.length"
-                            class="text-left text-red mt-1 p-1 pb-0"
-                        >
-                            <div
-                                v-for="item in errors"
-                                :key="item.id"
-                                class="text-xm"
+                        <div class="w-full mt-3 mb-6 flex justify-end px-2">
+                            <p
+                                @click="openModal('FORGOT PASSOWRD')"
+                                class="text-white cursor-pointer hover:text-red rounded-full transition-all p-1 px-4"
                             >
-                                * {{ item }}
-                            </div>
+                                Forgot your password?
+                            </p>
                         </div>
-                        <div v-if="!errors.length" class="mt-8"></div>
 
                         <!-- Add TYPE SUBMIT HERE -->
                         <Button
                             title="LOGIN"
-                            customClass="mt-2 bg-mintage hover:bg-gray/30 text-white"
+                            customClass="mt-5 bg-red hover:bg-red/70 text-white"
                             submit
                             large
                         />
                     </form>
 
-                    <!-- Seperate line -->
-                    <div class="mt-6 flex justify-center items-center">
-                        <hr class="grow" />
-                        <div class="w-1/6">OR</div>
-                        <hr class="grow" />
-                    </div>
-
                     <Button
                         title="REGISTER"
-                        medium
-                        customClass="mt-4 bg-white hover:bg-cool hover:text-white"
+                        large
+                        customClass="mt-5 bg-white hover:bg-mintage/90 hover:text-white text-gray"
                         @click="leadTo('Register')"
-                    />
-                    <Button
-                        title="FORGOT PASSWORD"
-                        medium
-                        customClass="mt-2 bg-gray/70 text-white hover:bg-red "
-                        @click="openModal('FORGOT PASSOWRD')"
                     />
                 </div>
             </div>
@@ -178,7 +165,16 @@
         </Modal>
 
         <!-- Loader -->
-        <Loader :loading="is_loading && !show" class="w-4/5"></Loader>
+        <Loader
+            :loading="is_loading && !show"
+            class="z-20 w-4/5 absolute"
+        ></Loader>
+
+        <!-- Modal background -->
+        <div
+            v-if="show"
+            class="z-10 h-screen w-screen bg-white/70 absolute top-0 left-0"
+        ></div>
     </div>
 </template>
 
@@ -261,6 +257,26 @@ export default {
                 this.has_error = false;
                 if (!this.user.id) this.errors.push("ID No. Required");
                 if (!this.user.pw) this.errors.push("Password Required");
+            }
+
+            if (this.errors.length) {
+                const errorsHTML =
+                    "<p class='w-full text-left pl-2'>Errors:</p>" +
+                    "<div class='flex flex-wrap text-left p-2'>" +
+                    this.errors
+                        .map(
+                            (e) =>
+                                "<div class='mb-2 mr-2 rounded-md bg-gray text-red font-light p-2 px-5'>" +
+                                e +
+                                "</div>"
+                        )
+                        .join("") +
+                    "</div>";
+                this.$swal({
+                    title: "Login",
+                    html: errorsHTML,
+                    icon: "error",
+                });
             }
 
             e.preventDefault();

@@ -2,10 +2,10 @@
     <Transition name="slide-fade">
         <div
             v-if="loading"
-            class="flex justify-center items-center h-screen w-full top-0 left-0 bg-gray/70 z-50"
+            class="flex justify-center items-center h-screen w-full top-0 left-0 bg-white/70 z-50"
         >
             <div
-                class="bg-mintage w-[200px] h-[200px] rounded-full flex items-center justify-center"
+                class="bg-red w-[180px] h-[180px] rounded-full flex items-center justify-center"
             >
                 <svg
                     role="img"
@@ -59,12 +59,12 @@
                     >
                         <g>
                             <rect
-                                fill="hsl(193,90%,50%)"
+                                fill="white"
                                 width="128"
                                 height="64"
                                 clip-path="url(#smiley-eyes)"
                             />
-                            <g fill="none" stroke="hsl(193,90%,50%)">
+                            <g fill="none" stroke="white">
                                 <circle
                                     class="smiley__mouth1"
                                     cx="64"
@@ -83,12 +83,12 @@
                         </g>
                         <g mask="url(#smiley-mask)">
                             <rect
-                                fill="hsl(223,90%,50%)"
+                                fill="white"
                                 width="128"
                                 height="64"
                                 clip-path="url(#smiley-eyes)"
                             />
-                            <g fill="none" stroke="hsl(223,90%,50%)">
+                            <g fill="none" stroke="white">
                                 <circle
                                     class="smiley__mouth1"
                                     cx="64"
@@ -107,8 +107,9 @@
                         </g>
                     </g>
                 </svg>
-            </div></div
-    ></Transition>
+            </div>
+        </div>
+    </Transition>
 </template>
 
 <style>

@@ -172,6 +172,7 @@ export default {
                 if (response.data.message.passcode_verification) {
                     this.is_initiated = true;
                     this.user.name = response.data.message.name;
+                    this.is_access_denied = false;
                 } else {
                     this.is_initiated = false;
                     this.is_access_denied = true;

@@ -3,18 +3,18 @@
         <!-- Normal Textbox -->
         <div
             v-if="!isPassword"
-            class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
+            class="px-4 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-12 bg-transparent rounded-3xl border-y-2 shadow-lg"
             :class="[customClass]"
         >
             <div v-if="hasIcon">
-                <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
+                <img :src="getIconUrl()" class="w-6 h-6 mr-2" />
             </div>
             <div class="form mr-6">
                 <input
                     type="text"
                     autocomplete="off"
                     required
-                    class="pl-4 text-lg cursor-pointer outline-none bg-transparent w-full"
+                    class="pl-4 text-md cursor-pointer outline-none bg-transparent w-full"
                     :value="modelValue"
                     :style="{ color: colour }"
                     @input="$emit('update:modelValue', $event.target.value)"
@@ -30,11 +30,11 @@
         <!-- Password Textbox -->
         <div
             v-if="isPassword"
-            class="px-3 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-14 bg-transparent rounded-3xl border-y-2 shadow-lg"
+            class="px-4 p-1 flex items-center cursor-pointer hover:bg-black/10 transition w-full h-12 bg-transparent rounded-3xl border-y-2 shadow-lg"
             :class="[customClass]"
         >
             <div v-if="hasIcon">
-                <img :src="getIconUrl()" class="w-7 h-7 mr-2" />
+                <img :src="getIconUrl()" class="w-6 h-6 mr-2" />
             </div>
             <div class="form">
                 <input
@@ -97,10 +97,9 @@
 
 .content-name {
     position: absolute;
-    bottom: 10%;
+    bottom: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    padding-bottom: 5px;
+    transform: translate(-50%, 50%);
     transition: all 0.6s ease;
 }
 .form input:focus {
@@ -108,7 +107,7 @@
 }
 .form input:focus + .label-name .content-name,
 .form input:valid + .label-name .content-name {
-    transform: translateY(-100%);
+    transform: translateY(-40%);
     font-size: 10px;
     left: 10px;
 }

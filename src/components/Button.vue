@@ -1,6 +1,6 @@
 <template>
     <div
-        class="text-black button transition-all cursor-pointer w-full rounded-lg shadow-xl"
+        class="text-black button transition-all cursor-pointer w-full rounded-full shadow-md"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -13,7 +13,7 @@
     </div>
 
     <button
-        class="text-black button transition-all cursor-pointer w-full rounded-lg shadow-xl"
+        class="text-black button transition-all cursor-pointer w-full rounded-full shadow-md"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -59,7 +59,7 @@ export default {
     data() {
         return {
             mediumClass: "text-sm py-2",
-            largeClass: "text-xl py-3",
+            largeClass: "text-md py-3",
         };
     },
     methods: {
