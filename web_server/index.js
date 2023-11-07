@@ -1,5 +1,8 @@
 const express = require("express");
 const mongodb = require("mongodb");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
 const formattedResponse = require("./formattedJsonData");
 const authentication = require("./authentication");
 const { ProfileController } = require("./profileController");
@@ -10,6 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Middleware: To allow access from a specific address and port
 app.use(function (req, res, next) {
@@ -96,6 +100,7 @@ Protocol          ${request.protocol}
     }
 });
 
+// Profile Initiation - short
 app.post("/username", async (request, response) => {
     try {
         // Get request data
