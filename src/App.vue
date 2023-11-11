@@ -37,8 +37,5 @@
 </style>
 
 <script>
-export default {
-    computed: {},
-    methods: {},
-};
+export default {};
 </script>

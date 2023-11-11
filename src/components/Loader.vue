@@ -2,7 +2,7 @@
     <Transition name="slide-fade">
         <div
             v-if="loading"
-            class="flex justify-center items-center h-screen w-full top-0 left-0 bg-white/70 z-50"
+            class="flex justify-center items-center h-screen w-full top-0 left-0 bg-gray z-50"
         >
             <div
                 class="bg-red w-[180px] h-[180px] rounded-full flex items-center justify-center"

@@ -26,6 +26,31 @@ class ProfileController {
 
         return formattedResponse.successMsg(result);
     }
+
+    async get_locale(client, requestData) {
+        console.log("Getting locale");
+        await client.connect();
+        const db = client.db("FYP-IHIES");
+        const coll_auth = db.collection("Authentication");
+
+        const cursor = coll_auth.find({ "user.id": requestData.id });
+
+        // Get query result from mongodb
+        const data = await cursor.toArray();
+
+        // check if uid exists
+        if (!data.length) {
+            return formattedResponse.errorMsg(
+                "Profile Info Retrieval Failed",
+                "/locale",
+                "Locale does not exist."
+            );
+        }
+
+        const result = { locale: data[0].user.language };
+
+        return formattedResponse.successMsg(result);
+    }
 }
 
 module.exports = { ProfileController };

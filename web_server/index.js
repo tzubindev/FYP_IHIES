@@ -101,6 +101,7 @@ Protocol          ${request.protocol}
 });
 
 // Profile Initiation - short
+// NEED INCLUSION IN 1 endpoint instead of many points
 app.post("/username", async (request, response) => {
     try {
         // Get request data
@@ -124,6 +125,78 @@ app.post("/username", async (request, response) => {
         await client.close();
     }
 });
+
+// Get User Language Preference
+// NEED INCLUSION IN 1 endpoint instead of many points
+app.get("/locale/:uid", async (request, response) => {
+    try {
+        // Get Request Details
+        console.log(
+            "\n\t[LOCALE GET REQUEST]\n",
+            `
+    IP                ${request.ip}
+    Method            ${request.method}
+    Query Params      ${JSON.stringify(request.query)}
+    Cookies           ${JSON.stringify(request.cookies)}
+    URL               ${request.url}
+    Path              ${request.path}
+    Host Name         ${request.hostname}
+    Protocol          ${request.protocol}
+                `
+        );
+
+        let requestData = request.body;
+        requestData.id = request.params.uid;
+        response.send(
+            await new ProfileController().get_locale(client, requestData)
+        );
+    } catch (e) {
+        response.send(
+            formattedResponse.errorMsg(
+                "Get Info Error",
+                "/locale/:id",
+                e.message
+            )
+        );
+    } finally {
+        // Ensures that the client will close when you finish/error
+        await client.close();
+    }
+});
+
+// Change locale
+// app.post("/locale/:uid", async (request, response) => {
+//     try {
+//         // Get Request Details
+//         console.log(
+//             "\n\t[LOCALE POST REQUEST]\n",
+//             `
+//     IP                ${request.ip}
+//     Method            ${request.method}
+//     Query Params      ${JSON.stringify(request.query)}
+//     Cookies           ${JSON.stringify(request.cookies)}
+//     URL               ${request.url}
+//     Path              ${request.path}
+//     Host Name         ${request.hostname}
+//     Protocol          ${request.protocol}
+//                 `
+//         );
+
+//         let requestData = request.body;
+//         requestData.id = request.params.uid;
+//         // change get_locale to set_locale here
+//         response.send(
+//             await new ProfileController().get_locale(client, requestData)
+//         );
+//     } catch (e) {
+//         response.send(
+//             formattedResponse.errorMsg("Get Info Error", "/locale/:id")
+//         );
+//     } finally {
+//         // Ensures that the client will close when you finish/error
+//         await client.close();
+//     }
+// });
 
 // Listener
 app.listen(PORT, () => {
