@@ -1,13 +1,13 @@
 <template>
     <div
-        class="bg-gray text-white fixed top-0 bottom-0 lg:left-0 w-[180px] lg:w-[240px] text-center"
+        class="z-20 bg-gray text-white fixed top-0 bottom-0 lg:left-0 w-[180px] lg:w-[240px] text-center"
     >
         <!-- Company Logo -->
         <div
             class="p-4 pt-0 flex flex-wrap justify-start items-center text-gray text-xl h-[200px] bg-white"
         >
             <h1 class="z-10 w-full font-extrabold text-gray text-sm">
-                HEALTHIE
+                {{ $t("healthie") }}
             </h1>
 
             <div
@@ -45,7 +45,7 @@
                 <transition name="slide-fade">
                     <input
                         type="text"
-                        placeholder="Search"
+                        :placeholder="`${$t('search')}`"
                         v-if="is_searching"
                         class="cursor-pointer text-[14px] ml-4 w-full bg-transparent placeholder:text-white focus:outline-none"
                     />

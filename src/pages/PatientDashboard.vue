@@ -19,56 +19,195 @@
         <div></div>
 
         <!-- Medium screen size and above-->
-        <div v-if="is_verified" class="h-screen w-full flex flex-wrap">
+        <div
+            v-if="is_verified"
+            class="h-screen w-full flex flex-wrap overflow-y-auto"
+        >
             <!-- Sidebar -->
             <Sidebar :username="this.user.name"></Sidebar>
 
             <!-- Topbar -->
-            <div
-                class="px-3 text-[14px] bg-gray/5 shadow w-full h-12 flex justify-end items-center"
-            >
-                <!-- Language -->
-                <div class="flex items-center mr-3">
-                    <Dropdown
-                        class=""
-                        :menuItems="languages"
-                        :show="is_language_shown"
-                        @click="updateLanguageDropdown"
-                        @selectedItem="updateSelectedLanguage"
+            <Topbar></Topbar>
+
+            <!-- Dashboard -->
+            <div class="pl-[180px] w-full h-full">
+                <div class="pt-6 pb-4 px-10 w-full h-full">
+                    <!-- Path showing -->
+                    <div
+                        class="h-[40px] font-extrabold p-2 text-xs flex justify-left items-center"
                     >
-                        {{ $t(this.$i18n.locale) }}
-                    </Dropdown>
+                        <p>{{ $t("healthie") }}</p>
+                        <p class="mx-1.5">></p>
+                        <p>{{ $t("dashboard") }}</p>
+                    </div>
+
+                    <!-- Profile  -->
+                    <div
+                        class="py-4 w-full flex h-fit bg-gray rounded-xl text-white items-center"
+                    >
+                        <!-- Picture -->
+                        <div
+                            class="h-full w-1/3 flex justify-center items-center"
+                        >
+                            <img
+                                src="../sample_assets/profilePic_tb.jpg"
+                                class="w-[150px] h-[150px] rounded-full"
+                            />
+                        </div>
+
+                        <!-- Name and Access -->
+                        <div class="h-full w-3/12 flex items-center pr-4">
+                            <div>
+                                <div class="font-extrabold text-xl">
+                                    {{ $t("user") }}
+                                </div>
+                                <div class="text-md">
+                                    {{ this.user.name }}
+                                </div>
+                                <div
+                                    class="p-3 py-1.5 mt-4 text-xs w-fit rounded bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                >
+                                    {{ $t("view_profile") }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile details -->
+                        <div
+                            class="h-full w-5/12 p-4 pl-2 gap-1 grid grid-cols-2 text-[12px] border-l border-white/20"
+                        >
+                            <!-- Sex -->
+                            <div class="flex flex-wrap">
+                                <div class="font-light w-fit">
+                                    {{ $t("sex") }}
+                                </div>
+                                <div
+                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                >
+                                    {{ $t("sex") }}
+                                </div>
+                            </div>
+                            <!-- Age -->
+                            <div class="flex flex-wrap">
+                                <div class="font-light w-fit">
+                                    {{ $t("age") }}
+                                </div>
+                                <div
+                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                >
+                                    {{ $t("age") }}
+                                </div>
+                            </div>
+                            <div>
+                                <!-- blood -->
+                                <div class="flex flex-wrap">
+                                    <div class="font-light w-fit">
+                                        {{ $t("blood") }}
+                                    </div>
+                                    <div
+                                        class="w-full text-center py-0.5 rounded font-extrabold"
+                                    >
+                                        {{ $t("blood") }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- height -->
+                            <div class="flex flex-wrap">
+                                <div class="font-light w-fit">
+                                    {{ $t("height") }}
+                                </div>
+                                <div
+                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                >
+                                    {{ $t("height") }}
+                                </div>
+                            </div>
+
+                            <!-- weight -->
+                            <div class="flex flex-wrap">
+                                <div class="font-light w-fit">
+                                    {{ $t("weight") }}
+                                </div>
+                                <div
+                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                >
+                                    {{ $t("weight") }}
+                                </div>
+                            </div>
+
+                            <!--last logged in  -->
+                            <div class="flex flex-wrap">
+                                <div class="font-light w-fit">
+                                    {{ $t("last_logged_in") }}
+                                </div>
+                                <div
+                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                >
+                                    {{ $t("last_logged_in") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="w-full h-full max-h-[500px] pt-3">
+                        <div
+                            class="w-full h-full border-y border-gray/20 text-[14px]"
+                        >
+                            <div class="w-full my-1.5">
+                                {{ $t("personal_data") }}
+                            </div>
+
+                            <div class="w-full h-5/6 grid grid-cols-2 gap-2">
+                                <div class="bg-gray w-full h-full rounded-xl">
+                                    <Line :data="data" :options="options" />
+                                </div>
+                                <div
+                                    class="bg-gray w-full h-full rounded-xl"
+                                ></div>
+                                <div
+                                    class="bg-gray w-full h-full rounded-xl"
+                                ></div>
+                                <div
+                                    class="bg-gray w-full h-full rounded-xl"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- Notification -->
-                <div>
-                    <img
-                        src="../assets/notification_closed.svg"
-                        class="h-5 w-5 cursor-pointer"
-                        v-if="is_notification_closed"
-                        @click="
-                            is_notification_closed = !is_notification_closed
-                        "
-                    />
-                    <img
-                        src="../assets/notification_opened.svg"
-                        class="h-5 w-5 cursor-pointer"
-                        v-if="!is_notification_closed"
-                        @click="
-                            is_notification_closed = !is_notification_closed
-                        "
-                    />
-                </div>
-                <!-- Profile
-                <div class="flex flex-nowrap items-center ml-2">
-                    <div class="h-8 w-8 rounded-lg bg-gray"></div>
-                </div> -->
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+import { Line } from "vue-chartjs";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
 export default {
+    components: {
+        Line,
+    },
     data() {
         return {
             user: {
@@ -76,16 +215,37 @@ export default {
                 name: null,
                 passcode: null,
             },
-            errors: [],
-            languages: ["en", "cn_tw", "my", "jp", "kr"],
+
             // modalTitle: "Custom Modal",
             // show: false,
             is_verified: false,
             is_initiated: false,
             is_access_denied: false,
-            is_notification_closed: true,
-            is_language_shown: false,
             api_url: "http://127.0.0.1:3000",
+
+            // chart
+            data: {
+                labels: [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                ],
+                datasets: [
+                    {
+                        label: "Data One",
+                        backgroundColor: "#f87979",
+                        data: [40, 39, 10, 40, 39, 80, 40],
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
         };
     },
     async created() {
@@ -134,12 +294,6 @@ export default {
     methods: {
         async initiateDashboard(id) {
             this.$axios();
-        },
-        updateLanguageDropdown() {
-            this.is_language_shown = !this.is_language_shown;
-        },
-        updateSelectedLanguage(lang) {
-            this.$i18n.locale = this.languages.find((l) => l === lang);
         },
     },
 };

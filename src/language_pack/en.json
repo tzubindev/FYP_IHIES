@@ -1,4 +1,5 @@
 {
+    "healthie": "HEALTHIE",
     "en": "English",
     "cn_tw": "Tranditional Chinese",
     "my": "Malay",
@@ -10,12 +11,14 @@
     "schedule": "Schedule",
     "setting": "Setting",
     "logout": "Logout",
-    "": "",
-    "": "",
-    "": "",
-    "": "",
-    "": "",
-    "": "",
-    "": "",
-    "": ""
+    "search": "Search",
+    "patient": "Patient",
+    "user": "User",
+    "view_profile": "VIEW PROFILE",
+    "sex": "Sex",
+    "age": "Age",
+    "blood": "Blood",
+    "height": "Height",
+    "weight": "Weight",
+    "last_logged_in": "Last Logged In"
 }

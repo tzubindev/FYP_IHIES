@@ -3,7 +3,7 @@
         <div>
             <button
                 type="button"
-                class="outline-none border-y inline-flex w-full justify-center gap-x-1.5 rounded-full shadow bg-transparent px-3 py-1 text-sm hover:bg-gray-50"
+                class="outline-none inline-flex w-full justify-center gap-x-1.5 bg-transparent px-3 py-1 text-sm hover:bg-gray-50"
                 id="menu-button"
                 aria-expanded="true"
                 aria-haspopup="true"

@@ -19,6 +19,7 @@ import Modal from "./components/Modal.vue";
 import Loader from "./components/Loader.vue";
 import Dropdown from "./components/Dropdown.vue";
 import Sidebar from "./components/Sidebar.vue";
+import Topbar from "./components/Topbar.vue";
 
 // Handling http req
 import axios from "axios";
@@ -65,5 +66,6 @@ app.component("Modal", Modal);
 app.component("Loader", Loader);
 app.component("Dropdown", Dropdown);
 app.component("Sidebar", Sidebar);
+app.component("Topbar", Topbar);
 
 app.mount("#app");
