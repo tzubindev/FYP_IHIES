@@ -11,6 +11,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
 import PatientDashboard from "./pages/PatientDashboard.vue";
+import MedicalRecord from "./pages/MedicalRecord.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -39,6 +40,7 @@ const router = createRouter({
         { path: "/login", component: Login },
         { path: "/register", component: Register },
         { path: "/patient/:id", component: PatientDashboard },
+        { path: "/medical-record/:id", component: MedicalRecord },
     ],
 });
 

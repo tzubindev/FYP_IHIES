@@ -747,19 +747,23 @@
                     </div>
 
                     <!-- Path to view medical record -->
-                    <div
-                        class="cursor-pointer transition hover:shadow w-full h-32 my-4 rounded-xl shadow-gray/40 shadow-xl overflow-hidden relative"
-                    >
-                        <img
-                            src="../assets/medical_record.jpg"
-                            class="h-full w-full object-cover rounded-xl"
-                            alt="Medical Record"
-                        />
-                        <div class="absolute inset-0 bg-gray opacity-70"></div>
+                    <div class="w-full h-32 flex justify-center">
                         <div
-                            class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold text-3xl"
+                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] my-4 rounded-xl shadow-gray/40 shadow-xl overflow-hidden relative"
                         >
-                            {{ $t("view_your_medical_record") }}
+                            <img
+                                src="../assets/medical_record.jpg"
+                                class="h-full w-full object-cover rounded-xl"
+                                alt="Medical Record"
+                            />
+                            <div
+                                class="absolute inset-0 bg-gray opacity-70"
+                            ></div>
+                            <div
+                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold text-3xl"
+                            >
+                                {{ $t("view_your_medical_record") }}
+                            </div>
                         </div>
                     </div>
                 </div>
