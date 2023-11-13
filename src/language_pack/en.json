@@ -25,5 +25,10 @@
     "sys": "SYS",
     "dia": "DIA",
     "pulse": "Pulse",
-    "breath": "Breath"
+    "breath": "Breath",
+    "mmHg": "mmHg",
+    "bpm": "BPM",
+    "tpm": "Times/Min",
+    "view_your_medical_record": "View Your Medical Record",
+    "medical_record": "Medical Record"
 }

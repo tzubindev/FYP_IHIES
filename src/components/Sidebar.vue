@@ -1,6 +1,13 @@
 <template>
+    <transition>
+        <div
+            class="absolute w-full h-full bg-white/70 z-30"
+            v-if="is_expanding"
+            @click="toggleExpanding"
+        ></div
+    ></transition>
     <div
-        class="overflow-y-auto overflow-x-hidden z-20 bg-gray text-white fixed top-0 bottom-0 lg:left-0 text-center"
+        class="overflow-y-auto overflow-x-hidden z-40 bg-gray text-white fixed top-0 bottom-0 lg:left-0 text-center"
         :class="{
             'w-[180px] lg:w-[240px]': is_expanding,
             'w-[60px] lg:w-[80px]': !is_expanding,
@@ -69,7 +76,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                        'p-2 justify-center lg:p-3': !is_expanding,
                     }"
                 >
                     <img src="../assets/dashboard.svg" class="w-4 h-4" />
@@ -80,12 +87,28 @@
                     >
                 </div>
 
+                <!-- Medical record -->
+                <div
+                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:p-3': !is_expanding,
+                    }"
+                >
+                    <img src="../assets/record.svg" class="w-4 h-4" />
+                    <span
+                        class="text-[12px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("medical_record") }}</span
+                    >
+                </div>
+
                 <!-- Inquiry -->
                 <div
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                        'p-2 justify-center lg:p-3': !is_expanding,
                     }"
                 >
                     <img src="../assets/inquiry.svg" class="w-4 h-4" />
@@ -101,7 +124,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                        'p-2 justify-center lg:p-3': !is_expanding,
                     }"
                 >
                     <img src="../assets/schedule.svg" class="w-4 h-4" />
@@ -117,7 +140,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                        'p-2 justify-center lg:p-3': !is_expanding,
                     }"
                 >
                     <img src="../assets/setting.svg" class="w-4 h-4" />
@@ -134,7 +157,7 @@
                 class="mt-3 bg-red hover:bg-red/40 transition flex items-center rounded-md cursor-pointer"
                 :class="{
                     'p-2 px-3 justify-start': is_expanding,
-                    'p-3 justify-center lg:py-2 lg:px-0': !is_expanding,
+                    'p-3 justify-center lg:p-3 ': !is_expanding,
                 }"
             >
                 <img src="../assets/logout.svg" class="w-4 h-4" />
@@ -175,6 +198,7 @@
 
 <script>
 export default {
+    emits: ["toggled"],
     props: {
         username: {
             type: String,
