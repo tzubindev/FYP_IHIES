@@ -401,10 +401,11 @@ export default {
                     break;
                 case "Patient":
                     console.log(`Redirect to ${targetPage} Dashboard.`);
+                    sessionStorage.setItem("passcode", params.passcode);
                     this.$router.push({
                         path: `/patient/${this.user.id}`,
-                        query: { passcode: params.passcode },
                     });
+
                     break;
             }
         },

@@ -20,5 +20,10 @@
     "blood": "Blood",
     "height": "Height",
     "weight": "Weight",
-    "last_logged_in": "Last Logged In"
+    "last_logged_in": "Last Logged In",
+    "personal_data": "Personal Data",
+    "sys": "SYS",
+    "dia": "DIA",
+    "pulse": "Pulse",
+    "breath": "Breath"
 }

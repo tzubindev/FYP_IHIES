@@ -20,5 +20,10 @@
     "blood": "血型",
     "height": "身高",
     "weight": "體重",
-    "last_logged_in": "最後登錄於"
+    "last_logged_in": "最後登錄於",
+    "personal_data": "個人數據",
+    "sys": "收縮壓(SYS)",
+    "dia": "舒張壓(DIA)",
+    "pulse": "脈搏",
+    "breath": "呼吸"
 }

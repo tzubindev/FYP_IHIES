@@ -5,7 +5,7 @@
             class="flex justify-center items-center h-screen w-full top-0 left-0 bg-gray z-50"
         >
             <div
-                class="bg-red w-[180px] h-[180px] rounded-full flex items-center justify-center"
+                class="bg-red w-[200px] h-[200px] rounded-full flex items-center justify-center"
             >
                 <svg
                     role="img"

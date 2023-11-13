@@ -4,15 +4,15 @@
     >
         <div
             v-if="is_access_denied"
-            class="flex-wrap access-denied-overlay z-20 absolute w-full h-screen bg-black text-red flex justify-center items-center"
+            class="flex-wrap access-denied-overlay z-100 absolute w-full h-screen bg-black text-red flex justify-center items-center"
         >
             <p class="access-denied-text font-extrabold">ACCESS DENIED</p>
         </div>
 
         <Loader
-            :loading="!is_verified || !is_initiated"
+            :loading="!(is_verified && is_initiated) && !is_access_denied"
             class="w-4/5 z-30 absolute"
-            v-if="!is_verified || !is_initiated"
+            v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
         <!-- Small screen size -->
@@ -20,18 +20,27 @@
 
         <!-- Medium screen size and above-->
         <div
-            v-if="is_verified"
+            v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
         >
             <!-- Sidebar -->
-            <Sidebar :username="this.user.name"></Sidebar>
+            <Sidebar
+                :username="this.user.name"
+                @toggled="updateSidebarExpansion"
+            ></Sidebar>
 
             <!-- Topbar -->
             <Topbar></Topbar>
 
             <!-- Dashboard -->
-            <div class="pl-[180px] w-full h-full">
-                <div class="pt-6 pb-4 px-10 w-full h-full">
+            <div
+                class="w-full h-full"
+                :class="{
+                    'pl-[180px]': is_sidebar_expanding,
+                    'pl-[60px]': !is_sidebar_expanding,
+                }"
+            >
+                <div class="pt-6 pb-4 px-10 w-full h-fit">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] font-extrabold p-2 text-xs flex justify-left items-center"
@@ -78,25 +87,29 @@
                         >
                             <!-- Sex -->
                             <div class="flex flex-wrap">
+                                <!-- label -->
                                 <div class="font-light w-fit">
                                     {{ $t("sex") }}
                                 </div>
-                                <div
+                                <!-- data -->
+                                <!-- <div
                                     class="w-full text-center py-0.5 rounded font-extrabold"
                                 >
                                     {{ $t("sex") }}
-                                </div>
+                                </div> -->
+                                <Barloader />
                             </div>
                             <!-- Age -->
                             <div class="flex flex-wrap">
                                 <div class="font-light w-fit">
                                     {{ $t("age") }}
                                 </div>
-                                <div
+                                <!-- <div
                                     class="w-full text-center py-0.5 rounded font-extrabold"
                                 >
                                     {{ $t("age") }}
-                                </div>
+                                </div> -->
+                                <Barloader />
                             </div>
                             <div>
                                 <!-- blood -->
@@ -104,11 +117,12 @@
                                     <div class="font-light w-fit">
                                         {{ $t("blood") }}
                                     </div>
-                                    <div
+                                    <!-- <div
                                         class="w-full text-center py-0.5 rounded font-extrabold"
                                     >
                                         {{ $t("blood") }}
-                                    </div>
+                                    </div> -->
+                                    <Barloader />
                                 </div>
                             </div>
 
@@ -117,11 +131,12 @@
                                 <div class="font-light w-fit">
                                     {{ $t("height") }}
                                 </div>
-                                <div
+                                <!-- <div
                                     class="w-full text-center py-0.5 rounded font-extrabold"
                                 >
                                     {{ $t("height") }}
-                                </div>
+                                </div> -->
+                                <Barloader />
                             </div>
 
                             <!-- weight -->
@@ -129,11 +144,12 @@
                                 <div class="font-light w-fit">
                                     {{ $t("weight") }}
                                 </div>
-                                <div
+                                <!-- <div
                                     class="w-full text-center py-0.5 rounded font-extrabold"
                                 >
                                     {{ $t("weight") }}
-                                </div>
+                                </div> -->
+                                <Barloader />
                             </div>
 
                             <!--last logged in  -->
@@ -141,37 +157,198 @@
                                 <div class="font-light w-fit">
                                     {{ $t("last_logged_in") }}
                                 </div>
-                                <div
+                                <!-- <div
                                     class="w-full text-center py-0.5 rounded font-extrabold"
                                 >
                                     {{ $t("last_logged_in") }}
-                                </div>
+                                </div> -->
+                                <Barloader />
                             </div>
                         </div>
                     </div>
 
                     <!-- Statistics -->
-                    <div class="w-full h-full max-h-[500px] pt-3">
+                    <div class="w-full h-full max-h-[500px] py-3">
                         <div
-                            class="w-full h-full border-y border-gray/20 text-[14px]"
+                            class="w-full h-full border-y border-gray/20 pb-3 text-[14px]"
                         >
                             <div class="w-full my-1.5">
                                 {{ $t("personal_data") }}
                             </div>
 
-                            <div class="w-full h-5/6 grid grid-cols-2 gap-2">
-                                <div class="bg-gray w-full h-full rounded-xl">
-                                    <Line :data="data" :options="options" />
+                            <div class="w-full h-5/6 grid grid-cols-2 gap-6">
+                                <!-- SYS -->
+                                <div
+                                    class="cursor-pointer bg-gray text-white p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                >
+                                    <div class="h-1/2 flex">
+                                        <div
+                                            class="w-fit flex h-fit items-center"
+                                        >
+                                            <p class="text-sm">
+                                                {{ $t("sys") }}
+                                            </p>
+
+                                            <img
+                                                src="../assets/heart.svg"
+                                                class="h-5 w-5 mx-1.5"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex grow justify-center items-center"
+                                        >
+                                            <div
+                                                class="h-fit text-[68px] mr-1.5"
+                                            >
+                                                {{
+                                                    data_sys.datasets[0].data[
+                                                        data_sys.datasets[0]
+                                                            .data.length - 1
+                                                    ]
+                                                }}
+                                            </div>
+                                            <div class="text-white/60 italic">
+                                                mmHg
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="h-1/2">
+                                        <Line
+                                            :data="data_sys"
+                                            :options="options_sys"
+                                        />
+                                    </div>
                                 </div>
+
+                                <!-- DIA -->
                                 <div
-                                    class="bg-gray w-full h-full rounded-xl"
-                                ></div>
+                                    class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                >
+                                    <div class="h-1/2 flex">
+                                        <div
+                                            class="w-fit flex h-fit items-center"
+                                        >
+                                            <p class="text-sm">
+                                                {{ $t("dia") }}
+                                            </p>
+
+                                            <img
+                                                src="../assets/heart.svg"
+                                                class="h-5 w-5 mx-1.5"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex grow justify-center items-center"
+                                        >
+                                            <div
+                                                class="h-fit text-[68px] mr-1.5"
+                                            >
+                                                {{
+                                                    data_dia.datasets[0].data[
+                                                        data_dia.datasets[0]
+                                                            .data.length - 1
+                                                    ]
+                                                }}
+                                            </div>
+                                            <div class="text-gray/60 italic">
+                                                BPM
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="h-1/2">
+                                        <Line
+                                            :data="data_dia"
+                                            :options="options_dia"
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Pulse -->
                                 <div
-                                    class="bg-gray w-full h-full rounded-xl"
-                                ></div>
+                                    class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                >
+                                    <div class="h-1/2 flex">
+                                        <div
+                                            class="w-fit flex h-fit items-center"
+                                        >
+                                            <p class="text-sm">
+                                                {{ $t("pulse") }}
+                                            </p>
+
+                                            <img
+                                                src="../assets/pulse.svg"
+                                                class="h-5 w-5 mx-1.5"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex grow justify-center items-center"
+                                        >
+                                            <div
+                                                class="h-fit text-[68px] mr-1.5"
+                                            >
+                                                {{
+                                                    data_pulse.datasets[0].data[
+                                                        data_pulse.datasets[0]
+                                                            .data.length - 1
+                                                    ]
+                                                }}
+                                            </div>
+                                            <div class="text-gray/60 italic">
+                                                mmHg
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="h-1/2">
+                                        <Line
+                                            :data="data_pulse"
+                                            :options="options_pulse"
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Breath -->
                                 <div
-                                    class="bg-gray w-full h-full rounded-xl"
-                                ></div>
+                                    class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                >
+                                    <div class="h-1/2 flex">
+                                        <div
+                                            class="w-fit flex h-fit items-center"
+                                        >
+                                            <p class="text-sm">
+                                                {{ $t("breath") }}
+                                            </p>
+
+                                            <img
+                                                src="../assets/breath.svg"
+                                                class="h-5 w-5 mx-1.5"
+                                            />
+                                        </div>
+                                        <div
+                                            class="flex grow justify-center items-center"
+                                        >
+                                            <div
+                                                class="h-fit text-[68px] mr-1.5"
+                                            >
+                                                {{
+                                                    data_breath.datasets[0]
+                                                        .data[
+                                                        data_breath.datasets[0]
+                                                            .data.length - 1
+                                                    ]
+                                                }}
+                                            </div>
+                                            <div class="text-gray/60 italic">
+                                                Times/Min
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="h-1/2">
+                                        <Line
+                                            :data="data_breath"
+                                            :options="options_breath"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,6 +381,8 @@ ChartJS.register(
     Legend
 );
 
+ChartJS.defaults.plugins.legend.display = false;
+
 export default {
     components: {
         Line,
@@ -221,52 +400,187 @@ export default {
             is_verified: false,
             is_initiated: false,
             is_access_denied: false,
+            is_sidebar_expanding: false,
             api_url: "http://127.0.0.1:3000",
 
-            // chart
-            data: {
-                labels: [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                ],
+            // Chart
+            // SYS
+            data_sys: {
+                labels: ["", "", ""],
                 datasets: [
                     {
-                        label: "Data One",
-                        backgroundColor: "#f87979",
-                        data: [40, 39, 10, 40, 39, 80, 40],
+                        borderColor: "#fb5b25",
+                        data: [40, 76, 10],
                     },
                 ],
             },
-            options: {
+            options_sys: {
                 responsive: true,
                 maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: "rgba(255,255,255,0.5)",
+                        },
+                    },
+                    y: {
+                        grid: {
+                            color: "rgba(255,255,255,0.5)",
+                        },
+                    },
+                },
+            },
+            // DIA
+            data_dia: {
+                labels: ["", "", ""],
+                datasets: [
+                    {
+                        borderColor: "#fb5b25",
+                        data: [140, 110, 96],
+                    },
+                ],
+            },
+            options_dia: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                    y: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                },
+            },
+            // pulse
+            data_pulse: {
+                labels: ["", "", ""],
+                datasets: [
+                    {
+                        borderColor: "#fb5b25",
+                        data: [72, 84, 80],
+                    },
+                ],
+            },
+            options_pulse: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                    y: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                },
+            },
+
+            // breath
+            data_breath: {
+                labels: ["", "", ""],
+                datasets: [
+                    {
+                        borderColor: "#fb5b25",
+                        data: [16, 18, 24],
+                    },
+                ],
+            },
+            options_breath: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                    y: {
+                        grid: {
+                            color: "rgba(0,0,0,0.1)",
+                        },
+                    },
+                },
             },
         };
     },
     async created() {
         console.log("CREATED");
     },
+    // async mounted() {
+    //     console.log("MOUNTED");
+
+    //     if (await !this.$route.query.hasOwnProperty("passcode"))
+    //         this.is_access_denied = true;
+
+    //     this.user.id = this.$route.params.id;
+    //     if (!this.user.passcode)
+    //         this.user.passcode = this.$route.query.passcode;
+
+    //     await this.axios
+    //         .post(`${this.api_url}/username`, this.user)
+    //         .then((response) => {
+    //             console.log("start verification");
+
+    //             this.is_verified = true;
+    //             if (response.data.message.passcode_verification) {
+    //                 this.user.name = response.data.message.name;
+    //                 this.is_access_denied = false;
+    //             } else {
+    //                 this.is_initiated = false;
+    //                 this.is_access_denied = true;
+    //             }
+    //         });
+
+    //     if (!this.is_access_denied) {
+    //         // Get user preference language
+    //         await this.axios
+    //             .get(`${this.api_url}/locale/${this.user.id}`)
+    //             .then((response) => {
+    //                 console.log(response);
+    //                 this.$i18n.locale = response.data.message.locale;
+    //             });
+    //         this.is_initiated = true;
+    //     }
+    // },
     async mounted() {
         console.log("MOUNTED");
 
-        if (!this.$route.query.hasOwnProperty("passcode"))
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        // Remove the item from sessionStorage
+        // UNCOMMENT
+        // sessionStorage.removeItem("passcode");
+
+        if (!this.user.passcode) {
             this.is_access_denied = true;
+        } else {
+            this.user.id = this.$route.params.id;
+            console.log(this.user.id);
+            console.log(this.user.passcode);
 
-        this.user.id = this.$route.params.id;
-        if (!this.user.passcode)
-            this.user.passcode = this.$route.query.passcode;
+            if (!(this.user.passcode && this.user.id)) {
+                this.is_verified = true;
+                this.is_access_denied = true;
+                this.is_initiated = false;
+                return;
+            }
 
-        await this.axios
-            .post(`${this.api_url}/username`, this.user)
-            .then((response) => {
-                console.log("start verification");
+            try {
+                const response = await this.axios.post(
+                    `${this.api_url}/username`,
+                    this.user
+                );
+                console.log("Start verification");
 
                 this.is_verified = true;
+
                 if (response.data.message.passcode_verification) {
                     this.user.name = response.data.message.name;
                     this.is_access_denied = false;
@@ -274,26 +588,30 @@ export default {
                     this.is_initiated = false;
                     this.is_access_denied = true;
                 }
-            });
 
-        try {
-            if (!this.is_access_denied) {
-                // Get user preference language
-                await this.axios
-                    .get(`${this.api_url}/locale/${this.user.id}`)
-                    .then((response) => {
-                        console.log(response);
-                        this.$i18n.locale = response.data.message.locale;
-                    });
-                this.is_initiated = true;
+                if (!this.is_access_denied) {
+                    // Get user preference language
+                    const localeResponse = await this.axios.get(
+                        `${this.api_url}/locale/${this.user.id}`
+                    );
+                    console.log(localeResponse);
+
+                    this.$i18n.locale = localeResponse.data.message.locale;
+                    this.is_initiated = true;
+                }
+            } catch (error) {
+                console.error("An error occurred:", error);
+                // Handle error as needed
             }
-        } catch (e) {
-            console.log(e);
         }
     },
+
     methods: {
         async initiateDashboard(id) {
             this.$axios();
+        },
+        updateSidebarExpansion(e) {
+            this.is_sidebar_expanding = e;
         },
     },
 };

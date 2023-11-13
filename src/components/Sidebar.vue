@@ -1,45 +1,53 @@
 <template>
     <div
-        class="z-20 bg-gray text-white fixed top-0 bottom-0 lg:left-0 w-[180px] lg:w-[240px] text-center"
+        class="overflow-y-auto overflow-x-hidden z-20 bg-gray text-white fixed top-0 bottom-0 lg:left-0 text-center"
+        :class="{
+            'w-[180px] lg:w-[240px]': is_expanding,
+            'w-[60px] lg:w-[80px]': !is_expanding,
+        }"
     >
         <!-- Company Logo -->
-        <div
-            class="p-4 pt-0 flex flex-wrap justify-start items-center text-gray text-xl h-[200px] bg-white"
-        >
-            <h1 class="z-10 w-full font-extrabold text-gray text-sm">
-                {{ $t("healthie") }}
-            </h1>
-
+        <transition>
             <div
-                class="z-10 w-full flex flex-wrap items-center justify-start mt-6"
+                class="p-4 pt-0 flex flex-wrap justify-start items-center text-gray text-xl h-[200px] bg-white"
+                v-if="is_expanding"
             >
-                <p class="text-sm w-full">{{ this.$t("good_day") }}</p>
+                <h1 class="z-10 w-full font-extrabold text-gray text-sm">
+                    {{ $t("healthie") }}
+                </h1>
 
-                <p class="text-sm w-full font-bold">
-                    {{ username }}
-                </p>
+                <div
+                    class="z-10 w-full flex flex-wrap items-center justify-start mt-6"
+                >
+                    <p class="text-sm w-full">{{ this.$t("good_day") }}</p>
+
+                    <p class="text-sm w-full font-bold">
+                        {{ username }}
+                    </p>
+                </div>
+
+                <div
+                    class="absolute -left-[60px] top-[60px] w-[200px] h-[140px] lg:w-[240px] bg-orange rounded-t-full"
+                ></div>
+
+                <div
+                    class="absolute left-[40px] top-[60px] w-[140px] h-[140px] lg:w-[180px] lg:left-[60px] bg-red rounded-tl-full"
+                ></div>
+
+                <div
+                    class="absolute left-[110px] top-[130px] w-[70px] h-[70px] lg:w-[100px] lg:left-[140px] bg-gradient-to-br from-red to-white/40 rounded-tl-full"
+                ></div>
             </div>
-
-            <div
-                class="absolute -left-[60px] top-[60px] w-[200px] h-[140px] lg:w-[240px] bg-orange rounded-t-full"
-            ></div>
-
-            <div
-                class="absolute left-[40px] top-[60px] w-[140px] h-[140px] lg:w-[180px] lg:left-[60px] bg-red rounded-tl-full"
-            ></div>
-
-            <div
-                class="absolute left-[110px] top-[130px] w-[70px] h-[70px] lg:w-[100px] lg:left-[140px] bg-gradient-to-br from-red to-white/40 rounded-tl-full"
-            ></div>
-        </div>
+        </transition>
 
         <!-- Side bar bottom part -->
-        <div class="z-10 p-2 pt-0 mt-3">
+        <div class="z-10 p-2 pt-0 mt-3 mb-10">
             <!-- Search Box -->
             <div
                 class="hover:bg-black/40 p-1 flex justify-center items-center rounded-md px-4 duration-300 cursor-pointer bg-white/40"
                 @click="openSearchbox"
                 ref="searchInput"
+                v-if="is_expanding"
             >
                 <img src="../assets/search.svg" class="w-6 h-6" />
                 <transition name="slide-fade">
@@ -58,59 +66,112 @@
             >
                 <!-- Dashboard -->
                 <div
-                    class="hover:bg-black transition p-2 flex items-center rounded-md px-3 cursor-pointer"
+                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                    }"
                 >
                     <img src="../assets/dashboard.svg" class="w-4 h-4" />
-                    <span class="text-[13px] ml-3 font-bold">{{
-                        $t("dashboard")
-                    }}</span>
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("dashboard") }}</span
+                    >
                 </div>
 
                 <!-- Inquiry -->
                 <div
-                    class="hover:bg-black transition p-2 flex items-center rounded-md px-3 cursor-pointer"
+                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                    }"
                 >
                     <img src="../assets/inquiry.svg" class="w-4 h-4" />
-                    <span class="text-[13px] ml-3 font-bold">{{
-                        $t("inquiry")
-                    }}</span>
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("inquiry") }}</span
+                    >
                 </div>
 
                 <!-- Schedule -->
                 <div
-                    class="hover:bg-black transition p-2 flex items-center rounded-md px-3 cursor-pointer"
+                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                    }"
                 >
                     <img src="../assets/schedule.svg" class="w-4 h-4" />
-                    <span class="text-[13px] ml-3 font-bold">{{
-                        $t("schedule")
-                    }}</span>
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("schedule") }}</span
+                    >
                 </div>
 
                 <!-- Setting -->
                 <div
-                    class="hover:bg-black transition p-2 flex items-center rounded-md px-3 cursor-pointer"
+                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2 lg:px-0': !is_expanding,
+                    }"
                 >
                     <img src="../assets/setting.svg" class="w-4 h-4" />
-                    <span class="text-[13px] ml-3 font-bold">{{
-                        $t("setting")
-                    }}</span>
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("setting") }}</span
+                    >
                 </div>
             </div>
 
             <!-- Logout -->
             <div
-                class="mt-3 bg-red hover:bg-red/40 transition p-2 px-3 flex justify-start items-center rounded-md cursor-pointer"
+                class="mt-3 bg-red hover:bg-red/40 transition flex items-center rounded-md cursor-pointer"
+                :class="{
+                    'p-2 px-3 justify-start': is_expanding,
+                    'p-3 justify-center lg:py-2 lg:px-0': !is_expanding,
+                }"
             >
                 <img src="../assets/logout.svg" class="w-4 h-4" />
-                <span class="text-[14px] ml-3 font-bold">{{
+                <span class="text-[14px] ml-3 font-bold" v-if="is_expanding">{{
                     $t("logout")
                 }}</span>
             </div>
         </div>
+
+        <!-- Menu icon -->
+        <div
+            class="bg-gray flex justify-center p-2 bottom-0 fixed"
+            :class="{
+                'w-[180px] lg:w-[240px] pl-0': is_expanding,
+                'w-[60px] lg:w-[80px] pl-1.5': !is_expanding,
+            }"
+        >
+            <img
+                src="../assets/menu.svg"
+                class="w-6 h-6 cursor-pointer"
+                @click="toggleExpanding"
+            />
+        </div>
     </div>
 </template>
 
-<style></style>
+<style>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>
 
 <script>
 export default {
@@ -123,6 +184,7 @@ export default {
     data() {
         return {
             is_searching: false,
+            is_expanding: false,
         };
     },
     mounted() {
@@ -141,6 +203,10 @@ export default {
             ) {
                 this.is_searching = false;
             }
+        },
+        toggleExpanding() {
+            this.is_expanding = !this.is_expanding;
+            this.$emit("toggled", this.is_expanding);
         },
     },
 };

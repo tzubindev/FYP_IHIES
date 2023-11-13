@@ -20,6 +20,7 @@ import Loader from "./components/Loader.vue";
 import Dropdown from "./components/Dropdown.vue";
 import Sidebar from "./components/Sidebar.vue";
 import Topbar from "./components/Topbar.vue";
+import Barloader from "./components/Barloader.vue";
 
 // Handling http req
 import axios from "axios";
@@ -67,5 +68,6 @@ app.component("Loader", Loader);
 app.component("Dropdown", Dropdown);
 app.component("Sidebar", Sidebar);
 app.component("Topbar", Topbar);
+app.component("Barloader", Barloader);
 
 app.mount("#app");
