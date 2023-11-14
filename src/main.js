@@ -6,12 +6,14 @@ import { createVfm } from "vue-final-modal";
 import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import dayjs from "dayjs";
 
 // Pages
 import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
 import PatientDashboard from "./pages/PatientDashboard.vue";
 import MedicalRecord from "./pages/MedicalRecord.vue";
+import Schedule from "./pages/Schedule.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -22,6 +24,8 @@ import Dropdown from "./components/Dropdown.vue";
 import Sidebar from "./components/Sidebar.vue";
 import Topbar from "./components/Topbar.vue";
 import Barloader from "./components/Barloader.vue";
+import Calendar from "./components/Calendar.vue";
+import Card from "./components/Card.vue";
 
 // Handling http req
 import axios from "axios";
@@ -30,7 +34,7 @@ import VueAxios from "vue-axios";
 // Language packs
 import { createI18n } from "vue-i18n";
 import en from "./language_pack/en.json";
-import cn_tw from "./language_pack/cn_tw.json";
+import zh_tw from "./language_pack/zh_tw.json";
 
 // Router handling
 const router = createRouter({
@@ -39,8 +43,9 @@ const router = createRouter({
         { path: "/", component: Login },
         { path: "/login", component: Login },
         { path: "/register", component: Register },
-        { path: "/patient/:id", component: PatientDashboard },
+        { path: "/dashboard/patient/:id", component: PatientDashboard },
         { path: "/medical-record/:id", component: MedicalRecord },
+        { path: "/schedule/:id", component: Schedule },
     ],
 });
 
@@ -49,7 +54,7 @@ const i18n = createI18n({
     locale: "en", // Default locale
     messages: {
         en,
-        cn_tw,
+        zh_tw,
     },
 });
 
@@ -71,5 +76,10 @@ app.component("Dropdown", Dropdown);
 app.component("Sidebar", Sidebar);
 app.component("Topbar", Topbar);
 app.component("Barloader", Barloader);
+app.component("Calendar", Calendar);
+app.component("Card", Card);
+
+// Apply dayjs
+app.config.globalProperties.$dayjs = dayjs;
 
 app.mount("#app");

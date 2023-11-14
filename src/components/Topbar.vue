@@ -36,7 +36,7 @@
 export default {
     data() {
         return {
-            languages: ["en", "cn_tw", "my", "jp", "kr"],
+            languages: ["en", "zh_tw", "my", "jp", "kr"],
             is_language_shown: false,
             is_notification_closed: true,
         };

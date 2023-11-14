@@ -31,9 +31,9 @@ class ProfileController {
         console.log("Getting locale");
         await client.connect();
         const db = client.db("FYP-IHIES");
-        const coll_auth = db.collection("Authentication");
+        const coll_prof = db.collection("Profile");
 
-        const cursor = coll_auth.find({ "user.id": requestData.id });
+        const cursor = coll_prof.find({ "user.id": requestData.id });
 
         // Get query result from mongodb
         const data = await cursor.toArray();
