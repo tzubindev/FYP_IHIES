@@ -1,6 +1,6 @@
 <template>
     <div
-        class="text-black button transition-all cursor-pointer w-full rounded-full shadow-md"
+        class="text-black button transition-all cursor-pointer w-full rounded shadow-md"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',
@@ -13,7 +13,7 @@
     </div>
 
     <button
-        class="text-black button transition-all cursor-pointer w-full rounded-full shadow-md"
+        class="text-black button transition-all cursor-pointer w-full rounded shadow-md"
         :class="[
             medium ? this.mediumClass : '',
             large ? this.largeClass : '',

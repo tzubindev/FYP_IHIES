@@ -69,17 +69,21 @@
 
             <!-- Feature Buttons -->
             <div
-                class="grid grid-cols-1 mt-3 gap-1 bg-white/10 shadow-xl rounded-md p-1"
+                class="grid grid-cols-1 mt-3 gap-1 bg-white/10 shadow-xl rounded-md p-1 lg:p-1.5"
             >
                 <!-- Dashboard -->
                 <div
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:p-3': !is_expanding,
+                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
                     }"
                 >
-                    <img src="../assets/dashboard.svg" class="w-4 h-4" />
+                    <img
+                        src="../assets/dashboard.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -92,10 +96,14 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:p-3': !is_expanding,
+                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
                     }"
                 >
-                    <img src="../assets/record.svg" class="w-4 h-4" />
+                    <img
+                        src="../assets/record.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
                     <span
                         class="text-[12px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -108,10 +116,14 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:p-3': !is_expanding,
+                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
                     }"
                 >
-                    <img src="../assets/inquiry.svg" class="w-4 h-4" />
+                    <img
+                        src="../assets/inquiry.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -124,10 +136,14 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:p-3': !is_expanding,
+                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
                     }"
                 >
-                    <img src="../assets/schedule.svg" class="w-4 h-4" />
+                    <img
+                        src="../assets/schedule.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -140,10 +156,14 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:p-3': !is_expanding,
+                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
                     }"
                 >
-                    <img src="../assets/setting.svg" class="w-4 h-4" />
+                    <img
+                        src="../assets/setting.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -157,10 +177,10 @@
                 class="mt-3 bg-red hover:bg-red/40 transition flex items-center rounded-md cursor-pointer"
                 :class="{
                     'p-2 px-3 justify-start': is_expanding,
-                    'p-3 justify-center lg:p-3 ': !is_expanding,
+                    'p-2 justify-center lg:p-3 ': !is_expanding,
                 }"
             >
-                <img src="../assets/logout.svg" class="w-4 h-4" />
+                <img src="../assets/logout.svg" class="w-4 h-4 lg:w-5 lg:h-5" />
                 <span class="text-[14px] ml-3 font-bold" v-if="is_expanding">{{
                     $t("logout")
                 }}</span>

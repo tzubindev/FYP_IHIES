@@ -7,6 +7,9 @@ import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import dayjs from "dayjs";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import "./style.scss";
 
 // Pages
 import Login from "./pages/Login.vue";
@@ -14,6 +17,7 @@ import Register from "./pages/Register.vue";
 import PatientDashboard from "./pages/PatientDashboard.vue";
 import MedicalRecord from "./pages/MedicalRecord.vue";
 import Schedule from "./pages/Schedule.vue";
+import Inquiry from "./pages/Inquiry.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -26,6 +30,8 @@ import Topbar from "./components/Topbar.vue";
 import Barloader from "./components/Barloader.vue";
 import Calendar from "./components/Calendar.vue";
 import Card from "./components/Card.vue";
+import AI_Reco from "./components/AI_Reco.vue";
+import AI_Loader from "./components/AI_Loader.vue";
 
 // Handling http req
 import axios from "axios";
@@ -46,6 +52,7 @@ const router = createRouter({
         { path: "/dashboard/patient/:id", component: PatientDashboard },
         { path: "/medical-record/:id", component: MedicalRecord },
         { path: "/schedule/:id", component: Schedule },
+        { path: "/inquiry/:id", component: Inquiry },
     ],
 });
 
@@ -78,6 +85,9 @@ app.component("Topbar", Topbar);
 app.component("Barloader", Barloader);
 app.component("Calendar", Calendar);
 app.component("Card", Card);
+app.component("VueDatePicker", VueDatePicker);
+app.component("AI_Reco", AI_Reco);
+app.component("AI_Loader", AI_Loader);
 
 // Apply dayjs
 app.config.globalProperties.$dayjs = dayjs;

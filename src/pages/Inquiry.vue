@@ -1,5 +1,6 @@
 <template>
     <!-- TRANSLATION -->
+
     <div
         class="font-serif bg-red/5 min-h-screen relative flex justify-center items-center"
     >
@@ -41,68 +42,21 @@
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-4 px-10 w-full h-fit">
+                <div class="pt-6 pb-4 px-5 lg:px-10 w-full h-fit">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"
                     >
                         <div
-                            class="w-full max-w-[950px] flex items-center justify-start"
+                            class="w-full max-w-[1140px] flex items-center justify-start"
                         >
                             <p>{{ $t("healthie") }}</p>
                             <p class="mx-1.5">&gt;</p>
-                            <p>{{ $t("schedule") }}</p>
+                            <p>{{ $t("inquiry") }}</p>
                         </div>
                     </div>
-
-                    <!-- Calendar and events -->
-                    <div class="flex justify-center w-full">
-                        <div
-                            class="w-full grid grid-cols-3 gap-2 lg:max-w-[950px]"
-                        >
-                            <Calendar
-                                class="col-span-2 w-full"
-                                @selectedEvents="updateSelectedEvents"
-                            ></Calendar>
-
-                            <!-- Event Listing -->
-                            <div
-                                class="w-full h-fit p-3 px-2 bg-green/50 rounded"
-                            >
-                                <div
-                                    class="w-full bg-gray text-white rounded text-center"
-                                >
-                                    Events
-                                </div>
-
-                                <div
-                                    class="mt-2 overflow-y-auto max-h-[400px] p-1"
-                                >
-                                    <div
-                                        class=""
-                                        v-for="ev in selected_events"
-                                        :key="ev.id"
-                                    >
-                                        <Card class="flex flex-wrap mt-2">
-                                            <div
-                                                class="w-fit h-fit text-[12px] rounded shadow bg-blue/80 p-2 py-0.5"
-                                            >
-                                                {{ ev.date }}
-                                            </div>
-                                            <div class="grow"></div>
-                                            <div
-                                                class="flex justify-center items-center"
-                                            >
-                                                {{ ev.time }}
-                                            </div>
-                                            <div class="w-full text-[16px]">
-                                                {{ ev.title }}
-                                            </div>
-                                        </Card>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="h-fit w-full flex justify-center flex-wrap">
+                        <AI_Reco></AI_Reco>
                     </div>
                 </div>
             </div>
@@ -126,9 +80,7 @@ export default {
             is_initiated: true, // false in default
             is_access_denied: false,
             is_sidebar_expanding: false,
-            selected_events: null,
             api_url: "http://127.0.0.1:3000",
-            records: [],
         };
     },
     async created() {
@@ -197,10 +149,6 @@ export default {
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
-        },
-        updateSelectedEvents(e) {
-            console.log(e);
-            this.selected_events = e;
         },
     },
 };

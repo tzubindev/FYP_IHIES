@@ -1,6 +1,6 @@
 <template>
     <div
-        class="px-3 text-[14px] bg-gray/5 shadow w-full h-12 flex justify-end items-center"
+        class="px-3 text-[14px] bg-gray/5 shadow w-full h-10 flex justify-end items-center"
     >
         <!-- Language -->
         <div class="flex items-center mr-3">
