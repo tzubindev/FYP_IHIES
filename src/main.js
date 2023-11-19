@@ -32,6 +32,7 @@ import Calendar from "./components/Calendar.vue";
 import Card from "./components/Card.vue";
 import AI_Reco from "./components/AI_Reco.vue";
 import AI_Loader from "./components/AI_Loader.vue";
+import DoughnutChart from "./components/DoughnutChart.vue";
 
 // Handling http req
 import axios from "axios";
@@ -88,6 +89,7 @@ app.component("Card", Card);
 app.component("VueDatePicker", VueDatePicker);
 app.component("AI_Reco", AI_Reco);
 app.component("AI_Loader", AI_Loader);
+app.component("DoughnutChart", DoughnutChart);
 
 // Apply dayjs
 app.config.globalProperties.$dayjs = dayjs;

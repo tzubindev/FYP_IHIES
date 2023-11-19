@@ -33,7 +33,7 @@
             <!-- Topbar -->
             <Topbar></Topbar>
 
-            <!-- Medical Record -->
+            <!-- Schedule slot -->
             <div
                 class="w-full h-full"
                 :class="{
@@ -41,7 +41,7 @@
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-4 px-10 w-full h-fit">
+                <div class="pt-6 pb-8 px-10 w-full h-fit">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"
@@ -58,49 +58,163 @@
                     <!-- Calendar and events -->
                     <div class="flex justify-center w-full">
                         <div
-                            class="w-full grid grid-cols-3 gap-2 lg:max-w-[950px]"
+                            class="w-full grid grid-cols-5 gap-4 lg:max-w-[950px]"
                         >
-                            <Calendar
-                                class="col-span-2 w-full"
-                                @selectedEvents="updateSelectedEvents"
-                            ></Calendar>
+                            <!-- Statistics -->
+                            <div class="col-span-5 w-full p-2 pb-0">
+                                <div
+                                    class="col-span-5 w-full py-1 text-center bg-gray text-white rounded"
+                                >
+                                    Overview
+                                </div>
+                            </div>
+                            <div
+                                class="col-span-5 grid-cols-3 grid w-full text-xs border-b-2 border-gray/20 pb-2"
+                            >
+                                <!-- Total -->
+                                <div class="cursor-pointer p-2 min-h-[150px]">
+                                    <div
+                                        class="bg-yellow h-full p-2 rounded shadow-xl flex flex-wrap"
+                                    >
+                                        <p
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                        >
+                                            Total
+                                        </p>
+                                        <p
+                                            class="w-full flex items-center justify-center text-[64px]"
+                                        >
+                                            {{
+                                                chartData.datasets[0].data.reduce(
+                                                    (
+                                                        accumulator,
+                                                        currentValue
+                                                    ) =>
+                                                        accumulator +
+                                                        currentValue,
+                                                    0
+                                                )
+                                            }}
+                                        </p>
+                                        <p
+                                            class="w-full flex justify-end items-end text-xs italic"
+                                        >
+                                            Events
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Today Events -->
+                                <div class="cursor-pointer p-2">
+                                    <div
+                                        class="bg-red h-full p-2 rounded shadow-xl flex flex-wrap"
+                                    >
+                                        <p
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                        >
+                                            Today
+                                        </p>
+                                        <p
+                                            class="w-full flex items-center justify-center text-[64px]"
+                                        >
+                                            {{ chartData.datasets[0].data[0] }}
+                                        </p>
+                                        <p
+                                            class="w-full flex justify-end items-end text-xs italic"
+                                        >
+                                            Events
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Future Events -->
+                                <div class="cursor-pointer p-2">
+                                    <div
+                                        class="bg-green h-full p-2 rounded shadow-xl flex flex-wrap"
+                                    >
+                                        <p
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                        >
+                                            In Future
+                                        </p>
+                                        <p
+                                            class="w-full flex items-center justify-center text-[64px]"
+                                        >
+                                            {{ chartData.datasets[0].data[0] }}
+                                        </p>
+                                        <p
+                                            class="w-full flex justify-end items-end text-xs italic"
+                                        >
+                                            Events
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Calendar -->
+                            <div class="col-span-5 md:col-span-3 w-full">
+                                <Calendar
+                                    class="w-full"
+                                    @selectedEvents="updateSelectedEvents"
+                                ></Calendar>
+                                <div
+                                    class="gap-1 flex justify-center items-center w-full py-1.5 bg-red text-sm text-center mt-2 rounded-lg shadow-xl text-white cursor-pointer hover:bg-gray transition"
+                                >
+                                    <img
+                                        src="../assets/add.svg"
+                                        class="w-5 h-5"
+                                    />
+                                    Add New Schedule
+                                </div>
+                            </div>
 
                             <!-- Event Listing -->
                             <div
-                                class="w-full h-fit p-3 px-2 bg-green/50 rounded"
+                                class="w-full h-fit p-3 px-2 bg-yellow rounded col-span-5 md:col-span-2"
                             >
                                 <div
                                     class="w-full bg-gray text-white rounded text-center"
                                 >
                                     Events
                                 </div>
-
-                                <div
-                                    class="mt-2 overflow-y-auto max-h-[400px] p-1"
-                                >
+                                <Transition>
                                     <div
-                                        class=""
-                                        v-for="ev in selected_events"
-                                        :key="ev.id"
+                                        class="mt-2 overflow-y-auto max-h-[340px] p-1"
+                                        v-if="selected_events.length"
                                     >
-                                        <Card class="flex flex-wrap mt-2">
-                                            <div
-                                                class="w-fit h-fit text-[12px] rounded shadow bg-blue/80 p-2 py-0.5"
+                                        <div
+                                            class=""
+                                            v-for="(
+                                                ev, index
+                                            ) in selected_events"
+                                            :key="index"
+                                        >
+                                            <Card
+                                                class="flex flex-wrap mt-2 slide-in-left-to-right"
+                                                :style="{
+                                                    'animation-delay': `${
+                                                        0.1 + index * 0.2
+                                                    }s`,
+                                                }"
                                             >
-                                                {{ ev.date }}
-                                            </div>
-                                            <div class="grow"></div>
-                                            <div
-                                                class="flex justify-center items-center"
-                                            >
-                                                {{ ev.time }}
-                                            </div>
-                                            <div class="w-full text-[16px]">
-                                                {{ ev.title }}
-                                            </div>
-                                        </Card>
+                                                <div
+                                                    class="w-fit h-fit text-[12px] rounded shadow bg-blue/80 p-2 py-0.5"
+                                                >
+                                                    {{ ev.date }}
+                                                </div>
+                                                <div class="grow"></div>
+                                                <div
+                                                    class="flex justify-center items-center"
+                                                >
+                                                    {{ ev.time }}
+                                                </div>
+                                                <div class="w-full text-[16px]">
+                                                    {{ ev.title }}
+                                                </div>
+                                            </Card>
+                                        </div>
                                     </div>
-                                </div>
+                                </Transition>
                             </div>
                         </div>
                     </div>
@@ -126,9 +240,22 @@ export default {
             is_initiated: true, // false in default
             is_access_denied: false,
             is_sidebar_expanding: false,
-            selected_events: null,
+            selected_events: [],
             api_url: "http://127.0.0.1:3000",
             records: [],
+            chartData: {
+                labels: ["Scheduled", "Completed"],
+                datasets: [
+                    {
+                        backgroundColor: ["#ee674a", "#474540"],
+                        data: [2, 12],
+                    },
+                ],
+            },
+            chartOptions: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
         };
     },
     async created() {
@@ -207,6 +334,21 @@ export default {
 </script>
 
 <style>
+.slide-in-left-to-right {
+    opacity: 0;
+    animation: slideInLeftToRight 0.5s ease-out forwards;
+}
+
+@keyframes slideInLeftToRight {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 * {
     user-select: none;
 }

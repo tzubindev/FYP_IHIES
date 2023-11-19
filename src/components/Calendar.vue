@@ -1,13 +1,13 @@
 <!-- CustomCalendar.vue -->
 <template>
-    <div class="max-w-[600px] mx-auto bg-cool/30 rounded p-3">
+    <div class="max-w-[600px] mx-auto">
         <!-- Top calendar bar -->
         <div
-            class="flex justify-between items-center p-4 text-white bg-gray rounded"
+            class="flex justify-between text-center items-center p-2 text-white bg-gray rounded-t-lg"
         >
             <button
                 @click="prevMonth"
-                class="w-12 h-12 p-2 bg-red text-white font-bold rounded transition hover:bg-red/50"
+                class="p-1 px-3 bg-red text-gray font-bold rounded transition hover:bg-red/50"
             >
                 &lt;
             </button>
@@ -16,14 +16,14 @@
             </h2>
             <button
                 @click="nextMonth"
-                class="w-12 h-12 p-2 bg-red text-white font-bold rounded transition hover:bg-red/50"
+                class="p-1 px-3 bg-red text-gray font-bold rounded transition hover:bg-red/50"
             >
                 &gt;
             </button>
         </div>
 
         <!-- Day columns -->
-        <div class="">
+        <div class="bg-gray/30 p-2 rounded-b-lg">
             <div class="grid grid-cols-7 mt-2">
                 <div
                     class="w-full h-full flex justify-center items-center p-1 py-0.5"
@@ -31,7 +31,7 @@
                     :key="day.id"
                 >
                     <div
-                        class="w-full h-full bg-cool text-white flex justify-center items-center rounded"
+                        class="text-sm p-1 py-0.5 w-full h-full bg-cool text-white flex justify-center items-center rounded"
                     >
                         {{ day }}
                     </div>
@@ -46,7 +46,7 @@
                 <div
                     v-for="day in week"
                     :key="day.date"
-                    class="p-0.5 flex justify-center items-center rounded-full cursor-pointer transition-all duration-300"
+                    class="p-1 flex justify-center items-center rounded-full cursor-pointer transition-all duration-300"
                     @click="selectDate(day)"
                     :class="{
                         'bg-none rounded-none': !day,
@@ -54,14 +54,14 @@
                     style="aspect-ratio: 1"
                 >
                     <div
-                        class="w-full h-full font-semibold flex justify-center items-center rounded-full"
+                        class="transition hover:text-gray w-full h-full font-semibold flex justify-center items-center rounded"
                         :class="{
-                            'hover:bg-gray/10':
+                            'hover:bg-white/80':
                                 day && day.date !== selectedDate?.date,
                             'bg-blue/80':
                                 selectedDate && selectedDate.date === day.date,
-                            'bg-green': isToday(day.date),
-                            'bg-yellow':
+                            'bg-green ': isToday(day.date),
+                            'bg-yellow ':
                                 hasEvents(day) && !isTodayOrPast(day.date),
                             'bg-red': hasEvents(day) && isTodayOrPast(day.date),
                         }"
@@ -72,14 +72,6 @@
             </div>
         </div>
     </div>
-
-    <!-- <div v-if="day.events.length">
-        <ul class="list-none p-0 m-0">
-            <li v-for="event in day.events" :key="event.id" class="mb-1">
-                {{ event.title }} - {{ event.time }}
-            </li>
-        </ul>
-    </div> -->
 </template>
 
 <script>
