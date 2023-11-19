@@ -69,14 +69,14 @@
 
             <!-- Feature Buttons -->
             <div
-                class="grid grid-cols-1 mt-3 gap-1 bg-white/10 shadow-xl rounded-md p-1 lg:p-1.5"
+                class="grid grid-cols-1 mt-3 gap-1 bg-white/10 shadow-xl rounded-md p-1 lg:gap-1.5"
             >
                 <!-- Dashboard -->
                 <div
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -96,7 +96,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -116,7 +116,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -136,7 +136,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -156,7 +156,7 @@
                     class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-1 justify-center lg:py-2.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >

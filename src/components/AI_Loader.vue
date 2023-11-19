@@ -1,6 +1,6 @@
 <template>
     <!-- First Loader -->
-    <div class="relative translate-y-28 lg:translate-y-24">
+    <div class="relative translate-y-28 lg:translate-y-20">
         <div class="blob">
             <h1 class="text-[20px]">Waiting...</h1>
         </div>
