@@ -185,7 +185,7 @@
                                             <p class="">Record Details</p>
                                             <div
                                                 class="bg-red px-2 cursor-pointer"
-                                                @click="selected_record = null"
+                                                @click="clearRecord"
                                             >
                                                 Close
                                             </div>
@@ -247,9 +247,11 @@
                                     >
                                         <!-- View Panel Title -->
                                         <div
-                                            class="justify-center py-1 font-bold text-md flex items-center w-full bg-[#fcd53f] text-gray"
+                                            class="justify-center p-1 px-3 font-bold text-md flex items-center w-full bg-[#fcd53f] text-gray"
                                         >
-                                            <div>Record</div>
+                                            <div class="px-1 mr-2 bg-white/70">
+                                                Record
+                                            </div>
                                             {{ selected_record.mp_id }}_
                                             {{ selected_record.mp_name }}_{{
                                                 selected_record.created_timestamp
@@ -264,28 +266,62 @@
                                             :key="index"
                                             class="w-full grid grid-cols-4 gap-2 py-2 border-b border-white/40"
                                         >
+                                            <!-- Data Name -->
                                             <div
-                                                class="w-full bg-white/30 text-white items-center justify-center flex py-1 font-semibold"
+                                                class="w-full bg-white/30 text-white items-center text-center justify-center flex py-1 font-semibold"
                                             >
                                                 {{ standardiseString(key) }}
                                             </div>
+
+                                            <!-- Data Value -->
                                             <div
                                                 class="col-span-3 flex items-center"
                                                 v-if="key === 'url'"
                                             >
-                                                <a
-                                                    class="truncate h-fit hover:underline cursor-pointer transition hover:text-red"
-                                                    :href="value"
-                                                    target="_blank"
-                                                    :title="value"
+                                                <!-- Non-array data -->
+                                                <div
+                                                    class="flex w-full"
+                                                    v-if="!Array.isArray(value)"
                                                 >
-                                                    {{ value }}
-                                                </a>
-                                                <img
-                                                    class="w-5 h-4 ml-0.5"
-                                                    src="https://img.icons8.com/ios/50/ffffff/open-in-popup.png"
-                                                    alt="open-in-popup"
-                                                />
+                                                    <a
+                                                        class="truncate h-fit hover:underline cursor-pointer transition hover:text-red"
+                                                        :href="value"
+                                                        target="_blank"
+                                                        :title="value"
+                                                    >
+                                                        {{ value }}
+                                                    </a>
+                                                    <img
+                                                        class="w-5 h-4 ml-0.5 mt-0.5"
+                                                        src="https://img.icons8.com/ios/50/ffffff/open-in-popup.png"
+                                                        alt="open-in-popup"
+                                                    />
+                                                </div>
+                                                <!-- array data -->
+                                                <div
+                                                    v-else
+                                                    class="w-full grid grid-cols-1 gap-1"
+                                                >
+                                                    <div
+                                                        class="w-full flex items-center"
+                                                        v-for="v in value"
+                                                        :key="v"
+                                                    >
+                                                        <a
+                                                            class="truncate h-fit hover:underline cursor-pointer transition hover:text-red"
+                                                            :href="v"
+                                                            target="_blank"
+                                                            :title="v"
+                                                        >
+                                                            {{ v }}
+                                                        </a>
+                                                        <img
+                                                            class="w-5 h-4 ml-0.5 mt-0.5"
+                                                            src="https://img.icons8.com/ios/50/ffffff/open-in-popup.png"
+                                                            alt="open-in-popup"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div
                                                 v-else
@@ -313,6 +349,7 @@
                                     </div></Transition
                                 >
 
+                                <!-- No data message -->
                                 <div
                                     v-if="!selected_record"
                                     class="flex justify-center items-center h-20 w-full bg-white col-span-5 shadow shadow-gray/50"
@@ -556,8 +593,8 @@ export default {
                     },
                 },
                 {
-                    mp_id: "2345678",
-                    mp_name: "sample mp 2",
+                    mp_id: "6508102616",
+                    mp_name: "sample mp",
                     created_timestamp: 1700018917663,
                     record: {
                         doctor_clinical_notes: [
@@ -570,10 +607,13 @@ export default {
                                 note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
                             },
                         ],
-                        discussion_recording: {
-                            content: "Discussion content here",
-                            witness: "Witness name",
-                        },
+                        discussion_recording: [
+                            {
+                                content: "Discussion content here",
+                                witness: "Witness name",
+                                timestamp: "2023-11-14",
+                            },
+                        ],
                         referral_notes: [
                             {
                                 timestamp: "2023-11-14",
@@ -861,6 +901,10 @@ export default {
                 .toISOString()
                 .slice(0, 10)
                 .replace(/-/g, "")}`;
+        },
+        clearRecord() {
+            this.selected_record = null;
+            this.selected_record_item = null;
         },
     },
 };

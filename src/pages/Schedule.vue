@@ -58,7 +58,7 @@
                     <!-- Calendar and events -->
                     <div class="flex justify-center w-full">
                         <div
-                            class="w-full grid grid-cols-5 gap-4 lg:max-w-[950px]"
+                            class="w-full grid grid-cols-5 gap-1 lg:max-w-[950px]"
                         >
                             <!-- Statistics -->
                             <div class="col-span-5 w-full p-2 pb-0">
@@ -69,15 +69,17 @@
                                 </div>
                             </div>
                             <div
-                                class="col-span-5 grid-cols-3 grid w-full text-xs border-b-2 border-gray/20 pb-2"
+                                class="col-span-5 grid-cols-3 grid w-full text-xs border-b-2 border-gray/20 pb-2 mb-2"
                             >
                                 <!-- Total -->
-                                <div class="cursor-pointer p-2 min-h-[150px]">
+                                <div
+                                    class="cursor-pointer p-2 pt-0 min-h-[150px]"
+                                >
                                     <div
-                                        class="bg-yellow h-full p-2 shadow-xl flex flex-wrap"
+                                        class="bg-gray/90 text-white h-full p-2 flex flex-wrap shadow-md shadow-gray"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
+                                            class="bg-red w-fit h-fit p-1 px-2 text-white shadow shadow-white/20"
                                         >
                                             Total
                                         </p>
@@ -105,12 +107,12 @@
                                 </div>
 
                                 <!-- Today Events -->
-                                <div class="cursor-pointer p-2">
+                                <div class="cursor-pointer p-2 pt-0">
                                     <div
-                                        class="bg-red h-full p-2 shadow-xl flex flex-wrap"
+                                        class="bg-green h-full p-2 flex flex-wrap shadow-md shadow-gray"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
+                                            class="bg-darkgreen w-fit h-fit p-1 px-2 text-white shadow shadow-gray"
                                         >
                                             Today
                                         </p>
@@ -128,12 +130,12 @@
                                 </div>
 
                                 <!-- Future Events -->
-                                <div class="cursor-pointer p-2">
+                                <div class="cursor-pointer p-2 pt-0">
                                     <div
-                                        class="bg-green h-full p-2 shadow-xl flex flex-wrap"
+                                        class="bg-yellow h-full p-2 flex flex-wrap shadow-md shadow-gray"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
+                                            class="bg-darkyellow w-fit h-fit p-1 px-2 text-white shadow shadow-gray"
                                         >
                                             In Future
                                         </p>
@@ -170,10 +172,10 @@
 
                             <!-- Event Listing -->
                             <div
-                                class="w-full h-fit p-3 px-2 bg-yellow col-span-5 md:col-span-2"
+                                class="w-full h-fit p-3 px-2 bg-gray col-span-5 md:col-span-2"
                             >
                                 <div
-                                    class="w-full bg-gray text-white text-center"
+                                    class="w-full bg-white/10 text-white text-center"
                                 >
                                     Events
                                 </div>
@@ -190,7 +192,7 @@
                                             :key="index"
                                         >
                                             <Card
-                                                class="flex flex-wrap mt-2 slide-in-left-to-right"
+                                                class="bg-white/80 hover:bg-white/50 flex flex-wrap mt-2 slide-in-left-to-right"
                                                 :style="{
                                                     'animation-delay': `${
                                                         0.1 + index * 0.2

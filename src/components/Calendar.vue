@@ -3,11 +3,11 @@
     <div class="max-w-[600px] mx-auto">
         <!-- Top calendar bar -->
         <div
-            class="flex justify-between text-center items-center p-2 text-white bg-gray -t-lg"
+            class="flex justify-between text-center items-center p-4 text-white bg-gray"
         >
             <button
                 @click="prevMonth"
-                class="p-1 px-3 bg-red text-gray font-bold transition hover:bg-red/50"
+                class="px-2 p-0.5 bg-red text-gray font-bold transition hover:bg-red/50"
             >
                 &lt;
             </button>
@@ -16,22 +16,22 @@
             </h2>
             <button
                 @click="nextMonth"
-                class="p-1 px-3 bg-red text-gray font-bold transition hover:bg-red/50"
+                class="px-2 p-0.5 bg-red text-gray font-bold transition hover:bg-red/50"
             >
                 &gt;
             </button>
         </div>
 
         <!-- Day columns -->
-        <div class="bg-gray/30 p-2 -b-lg">
-            <div class="grid grid-cols-7 mt-2">
+        <div class="bg-gray/90 text-white p-2">
+            <div class="grid grid-cols-7">
                 <div
-                    class="w-full h-full flex justify-center items-center p-1 py-0.5"
+                    class="w-full h-full flex justify-center items-center p-1 py-0.5 bg-red/80 text-white"
                     v-for="day in weekdays"
                     :key="day.id"
                 >
                     <div
-                        class="text-sm p-1 py-0.5 w-full h-full bg-cool text-white flex justify-center items-center"
+                        class="text-sm p-1 py-0.5 w-full h-full flex justify-center items-center"
                     >
                         {{ day }}
                     </div>
@@ -58,12 +58,13 @@
                         :class="{
                             'hover:bg-white/80':
                                 day && day.date !== selectedDate?.date,
-                            'bg-blue/80':
+                            'bg-blue/80 ':
                                 selectedDate && selectedDate.date === day.date,
-                            'bg-green ': isToday(day.date),
-                            'bg-yellow ':
+                            'bg-darkgreen ': isToday(day.date),
+                            'bg-darkyellow ':
                                 hasEvents(day) && !isTodayOrPast(day.date),
-                            'bg-red': hasEvents(day) && isTodayOrPast(day.date),
+                            'bg-darkred':
+                                hasEvents(day) && isTodayOrPast(day.date),
                         }"
                     >
                         {{ day.day }}
