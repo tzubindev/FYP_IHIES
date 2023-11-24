@@ -1,6 +1,6 @@
 <template>
     <div
-        class="bg-gray/40 rounded w-full h-fit p-2 shadow hover:bg-gray/20 cursor-pointer transition"
+        class="bg-gray/40 w-full h-fit p-2 shadow hover:bg-gray/20 cursor-pointer transition"
     >
         <slot></slot>
     </div>

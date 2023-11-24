@@ -58,7 +58,7 @@
                         <div class="w-full mt-3 mb-6 flex justify-end px-2">
                             <p
                                 @click="openModal('FORGOT PASSOWRD')"
-                                class="text-white cursor-pointer hover:text-red rounded-full transition-all p-1 px-4"
+                                class="text-white cursor-pointer hover:text-red -full transition-all p-1 px-4"
                             >
                                 Forgot your password?
                             </p>
@@ -90,12 +90,10 @@
 
             <!-- Cover -->
             <div class="p-5 hidden md:block">
-                <div
-                    class="bg-cool rounded-2xl w-full h-full flex inset-0 relative"
-                >
+                <div class="bg-cool -2xl w-full h-full flex inset-0 relative">
                     <img
                         src="../assets/login_cover_bgrm.png"
-                        class="m-auto rounded-b-full hidden m:w-5/6"
+                        class="m-auto -b-full hidden m:w-5/6"
                     />
                 </div>
             </div>
@@ -126,7 +124,7 @@
             <div class="mb-4">
                 <!-- OTP Span -->
                 <div
-                    class="w-full p-2 pr-4 bg-orange/30 rounded-3xl shadow-md"
+                    class="w-full p-2 pr-4 bg-orange/30 -3xl shadow-md"
                     v-if="is_otp_sent"
                 >
                     <div class="flex justify-start items-center">
@@ -138,7 +136,7 @@
                         <input
                             type="text"
                             v-model="otp.code"
-                            class="w-full bg-gray rounded-2xl p-2 border-y-2 outline-none text-center"
+                            class="w-full bg-gray -2xl p-2 border-y-2 outline-none text-center"
                         />
                     </div>
                 </div>
@@ -153,7 +151,7 @@
 
                     <!-- Loading animation -->
                     <div
-                        class="animate-pulse bg-white/20 shadow rounded-md p-4 max-w-sm w-full mx-auto"
+                        class="animate-pulse bg-white/20 shadow p-4 max-w-sm w-full mx-auto"
                         v-if="(!otp.id && is_auth) || is_sending_otp"
                     >
                         <div class="flex justify-center items-center">
@@ -266,7 +264,7 @@ export default {
                     this.errors
                         .map(
                             (e) =>
-                                "<div class='mb-2 mr-2 rounded-md bg-gray text-red font-light p-2 px-5'>" +
+                                "<div class='mb-2 mr-2  bg-gray text-red font-light p-2 px-5'>" +
                                 e +
                                 "</div>"
                         )
@@ -403,7 +401,7 @@ export default {
                     console.log(`Redirect to ${targetPage} Dashboard.`);
                     sessionStorage.setItem("passcode", params.passcode);
                     this.$router.push({
-                        path: `/patient/${this.user.id}`,
+                        path: `/dashboard/patient/${this.user.id}`,
                     });
 
                     break;

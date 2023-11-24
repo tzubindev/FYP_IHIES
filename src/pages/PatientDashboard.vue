@@ -58,7 +58,7 @@
                     <div class="hidden md:block lg:hidden">
                         <!-- Profile -->
                         <div
-                            class="py-4 w-full flex h-fit bg-gray rounded-xl text-white items-center"
+                            class="py-4 w-full flex h-fit bg-gray text-white items-center"
                         >
                             <!-- Picture -->
                             <div
@@ -66,7 +66,7 @@
                             >
                                 <img
                                     src="../sample_assets/profilePic_tb.jpg"
-                                    class="w-[150px] h-[150px] rounded-full"
+                                    class="w-[150px] h-[150px] -full"
                                 />
                             </div>
 
@@ -80,7 +80,7 @@
                                         {{ this.user.name }}
                                     </div>
                                     <div
-                                        class="p-3 py-1.5 mt-4 text-xs w-fit rounded bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                        class="p-3 py-1.5 mt-4 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
                                     >
                                         {{ $t("view_profile") }}
                                     </div>
@@ -99,7 +99,7 @@
                                     </div>
                                     <!-- data -->
                                     <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("sex") }}
                                 </div> -->
@@ -111,7 +111,7 @@
                                         {{ $t("age") }}
                                     </div>
                                     <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("age") }}
                                 </div> -->
@@ -124,7 +124,7 @@
                                             {{ $t("blood") }}
                                         </div>
                                         <!-- <div
-                                        class="w-full text-center py-0.5 rounded font-extrabold"
+                                        class="w-full text-center py-0.5  font-extrabold"
                                     >
                                         {{ $t("blood") }}
                                     </div> -->
@@ -138,7 +138,7 @@
                                         {{ $t("height") }}
                                     </div>
                                     <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("height") }}
                                 </div> -->
@@ -151,7 +151,7 @@
                                         {{ $t("weight") }}
                                     </div>
                                     <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("weight") }}
                                 </div> -->
@@ -164,7 +164,7 @@
                                         {{ $t("last_logged_in") }}
                                     </div>
                                     <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("last_logged_in") }}
                                 </div> -->
@@ -187,7 +187,7 @@
                                 >
                                     <!-- SYS -->
                                     <div
-                                        class="cursor-pointer bg-gray text-white p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                        class="cursor-pointer bg-gray text-white p-4 pt-2 pb-0 w-full h-44"
                                     >
                                         <div class="h-1/2 flex">
                                             <div
@@ -233,7 +233,7 @@
 
                                     <!-- DIA -->
                                     <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
                                     >
                                         <div class="h-1/2 flex">
                                             <div
@@ -279,7 +279,7 @@
 
                                     <!-- Pulse -->
                                     <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
                                     >
                                         <div class="h-1/2 flex">
                                             <div
@@ -326,7 +326,7 @@
 
                                     <!-- Breath -->
                                     <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44 rounded-xl"
+                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
                                     >
                                         <div class="h-1/2 flex">
                                             <div
@@ -380,7 +380,7 @@
                         <div class="lg:grid grid-cols-2 gap-4 max-w-[1140px]">
                             <!-- Profile -->
                             <div
-                                class="shadow-lg shadow-gray/30 p-4 w-full flex h-full flex-wrap bg-gray rounded-xl text-white items-center"
+                                class="shadow-lg shadow-gray/30 p-4 w-full flex h-full flex-wrap bg-gray text-white items-center"
                             >
                                 <div class="w-full grid grid-cols-2 h-2/5">
                                     <!-- Picture -->
@@ -389,7 +389,7 @@
                                     >
                                         <img
                                             src="../sample_assets/profilePic_tb.jpg"
-                                            class="w-[150px] h-[150px] rounded-full"
+                                            class="w-[150px] h-[150px] -full"
                                         />
                                     </div>
 
@@ -405,7 +405,7 @@
                                                 {{ this.user.name }}
                                             </div>
                                             <div
-                                                class="p-3 py-1.5 mt-4 text-xs w-fit rounded bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                                class="p-3 py-1.5 mt-4 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
                                             >
                                                 {{ $t("view_profile") }}
                                             </div>
@@ -429,7 +429,7 @@
                                         </div>
                                         <!-- data -->
                                         <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("sex") }}
                                 </div> -->
@@ -446,7 +446,7 @@
                                             {{ $t("age") }}
                                         </div>
                                         <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("age") }}
                                 </div> -->
@@ -463,7 +463,7 @@
                                             {{ $t("blood") }}
                                         </div>
                                         <!-- <div
-                                        class="w-full text-center py-0.5 rounded font-extrabold"
+                                        class="w-full text-center py-0.5  font-extrabold"
                                     >
                                         {{ $t("blood") }}
                                     </div> -->
@@ -480,7 +480,7 @@
                                             {{ $t("height") }}
                                         </div>
                                         <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("height") }}
                                 </div> -->
@@ -497,7 +497,7 @@
                                             {{ $t("weight") }}
                                         </div>
                                         <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("weight") }}
                                 </div> -->
@@ -514,7 +514,7 @@
                                             {{ $t("last_logged_in") }}
                                         </div>
                                         <!-- <div
-                                    class="w-full text-center py-0.5 rounded font-extrabold"
+                                    class="w-full text-center py-0.5  font-extrabold"
                                 >
                                     {{ $t("last_logged_in") }}
                                 </div> -->
@@ -539,7 +539,7 @@
                                     >
                                         <!-- SYS -->
                                         <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer bg-gray text-white p-2 py-2 w-full h-[115px] rounded-xl"
+                                            class="shadow-lg shadow-gray/30 flex cursor-pointer bg-gray text-white p-2 py-2 w-full h-[115px]"
                                         >
                                             <!-- summary -->
                                             <div
@@ -591,7 +591,7 @@
 
                                         <!-- DIA -->
                                         <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px] rounded-xl"
+                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
                                         >
                                             <div
                                                 class="h-fit w-1/3 flex flex-wrap"
@@ -641,7 +641,7 @@
 
                                         <!-- Pulse -->
                                         <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px] rounded-xl"
+                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
                                         >
                                             <div
                                                 class="h-fit w-1/3 flex flex-wrap"
@@ -692,7 +692,7 @@
 
                                         <!-- Breath -->
                                         <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px] rounded-xl"
+                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
                                         >
                                             <div
                                                 class="h-fit w-1/3 flex flex-wrap"
@@ -749,11 +749,11 @@
                     <!-- Path to view medical record -->
                     <div class="w-full h-32 flex justify-center">
                         <div
-                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] my-4 rounded-xl shadow-gray/40 shadow-xl overflow-hidden relative"
+                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] my-4 shadow-gray/40 shadow-xl overflow-hidden relative"
                         >
                             <img
                                 src="../assets/medical_record.jpg"
-                                class="h-full w-full object-cover rounded-xl"
+                                class="h-full w-full object-cover"
                                 alt="Medical Record"
                             />
                             <div

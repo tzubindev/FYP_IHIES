@@ -63,7 +63,7 @@
                             <!-- Statistics -->
                             <div class="col-span-5 w-full p-2 pb-0">
                                 <div
-                                    class="col-span-5 w-full py-1 text-center bg-gray text-white rounded"
+                                    class="col-span-5 w-full py-1 text-center bg-gray text-white"
                                 >
                                     Overview
                                 </div>
@@ -74,10 +74,10 @@
                                 <!-- Total -->
                                 <div class="cursor-pointer p-2 min-h-[150px]">
                                     <div
-                                        class="bg-yellow h-full p-2 rounded shadow-xl flex flex-wrap"
+                                        class="bg-yellow h-full p-2 shadow-xl flex flex-wrap"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
                                         >
                                             Total
                                         </p>
@@ -107,10 +107,10 @@
                                 <!-- Today Events -->
                                 <div class="cursor-pointer p-2">
                                     <div
-                                        class="bg-red h-full p-2 rounded shadow-xl flex flex-wrap"
+                                        class="bg-red h-full p-2 shadow-xl flex flex-wrap"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
                                         >
                                             Today
                                         </p>
@@ -130,10 +130,10 @@
                                 <!-- Future Events -->
                                 <div class="cursor-pointer p-2">
                                     <div
-                                        class="bg-green h-full p-2 rounded shadow-xl flex flex-wrap"
+                                        class="bg-green h-full p-2 shadow-xl flex flex-wrap"
                                     >
                                         <p
-                                            class="bg-gray w-fit h-fit p-1 px-2 text-white rounded"
+                                            class="bg-gray w-fit h-fit p-1 px-2 text-white"
                                         >
                                             In Future
                                         </p>
@@ -158,7 +158,7 @@
                                     @selectedEvents="updateSelectedEvents"
                                 ></Calendar>
                                 <div
-                                    class="gap-1 flex justify-center items-center w-full py-1.5 bg-red text-sm text-center mt-2 rounded-lg shadow-xl text-white cursor-pointer hover:bg-gray transition"
+                                    class="gap-1 flex justify-center items-center w-full py-1.5 bg-red text-sm text-center mt-2 shadow-xl text-white cursor-pointer hover:bg-gray transition"
                                 >
                                     <img
                                         src="../assets/add.svg"
@@ -170,10 +170,10 @@
 
                             <!-- Event Listing -->
                             <div
-                                class="w-full h-fit p-3 px-2 bg-yellow rounded col-span-5 md:col-span-2"
+                                class="w-full h-fit p-3 px-2 bg-yellow col-span-5 md:col-span-2"
                             >
                                 <div
-                                    class="w-full bg-gray text-white rounded text-center"
+                                    class="w-full bg-gray text-white text-center"
                                 >
                                     Events
                                 </div>
@@ -198,7 +198,7 @@
                                                 }"
                                             >
                                                 <div
-                                                    class="w-fit h-fit text-[12px] rounded shadow bg-blue/80 p-2 py-0.5"
+                                                    class="w-fit h-fit text-[12px] shadow bg-blue/80 p-2 py-0.5"
                                                 >
                                                     {{ ev.date }}
                                                 </div>

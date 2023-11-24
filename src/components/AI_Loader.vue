@@ -2,7 +2,7 @@
     <!-- First Loader -->
     <div class="relative translate-y-28 lg:translate-y-20">
         <div class="blob">
-            <h1 class="text-[20px]">Waiting...</h1>
+            <h1 class="text-[20px] waiting">Waiting...</h1>
         </div>
         <div class="blob1"></div>
         <div class="blob2"></div>
@@ -15,7 +15,7 @@ export default {};
 </script>
 
 <style>
-h1 {
+.waiting {
     position: relative;
     color: gray;
     font-size: 22px;

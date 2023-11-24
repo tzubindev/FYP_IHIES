@@ -1,11 +1,11 @@
 <template>
     <VueFinalModal
         class="abs-centre flex justify-center items-center w-4/5"
-        content-class="w-full  flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl rounded-lg space-y-2"
+        content-class="w-full  flex flex-col max-w-xl mx-4 p-6 bg-gray text-white shadow-xl  space-y-2"
         @update:model-value="(val) => emit('update:modelValue', val)"
     >
         <div
-            class="flex justify-center items-center p-2 rounded-xl shadow-xl mb-4"
+            class="flex justify-center items-center p-2 shadow-xl mb-4"
             :class="{
                 'bg-green text-gray': modalType == 'info',
                 'bg-red text-white': modalType == 'error',
@@ -21,13 +21,13 @@
         </div>
         <div v-if="!noPresetButton" class="flex justify-end">
             <button
-                class="px-3 py-1 mr-2 text-white font-bold hover:underline hover:text-red transition-all rounded-lg"
+                class="px-3 py-1 mr-2 text-white font-bold hover:underline hover:text-red transition-all"
                 @click="cancel"
             >
                 Cancel
             </button>
             <button
-                class="px-3 py-1 bg-white text-cool font-bold hover:bg-cool hover:text-white transition rounded-lg"
+                class="px-3 py-1 bg-white text-cool font-bold hover:bg-cool hover:text-white transition"
                 @click="confirm"
             >
                 Confirm

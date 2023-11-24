@@ -1,8 +1,6 @@
 <template>
-    <div
-        class="w-11/12 h-4 rounded bg-white/30 flex items-center p-1 overflow-hidden"
-    >
-        <div class="w-full h-2 bg-gray animate-expand-shrink rounded-sm"></div>
+    <div class="w-11/12 h-4 bg-white/30 flex items-center p-1 overflow-hidden">
+        <div class="w-full h-2 bg-gray animate-expand-shrink"></div>
     </div>
 </template>
 

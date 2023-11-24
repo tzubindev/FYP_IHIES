@@ -18,7 +18,7 @@
                         style="background-color: transparent; padding: 0"
                     >
                         <div
-                            class="w-full h-full px-4 p-2 flex flex-wrap rounded transition hover:bg-gray hover:text-white"
+                            class="w-full h-full px-4 p-2 flex flex-wrap transition hover:bg-gray hover:text-white"
                             :class="{
                                 'bg-green  ': r.risk === 0,
                                 'bg-yellow': r.risk === 1,
@@ -53,7 +53,7 @@
                 <!-- AI DepReco Disclaimer-->
                 <Transition>
                     <div
-                        class="cursor-pointer hover:bg-gray/30 transition text-[13px] italic bg-gray/10 p-1.5 px-3 rounded-lg mb-2"
+                        class="cursor-pointer hover:bg-gray/30 transition text-[13px] italic bg-gray/10 p-1.5 px-3 mb-2"
                         v-if="show_disclaimer"
                     >
                         <div class="flex">
@@ -89,8 +89,8 @@
 
                     <!-- Symptom insert box -->
                     <div
-                        class="w-full bg-gray h-fit rounded-t-lg flex items-center p-1.5"
-                        :class="{ 'rounded-b-lg': !symptoms.length }"
+                        class="w-full bg-gray h-fit -t-lg flex items-center p-1.5"
+                        :class="{ '-b-lg': !symptoms.length }"
                     >
                         <img
                             src="../assets/inquiry_symptom.svg"
@@ -103,7 +103,7 @@
                             @keyup.enter="handleEnterSymptom"
                         />
                         <div
-                            class="cursor-pointer bg-red text-gray font-semibold h-fit p-1 px-2 text-[10px] rounded"
+                            class="cursor-pointer bg-red text-gray font-semibold h-fit p-1 px-2 text-[10px]"
                             @click="insert_symptom"
                         >
                             Enter
@@ -113,13 +113,13 @@
                     <!-- Symptoms list-->
                     <Transition>
                         <div
-                            class="overflow-y-auto overflow-x-hidden flex flex-wrap gap-1.5 p-2 w-full bg-gray/20 max-h-[200px] rounded-b-lg backdrop-blur-lg"
+                            class="overflow-y-auto overflow-x-hidden flex flex-wrap gap-1.5 p-2 w-full bg-gray/20 max-h-[200px] -b-lg backdrop-blur-lg"
                             v-if="symptoms.length"
                         >
                             <div
                                 v-for="(s, index) in symptoms"
                                 :key="s.id"
-                                class="cursor-pointer transition hover:bg-red px-3 text-sm bg-red/80 w-fit rounded truncate"
+                                class="cursor-pointer transition hover:bg-red px-3 text-sm bg-red/80 w-fit truncate"
                                 @click="symptoms.splice(index, 1)"
                             >
                                 {{ s }}
@@ -131,7 +131,7 @@
                 <!-- AI DepReco Button -->
                 <Transition>
                     <div
-                        class="items-center cursor-pointer transition hover:bg-red/80 hover:text-gray w-full py-1 text-xs mt-2 bg-red text-white flex justify-center rounded-lg"
+                        class="items-center cursor-pointer transition hover:bg-red/80 hover:text-gray w-full py-1 text-xs mt-2 bg-red text-white flex justify-center"
                         v-if="symptoms.length"
                     >
                         Recommend
@@ -149,7 +149,7 @@
 
             <!-- Reco list -->
             <div
-                class="col-span-3 md:col-span-1 min-h-[280px] max-h-[500px] w-full p-3 bg-gray/20 backdrop-blur-xl text-gray shadow-lg rounded-lg"
+                class="col-span-3 md:col-span-1 min-h-[280px] max-h-[500px] w-full p-3 bg-gray/20 backdrop-blur-xl text-gray shadow-lg"
                 :class="{
                     'h-[280px]': !recommendations.length,
                     'h-full': recommendations.length,

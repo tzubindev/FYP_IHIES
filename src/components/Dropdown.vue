@@ -37,7 +37,7 @@
 
         <transition name="bounce">
             <div
-                class="absolute right-11 z-10 mt-3 w-40 origin-top-right rounded-xl bg-white shadow-sm shadow-gray outline-none"
+                class="absolute right-11 z-10 mt-3 w-40 origin-top-right bg-white shadow-sm shadow-gray outline-none"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="menu-button"
@@ -53,7 +53,7 @@
                         role="menuitem"
                         tabindex="-1"
                         ><p
-                            class="hover:bg-gray hover:text-white cursor-pointer text-left w-full p-2 rounded-md"
+                            class="hover:bg-gray hover:text-white cursor-pointer text-left w-full p-2"
                         >
                             {{ $t(item) }}
                         </p></a

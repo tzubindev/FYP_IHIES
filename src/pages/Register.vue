@@ -2,7 +2,7 @@
     <div
         class="flex h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gradient-to-br from-mintage to-violet/50"
     >
-        <div class="bg-white/70 p-5 py-10 rounded-2xl backdrop-blur-sm">
+        <div class="bg-white/70 p-5 py-10 -2xl backdrop-blur-sm">
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img
                     class="w-[80px] m-auto"

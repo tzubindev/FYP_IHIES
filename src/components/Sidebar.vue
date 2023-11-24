@@ -10,7 +10,7 @@
         class="overflow-y-auto overflow-x-hidden z-40 bg-gray text-white fixed top-0 bottom-0 lg:left-0 text-center"
         :class="{
             'w-[180px] lg:w-[240px]': is_expanding,
-            'w-[60px] lg:w-[80px]': !is_expanding,
+            'w-[70px] lg:w-[80px]': !is_expanding,
         }"
     >
         <!-- Company Logo -->
@@ -51,7 +51,7 @@
         <div class="z-10 p-2 pt-0 mt-3 mb-10">
             <!-- Search Box -->
             <div
-                class="hover:bg-black/40 p-1 flex justify-center items-center rounded-md px-4 duration-300 cursor-pointer bg-white/40"
+                class="hover:bg-black/40 p-1 flex justify-center items-center px-4 duration-300 cursor-pointer bg-white/40"
                 @click="openSearchbox"
                 ref="searchInput"
                 v-if="is_expanding"
@@ -69,15 +69,14 @@
 
             <!-- Feature Buttons -->
             <div
-                class="grid grid-cols-1 mt-3 gap-1 bg-white/10 shadow-xl rounded-md p-1 lg:gap-1.5"
+                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl lg:gap-1.5"
             >
                 <!-- Dashboard -->
                 <div
-                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center lg:py-2.5': !is_expanding,
                     }"
                 >
                     <img
@@ -93,10 +92,10 @@
 
                 <!-- Medical record -->
                 <div
-                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -113,10 +112,10 @@
 
                 <!-- Inquiry -->
                 <div
-                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -133,10 +132,10 @@
 
                 <!-- Schedule -->
                 <div
-                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -153,10 +152,10 @@
 
                 <!-- Setting -->
                 <div
-                    class="hover:bg-black transition flex items-center rounded-md cursor-pointer"
+                    class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-1.5 my-1 lg:my-0':
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
                 >
@@ -174,7 +173,7 @@
 
             <!-- Logout -->
             <div
-                class="mt-3 bg-red hover:bg-red/40 transition flex items-center rounded-md cursor-pointer"
+                class="mt-3 bg-red hover:bg-red/40 transition flex items-center cursor-pointer"
                 :class="{
                     'p-2 px-3 justify-start': is_expanding,
                     'p-2 justify-center lg:p-3 ': !is_expanding,
