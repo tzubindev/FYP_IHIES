@@ -67,9 +67,10 @@
                 </transition>
             </div>
 
-            <!-- Feature Buttons -->
+            <!-- Feature Buttons - Patient -->
             <div
                 class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl lg:gap-1.5"
+                v-if="!medicalPersonnel"
             >
                 <!-- Dashboard -->
                 <div
@@ -171,6 +172,151 @@
                 </div>
             </div>
 
+            <!-- Feature Buttons - Medical Personnel -->
+            <div
+                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl lg:gap-1.5"
+                v-if="medicalPersonnel"
+            >
+                <!-- Dashboard -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5': !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/dashboard.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("dashboard") }}</span
+                    >
+                </div>
+
+                <!-- Manage Schedule -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/schedule.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[13px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("schedule_management") }}</span
+                    >
+                </div>
+
+                <!-- Patient Transfer -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/transfer.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[12px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("patient_transfer") }}</span
+                    >
+                </div>
+
+                <!-- Incident Report Channel -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/report.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[12px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("incident_report_channel") }}</span
+                    >
+                </div>
+
+                <!-- Patient Medical Record -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/record.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[12px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("patient_medical_record") }}</span
+                    >
+                </div>
+
+                <!-- Access Management -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/access.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[13px] ml-3 font-bold text-left"
+                        v-if="is_expanding"
+                        >{{ $t("access_management") }}</span
+                    >
+                </div>
+
+                <!-- Setting -->
+                <div
+                    class="hover:bg-black transition flex items-center cursor-pointer"
+                    :class="{
+                        'p-2 px-3': is_expanding,
+                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
+                            !is_expanding,
+                    }"
+                >
+                    <img
+                        src="../assets/setting.svg"
+                        class="w-4 h-4 lg:w-5 lg:h-5"
+                    />
+                    <span
+                        class="text-[13px] ml-3 font-bold"
+                        v-if="is_expanding"
+                        >{{ $t("setting") }}</span
+                    >
+                </div>
+            </div>
+
             <!-- Logout -->
             <div
                 class="mt-3 bg-red hover:bg-red/40 transition flex items-center cursor-pointer"
@@ -222,6 +368,10 @@ export default {
         username: {
             type: String,
             required: true,
+        },
+        medicalPersonnel: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {

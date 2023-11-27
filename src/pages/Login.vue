@@ -1,39 +1,50 @@
 <template>
     <div class="min-h-screen relative">
-        <!-- NOTE -->
-        <!-- 1) gradient theme: bg-gradient-to-br from-teal to-violet/60 -->
-
-        <!-- < Small Screen Size -->
         <div
-            class="sm:hidden flex-wrap font-serif overflow-hidden h-screen flex justify-center items-end bg-gray/5"
+            class="flex-wrap font-serif overflow-hidden h-screen flex justify-center items-end bg-gray/5"
         >
             <h1
-                class="absolute top-0 pt-4 font-extrabold text-2xl text-gray w-full text-center"
+                class="md:hidden absolute top-0 pt-4 font-extrabold text-2xl text-gray w-full text-center"
             >
                 HEALTHIE
             </h1>
-            <!-- Upper -->
-            <div class="w-full h-1/3 flex justify-center items-end">
+            <!-- small Upper -->
+            <div class="md:hidden w-full h-1/3 flex justify-center items-end">
                 <img src="../assets/login_cover_mobile.svg" class="h-full" />
             </div>
 
+            <!-- Mid or above upper -->
+            <div class="hidden md:flex w-1/2 h-full justify-center">
+                <div class="w-full overflow-hidden relative">
+                    <img
+                        src="../assets/medical_record.jpg"
+                        class="h-full w-full object-cover blur-sm"
+                        alt="Medical Record"
+                    />
+                    <!-- <div class="absolute inset-0 bg-white opacity-5"></div> -->
+                </div>
+            </div>
+
+            <!-- Smaller Upper got problems here -->
+
             <!-- Lower -->
-            <!-- bg-[#4063cd] -->
             <div
-                class="flex-wrap bg-gray p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
+                class="md:w-1/2 md:h-full flex-wrap bg-gray lg:p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
             >
                 <h2
-                    class="w-full mb-3 text-left text-2xl font-bold leading-9 tracking-tight text-white"
+                    class="md:text-center md:mb-10 w-full mb-3 text-center text-2xl font-bold leading-9 tracking-tight text-white"
                 >
                     Sign in to your account
                 </h2>
 
                 <!-- Main panel -->
-                <div class="w-full text-center">
+                <div
+                    class="w-full text-center max-w-[600px] lg:max-w-full px-4 lg:px-10 xl:px-24 flex flex-wrap justify-center"
+                >
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
-                        class=""
+                        class="w-full"
                         @submit.prevent="login"
                         novalidate="true"
                     >
@@ -71,30 +82,13 @@
                             submit
                             large
                         />
+                        <Button
+                            title="REGISTER"
+                            large
+                            customClass="mt-5 bg-white hover:bg-mintage/90 hover:text-white text-gray"
+                            @click="leadTo('Register')"
+                        />
                     </form>
-
-                    <Button
-                        title="REGISTER"
-                        large
-                        customClass="mt-5 bg-white hover:bg-mintage/90 hover:text-white text-gray"
-                        @click="leadTo('Register')"
-                    />
-                </div>
-            </div>
-        </div>
-
-        <!-- >= Medium Screen Size -->
-        <div class="hidden md:grid grid-cols-2">
-            <!-- Login Side -->
-            <div></div>
-
-            <!-- Cover -->
-            <div class="p-5 hidden md:block">
-                <div class="bg-cool -2xl w-full h-full flex inset-0 relative">
-                    <img
-                        src="../assets/login_cover_bgrm.png"
-                        class="m-auto -b-full hidden m:w-5/6"
-                    />
                 </div>
             </div>
         </div>
@@ -136,7 +130,7 @@
                         <input
                             type="text"
                             v-model="otp.code"
-                            class="w-full bg-gray -2xl p-2 border-y-2 outline-none text-center"
+                            class="w-full bg-gray p-2 border-b-2 outline-none text-center"
                         />
                     </div>
                 </div>
@@ -183,6 +177,7 @@ export default {
             user: {
                 id: null,
                 pw: null,
+                role: null,
             },
             forget_password_id: null,
             otp: {
@@ -239,13 +234,16 @@ export default {
                             });
                             this.has_error = true;
                         }
+
+                        this.user.role = response.data.message.role
+                            ? response.data.message.role
+                            : null;
                     });
             }
             console.log("finish auth");
 
             if (this.is_auth && !this.has_error) {
                 this.show = true;
-
                 this.modal_title = "LOGIN";
                 await this.handleOTP("send");
                 this.is_loading = false;
@@ -341,6 +339,7 @@ export default {
                 .then((response) => {
                     response_data = response.data;
                 });
+            console.log(response_data);
             return response_data;
         },
         async handleOTP(mode) {
@@ -363,9 +362,14 @@ export default {
                     console.log("Two-Factor Auth:", msg);
                     console.log(msg.message === "VER_SUCCESS");
                     if (msg.message.split("|")[0] === "VER_SUCCESS") {
-                        this.leadTo("Patient", {
-                            passcode: msg.message.split("|")[1],
-                        });
+                        if (this.user.role === "patient")
+                            this.leadTo("Patient", {
+                                passcode: msg.message.split("|")[1],
+                            });
+                        else if (this.user.role === "medicalpersonnel")
+                            this.leadTo("MedicalPersonnel", {
+                                passcode: msg.message.split("|")[1],
+                            });
                     }
                 } else {
                     console.log("Forget Password: ", this.forget_password_id);
@@ -403,7 +407,13 @@ export default {
                     this.$router.push({
                         path: `/dashboard/patient/${this.user.id}`,
                     });
-
+                    break;
+                case "MedicalPersonnel":
+                    console.log(`Redirect to ${targetPage} Dashboard.`);
+                    sessionStorage.setItem("passcode", params.passcode);
+                    this.$router.push({
+                        path: `/dashboard/medical-personnel/${this.user.id}`,
+                    });
                     break;
             }
         },

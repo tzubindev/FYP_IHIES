@@ -145,6 +145,8 @@
                 <div class="w-full text-right italic text-[12px] pr-2 mt-2">
                     Powered by AI model
                 </div>
+
+                <!-- COMMENT: add demonstration here if possible -->
             </div>
 
             <!-- Reco list -->

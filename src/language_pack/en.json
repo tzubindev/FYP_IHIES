@@ -30,5 +30,13 @@
     "bpm": "BPM",
     "tpm": "Times/Min",
     "view_your_medical_record": "View Your Medical Record",
-    "medical_record": "Medical Record"
+    "medical_record": "Medical Record",
+    "schedule_management": "Schedule Management",
+    "patient_transfer": "Patient Transfer",
+    "incident_report_channel": "Incident Report Channel",
+    "patient_medical_record": "Patient Medical Record",
+    "access_management": "Access Management",
+    "medical_personnel": "Medical Personnel",
+    "": "",
+    "": ""
 }

@@ -18,6 +18,7 @@ import PatientDashboard from "./pages/PatientDashboard.vue";
 import MedicalRecord from "./pages/MedicalRecord.vue";
 import Schedule from "./pages/Schedule.vue";
 import Inquiry from "./pages/Inquiry.vue";
+import MedicalPersonnel from "./pages/MP_Dashboard.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -55,6 +56,10 @@ const router = createRouter({
         { path: "/medical-record/:id", component: MedicalRecord },
         { path: "/schedule/:id", component: Schedule },
         { path: "/inquiry/:id", component: Inquiry },
+        {
+            path: "/dashboard/medical-personnel/:id",
+            component: MedicalPersonnel,
+        },
     ],
 });
 

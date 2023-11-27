@@ -26,6 +26,7 @@
             <!-- Sidebar -->
             <Sidebar
                 :username="this.user.name"
+                medicalPersonnel
                 @toggled="updateSidebarExpansion"
             ></Sidebar>
 
@@ -55,14 +56,14 @@
                     </div>
 
                     <!-- Medium size -->
-                    <div class="block lg:hidden">
+                    <div class="hidden md:block lg:hidden">
                         <!-- Profile -->
                         <div
                             class="py-4 w-full flex h-fit bg-gray text-white items-center"
                         >
                             <!-- Picture -->
                             <div
-                                class="h-full w-1/3 flex justify-center items-center"
+                                class="h-full w-1/4 flex justify-center items-center"
                             >
                                 <img
                                     src="../sample_assets/profilePic_tb.jpg"
@@ -71,104 +72,27 @@
                             </div>
 
                             <!-- Name and Access -->
-                            <div class="h-full w-3/12 flex items-center pr-4">
-                                <div>
+                            <div
+                                class="h-full w-3/4 flex flex-wrap items-start pr-4"
+                            >
+                                <div
+                                    class="flex w-full items-start justify-between"
+                                >
                                     <div class="font-extrabold text-xl">
-                                        {{ $t("user") }}
-                                    </div>
-                                    <div class="text-md">
-                                        {{ this.user.name }}
+                                        {{ $t("medical_personnel") }}
                                     </div>
                                     <div
-                                        class="p-3 py-1.5 mt-4 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                        class="p-3 py-1.5 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
                                     >
                                         {{ $t("view_profile") }}
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Profile details -->
-                            <div
-                                class="h-full w-5/12 p-4 pl-2 gap-1 grid grid-cols-2 text-[12px] border-l border-white/20"
-                            >
-                                <!-- Sex -->
-                                <div class="flex flex-wrap">
-                                    <!-- label -->
-                                    <div class="font-light w-fit">
-                                        {{ $t("sex") }}
-                                    </div>
-                                    <!-- data -->
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("sex") }}
-                                </div> -->
-                                    <Barloader />
+                                <div class="text-md">
+                                    {{ this.user.name }}
                                 </div>
-                                <!-- Age -->
-                                <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
-                                        {{ $t("age") }}
-                                    </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("age") }}
-                                </div> -->
-                                    <Barloader />
-                                </div>
-                                <div>
-                                    <!-- blood -->
-                                    <div class="flex flex-wrap">
-                                        <div class="font-light w-fit">
-                                            {{ $t("blood") }}
-                                        </div>
-                                        <!-- <div
-                                        class="w-full text-center py-0.5  font-extrabold"
-                                    >
-                                        {{ $t("blood") }}
-                                    </div> -->
-                                        <Barloader />
-                                    </div>
-                                </div>
-
-                                <!-- height -->
-                                <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
-                                        {{ $t("height") }}
-                                    </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("height") }}
-                                </div> -->
-                                    <Barloader />
-                                </div>
-
-                                <!-- weight -->
-                                <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
-                                        {{ $t("weight") }}
-                                    </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("weight") }}
-                                </div> -->
-                                    <Barloader />
-                                </div>
-
-                                <!--last logged in  -->
-                                <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
-                                        {{ $t("last_logged_in") }}
-                                    </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("last_logged_in") }}
-                                </div> -->
-                                    <Barloader />
+                                <div class="text-md">
+                                    {{ this.user.id }}
                                 </div>
                             </div>
                         </div>
@@ -227,146 +151,6 @@
                                             <Line
                                                 :data="data_sys"
                                                 :options="options_sys"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <!-- DIA -->
-                                    <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
-                                    >
-                                        <div class="h-1/2 flex">
-                                            <div
-                                                class="w-fit flex h-fit items-center"
-                                            >
-                                                <p class="text-sm">
-                                                    {{ $t("dia") }}
-                                                </p>
-
-                                                <img
-                                                    src="../assets/heart.svg"
-                                                    class="h-5 w-5 mx-1.5"
-                                                />
-                                            </div>
-                                            <div
-                                                class="flex grow justify-center items-center"
-                                            >
-                                                <div
-                                                    class="h-fit text-[68px] mr-1.5"
-                                                >
-                                                    {{
-                                                        data_dia.datasets[0]
-                                                            .data[
-                                                            data_dia.datasets[0]
-                                                                .data.length - 1
-                                                        ]
-                                                    }}
-                                                </div>
-                                                <div
-                                                    class="text-gray/60 italic"
-                                                >
-                                                    {{ $t("mmHg") }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="h-1/2">
-                                            <Line
-                                                :data="data_dia"
-                                                :options="options_dia"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <!-- Pulse -->
-                                    <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
-                                    >
-                                        <div class="h-1/2 flex">
-                                            <div
-                                                class="w-fit flex h-fit items-center"
-                                            >
-                                                <p class="text-sm">
-                                                    {{ $t("pulse") }}
-                                                </p>
-
-                                                <img
-                                                    src="../assets/pulse.svg"
-                                                    class="h-5 w-5 mx-1.5"
-                                                />
-                                            </div>
-                                            <div
-                                                class="flex grow justify-center items-center"
-                                            >
-                                                <div
-                                                    class="h-fit text-[68px] mr-1.5"
-                                                >
-                                                    {{
-                                                        data_pulse.datasets[0]
-                                                            .data[
-                                                            data_pulse
-                                                                .datasets[0]
-                                                                .data.length - 1
-                                                        ]
-                                                    }}
-                                                </div>
-                                                <div
-                                                    class="text-gray/60 italic"
-                                                >
-                                                    {{ $t("bpm") }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="h-1/2">
-                                            <Line
-                                                :data="data_pulse"
-                                                :options="options_pulse"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <!-- Breath -->
-                                    <div
-                                        class="cursor-pointer text-gray border-2 border-gray/40 p-4 pt-2 pb-0 w-full h-44"
-                                    >
-                                        <div class="h-1/2 flex">
-                                            <div
-                                                class="w-fit flex h-fit items-center"
-                                            >
-                                                <p class="text-sm">
-                                                    {{ $t("breath") }}
-                                                </p>
-
-                                                <img
-                                                    src="../assets/breath.svg"
-                                                    class="h-5 w-5 mx-1.5"
-                                                />
-                                            </div>
-                                            <div
-                                                class="flex grow justify-center items-center"
-                                            >
-                                                <div
-                                                    class="h-fit text-[68px] mr-1.5"
-                                                >
-                                                    {{
-                                                        data_breath.datasets[0]
-                                                            .data[
-                                                            data_breath
-                                                                .datasets[0]
-                                                                .data.length - 1
-                                                        ]
-                                                    }}
-                                                </div>
-                                                <div
-                                                    class="text-gray/60 italic"
-                                                >
-                                                    {{ $t("tpm") }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="h-1/2">
-                                            <Line
-                                                :data="data_breath"
-                                                :options="options_breath"
                                             />
                                         </div>
                                     </div>
@@ -932,6 +716,9 @@ export default {
         console.log("MOUNTED");
 
         this.user.passcode = await sessionStorage.getItem("passcode");
+        // Remove the item from sessionStorage
+        // UNCOMMENT
+        // sessionStorage.removeItem("passcode");
 
         if (!this.user.passcode) {
             this.is_access_denied = true;
