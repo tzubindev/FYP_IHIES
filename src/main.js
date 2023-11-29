@@ -19,6 +19,9 @@ import MedicalRecord from "./pages/MedicalRecord.vue";
 import Schedule from "./pages/Schedule.vue";
 import Inquiry from "./pages/Inquiry.vue";
 import MedicalPersonnel from "./pages/MP_Dashboard.vue";
+import ScheduleManagement from "./pages/ScheduleManagement.vue";
+import PatientTransfer from "./pages/PatientTransfer.vue";
+import IncidentReportChannel from "./pages/IncidentReportChannel.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -58,8 +61,18 @@ const router = createRouter({
         { path: "/schedule/:id", component: Schedule },
         { path: "/inquiry/:id", component: Inquiry },
         {
-            path: "/dashboard/medical-personnel/:id",
+            path: "/dashboard/mp/:id",
             component: MedicalPersonnel,
+        },
+        { path: "/schedule-management/:id", component: ScheduleManagement },
+        { path: "/patient-transfer/:id", component: PatientTransfer },
+        {
+            path: "/incident-report-channel/:id",
+            component: IncidentReportChannel,
+        },
+        {
+            path: "/irc/:id",
+            component: IncidentReportChannel,
         },
     ],
 });
