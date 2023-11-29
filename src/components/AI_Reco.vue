@@ -113,13 +113,13 @@
                     <!-- Symptoms list-->
                     <Transition>
                         <div
-                            class="overflow-y-auto overflow-x-hidden flex flex-wrap gap-1.5 p-2 w-full bg-gray/20 max-h-[200px] -b-lg backdrop-blur-lg"
+                            class="overflow-y-auto overflow-x-hidden grid grid-cols-1 md:grid-cols-2 gap-1.5 p-2 w-full bg-gray/20 max-h-[200px] -b-lg backdrop-blur-lg"
                             v-if="symptoms.length"
                         >
                             <div
                                 v-for="(s, index) in symptoms"
                                 :key="s.id"
-                                class="cursor-pointer transition hover:bg-red px-3 text-sm bg-red/80 w-fit truncate"
+                                class="cursor-pointer transition hover:bg-red px-3 py-0.5 text-center text-sm bg-red/80 w-full truncate"
                                 @click="symptoms.splice(index, 1)"
                             >
                                 {{ s }}

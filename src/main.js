@@ -35,6 +35,7 @@ import AI_Reco from "./components/AI_Reco.vue";
 import AI_Loader from "./components/AI_Loader.vue";
 import DoughnutChart from "./components/DoughnutChart.vue";
 import AnimatedModal from "./components/AnimatedModal.vue";
+import Notification from "./components/Notification.vue";
 
 // Handling http req
 import axios from "axios";
@@ -97,6 +98,7 @@ app.component("AI_Reco", AI_Reco);
 app.component("AI_Loader", AI_Loader);
 app.component("DoughnutChart", DoughnutChart);
 app.component("AnimatedModal", AnimatedModal);
+app.component("Notification", Notification);
 
 // Apply dayjs
 app.config.globalProperties.$dayjs = dayjs;

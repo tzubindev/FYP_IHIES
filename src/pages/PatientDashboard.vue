@@ -58,43 +58,43 @@
                     <div class="block lg:hidden">
                         <!-- Profile -->
                         <div
-                            class="py-4 w-full flex h-fit bg-gray text-white items-center"
+                            class="py-4 w-full flex flex-wrap h-fit bg-gray text-white items-center"
                         >
                             <!-- Picture -->
                             <div
-                                class="h-full w-1/3 flex justify-center items-center"
+                                class="h-full w-1/2 justify-center items-center"
                             >
                                 <img
                                     src="../sample_assets/profilePic_tb.jpg"
-                                    class="w-[150px] h-[150px] -full"
+                                    class="w-[120px] h-[120px] mx-auto"
                                 />
                             </div>
 
                             <!-- Name and Access -->
-                            <div class="h-full w-3/12 flex items-center pr-4">
-                                <div>
-                                    <div class="font-extrabold text-xl">
-                                        {{ $t("user") }}
-                                    </div>
-                                    <div class="text-md">
-                                        {{ this.user.name }}
-                                    </div>
-                                    <div
-                                        class="p-3 py-1.5 mt-4 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
-                                    >
-                                        {{ $t("view_profile") }}
-                                    </div>
+                            <div
+                                class="h-full w-1/2 flex flex-wrap items-center justify-end pr-4"
+                            >
+                                <div class="font-extrabold text-xl w-full">
+                                    {{ $t("user") }}
+                                </div>
+                                <div class="text-md w-full">
+                                    {{ this.user.name }}
+                                </div>
+                                <div
+                                    class="p-2 py-1.5 mt-4 text-xs bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                >
+                                    {{ $t("view_profile") }}
                                 </div>
                             </div>
 
                             <!-- Profile details -->
                             <div
-                                class="h-full w-5/12 p-4 pl-2 gap-1 grid grid-cols-2 text-[12px] border-l border-white/20"
+                                class="h-full w-full p-4 gap-1 grid grid-cols-2 text-[12px] border-l border-white/20"
                             >
                                 <!-- Sex -->
                                 <div class="flex flex-wrap">
                                     <!-- label -->
-                                    <div class="font-light w-fit">
+                                    <div class="font-light w-fit md:w-full">
                                         {{ $t("sex") }}
                                     </div>
                                     <!-- data -->
@@ -107,7 +107,7 @@
                                 </div>
                                 <!-- Age -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
+                                    <div class="font-light w-fit md:w-full">
                                         {{ $t("age") }}
                                     </div>
                                     <!-- <div
@@ -120,7 +120,7 @@
                                 <div>
                                     <!-- blood -->
                                     <div class="flex flex-wrap">
-                                        <div class="font-light w-fit">
+                                        <div class="font-light w-fit md:w-full">
                                             {{ $t("blood") }}
                                         </div>
                                         <!-- <div
@@ -134,7 +134,7 @@
 
                                 <!-- height -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
+                                    <div class="font-light w-fit md:w-full">
                                         {{ $t("height") }}
                                     </div>
                                     <!-- <div
@@ -147,7 +147,7 @@
 
                                 <!-- weight -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
+                                    <div class="font-light w-fit md:w-full">
                                         {{ $t("weight") }}
                                     </div>
                                     <!-- <div
@@ -160,7 +160,7 @@
 
                                 <!--last logged in  -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit">
+                                    <div class="font-light w-fit md:w-full">
                                         {{ $t("last_logged_in") }}
                                     </div>
                                     <!-- <div
@@ -174,7 +174,7 @@
                         </div>
 
                         <!-- Statistics -->
-                        <div class="w-full h-full max-h-[500px] py-3">
+                        <div class="w-full h-full py-3">
                             <div
                                 class="w-full h-full border-y border-gray/20 pb-3 text-[14px]"
                             >
@@ -183,7 +183,7 @@
                                 </div>
 
                                 <div
-                                    class="w-full h-5/6 grid grid-cols-2 gap-6"
+                                    class="w-full h-5/6 grid grid-cols-1 gap-6"
                                 >
                                     <!-- SYS -->
                                     <div
@@ -376,7 +376,9 @@
                     </div>
 
                     <!-- large size screen -->
-                    <div class="hidden lg:flex justify-center flex-wrap">
+                    <div
+                        class="hidden lg:flex justify-center flex-wrap lg:pb-4"
+                    >
                         <div class="lg:grid grid-cols-2 gap-4 max-w-[1140px]">
                             <!-- Profile -->
                             <div
@@ -749,7 +751,7 @@
                     <!-- Path to view medical record -->
                     <div class="w-full h-32 flex justify-center">
                         <div
-                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] my-4 shadow-gray/40 shadow-xl overflow-hidden relative"
+                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] mb-4 shadow-gray/40 shadow-xl overflow-hidden relative"
                         >
                             <img
                                 src="../assets/medical_record.jpg"

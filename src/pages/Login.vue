@@ -9,12 +9,12 @@
                 HEALTHIE
             </h1>
             <!-- small Upper -->
-            <div class="md:hidden w-full h-1/3 flex justify-center items-end">
+            <div class="sm:hidden w-full h-1/3 flex justify-center items-end">
                 <img src="../assets/login_cover_mobile.svg" class="h-full" />
             </div>
 
             <!-- Mid or above upper -->
-            <div class="hidden md:flex w-1/2 h-full justify-center">
+            <div class="hidden sm:flex w-1/2 h-full justify-center">
                 <div class="w-full overflow-hidden relative">
                     <img
                         src="../assets/medical_record.jpg"
@@ -25,11 +25,9 @@
                 </div>
             </div>
 
-            <!-- Smaller Upper got problems here -->
-
             <!-- Lower -->
             <div
-                class="md:w-1/2 md:h-full flex-wrap bg-gray lg:p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
+                class="sm:w-1/2 sm:h-full flex-wrap bg-gray lg:p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
             >
                 <h2
                     class="md:text-center md:mb-10 w-full mb-3 text-center text-2xl font-bold leading-9 tracking-tight text-white"
@@ -39,7 +37,7 @@
 
                 <!-- Main panel -->
                 <div
-                    class="w-full text-center max-w-[600px] lg:max-w-full px-4 lg:px-10 xl:px-24 flex flex-wrap justify-center"
+                    class="w-full text-center :max-w-full px-4 lg:px-10 xl:px-24 flex flex-wrap justify-center"
                 >
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form

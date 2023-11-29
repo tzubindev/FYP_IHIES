@@ -56,43 +56,58 @@
                     </div>
 
                     <!-- Medium size -->
-                    <div class="hidden md:block lg:hidden">
+                    <div class="block md:hidden">
                         <!-- Profile -->
                         <div
-                            class="py-4 w-full flex h-fit bg-gray text-white items-center"
+                            class="py-4 w-full grid grid-cols-2 h-fit bg-gray text-white items-center"
                         >
                             <!-- Picture -->
                             <div
-                                class="h-full w-1/4 flex justify-center items-center"
+                                class="h-full w-full flex justify-center items-center"
                             >
                                 <img
                                     src="../sample_assets/profilePic_tb.jpg"
-                                    class="w-[150px] h-[150px] -full"
+                                    class="w-[150px] h-[150px]"
                                 />
                             </div>
 
                             <!-- Name and Access -->
                             <div
-                                class="h-full w-3/4 flex flex-wrap items-start pr-4"
+                                class="h-full w-full flex flex-wrap items-start pr-4"
                             >
                                 <div
-                                    class="flex w-full items-start justify-between"
+                                    class="flex w-full items-center justify-between"
                                 >
-                                    <div class="font-extrabold text-xl">
+                                    <div class="font-extrabold text-xs h-full">
                                         {{ $t("medical_personnel") }}
                                     </div>
                                     <div
-                                        class="p-3 py-1.5 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
+                                        class="p-2 py-1 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
                                     >
                                         {{ $t("view_profile") }}
                                     </div>
                                 </div>
 
-                                <div class="text-md">
-                                    {{ this.user.name }}
-                                </div>
-                                <div class="text-md">
-                                    {{ this.user.id }}
+                                <!-- Identity -->
+                                <div
+                                    class="flex flex-wrap h-full items-start flex-col w-full pt-4"
+                                >
+                                    <div
+                                        class="text-xs bg-red p-2 py-0.5 text-center"
+                                    >
+                                        {{ $t("name") }}
+                                    </div>
+                                    <div class="text-xs mt-1 w-full">
+                                        {{ this.user.name }}
+                                    </div>
+                                    <div
+                                        class="text-xs bg-red p-2 py-0.5 text-center mt-2"
+                                    >
+                                        {{ $t("id") }}
+                                    </div>
+                                    <div class="text-xs mt-1 w-full">
+                                        {{ this.user.id }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -111,11 +126,13 @@
                                 >
                                     <!-- SYS -->
                                     <div
-                                        class="cursor-pointer bg-gray text-white p-4 pt-2 pb-0 w-full h-44"
+                                        class="cursor-pointer bg-gray text-white p-4 py-2 w-full shadow shadow-gray"
                                     >
-                                        <div class="h-1/2 flex">
+                                        <div
+                                            class="h-full flex flex-wrap flex-col justify-start"
+                                        >
                                             <div
-                                                class="w-fit flex h-fit items-center"
+                                                class="w-full flex h-fit items-center"
                                             >
                                                 <p class="text-sm">
                                                     {{ $t("sys") }}
@@ -127,10 +144,10 @@
                                                 />
                                             </div>
                                             <div
-                                                class="flex grow justify-center items-center"
+                                                class="flex flex-wrap justify-center items-center"
                                             >
                                                 <div
-                                                    class="h-fit text-[68px] mr-1.5"
+                                                    class="h-fit w-full text-[52px] text-center"
                                                 >
                                                     {{
                                                         data_sys.datasets[0]
@@ -141,17 +158,11 @@
                                                     }}
                                                 </div>
                                                 <div
-                                                    class="text-white/60 italic"
+                                                    class="text-white/60 italic w-full text-right"
                                                 >
                                                     {{ $t("mmHg") }}
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="h-1/2">
-                                            <Line
-                                                :data="data_sys"
-                                                :options="options_sys"
-                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -544,9 +555,9 @@
                                 class="absolute inset-0 bg-gray opacity-70"
                             ></div>
                             <div
-                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold text-3xl"
+                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-3xl text-2xl"
                             >
-                                {{ $t("view_your_medical_record") }}
+                                {{ $t("view_patient_medical_record") }}
                             </div>
                         </div>
                     </div>

@@ -37,7 +37,7 @@
 
         <transition name="bounce">
             <div
-                class="absolute right-11 z-10 mt-3 w-40 origin-top-right bg-white shadow-sm shadow-gray outline-none"
+                class="absolute right-14 z-10 mt-3 w-40 origin-top-right bg-white shadow-sm shadow-gray outline-none"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="menu-button"

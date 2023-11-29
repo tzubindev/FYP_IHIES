@@ -19,18 +19,26 @@
             <img
                 src="../assets/notification_closed.svg"
                 class="h-5 w-5 cursor-pointer"
-                v-if="is_notification_closed"
-                @click="is_notification_closed = !is_notification_closed"
+                v-if="!is_notification_shown"
+                @click="updateNotificationDropdown"
             />
+
             <img
                 src="../assets/notification_opened.svg"
                 class="h-5 w-5 cursor-pointer"
-                v-if="!is_notification_closed"
-                @click="is_notification_closed = !is_notification_closed"
+                v-if="is_notification_shown"
+                @click="updateNotificationDropdown"
             />
         </div>
     </div>
+    <Notification
+        :items="languages"
+        :show="is_notification_shown"
+        @selectedItem="updateSelectedNotification"
+    ></Notification>
 </template>
+
+<style></style>
 
 <script>
 export default {
@@ -38,12 +46,17 @@ export default {
         return {
             languages: ["en", "zh_tw", "my", "jp", "kr"],
             is_language_shown: false,
-            is_notification_closed: true,
+            is_notification_shown: false,
         };
     },
     methods: {
         updateLanguageDropdown() {
             this.is_language_shown = !this.is_language_shown;
+            this.is_notification_shown = false;
+        },
+        updateNotificationDropdown() {
+            this.is_notification_shown = !this.is_notification_shown;
+            this.is_language_shown = false;
         },
         updateSelectedLanguage(lang) {
             this.$i18n.locale = this.languages.find((l) => l === lang);
