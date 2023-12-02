@@ -150,6 +150,7 @@ export default {
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
         },
+        // Connect to AI model using API here
     },
 };
 </script>

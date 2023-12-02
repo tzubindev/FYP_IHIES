@@ -58,12 +58,13 @@
                             class="w-full grid grid-cols-1 lg:grid-cols-3 lg:max-w-[950px]"
                         >
                             <div class="col-span-2 text-[14px] pr-4">
+                                <!-- Summary -->
                                 <div class="w-full grid grid-cols-3 gap-2">
                                     <div
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-mintage to-darkgreen text-white"
                                     >
                                         <div
-                                            class="bg-white/40 w-fit p-1 rounded backdrop-blur-xl"
+                                            class="bg-white/40 w-fit p-1 backdrop-blur-xl"
                                         >
                                             <img
                                                 src="../assets/bed.svg"
@@ -78,7 +79,7 @@
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-red to-darkred text-white"
                                     >
                                         <div
-                                            class="bg-white/40 w-fit p-1 rounded backdrop-blur-xl"
+                                            class="bg-white/40 w-fit p-1 backdrop-blur-xl"
                                         >
                                             <img
                                                 src="../assets/transfer.svg"
@@ -93,7 +94,7 @@
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-blue to-cool text-white"
                                     >
                                         <div
-                                            class="bg-white/40 w-fit p-1 rounded backdrop-blur-xl"
+                                            class="bg-white/40 w-fit p-1 backdrop-blur-xl"
                                         >
                                             <img
                                                 src="../assets/completed.svg"

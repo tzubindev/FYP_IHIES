@@ -22,6 +22,7 @@ import MedicalPersonnel from "./pages/MP_Dashboard.vue";
 import ScheduleManagement from "./pages/ScheduleManagement.vue";
 import PatientTransfer from "./pages/PatientTransfer.vue";
 import IncidentReportChannel from "./pages/IncidentReportChannel.vue";
+import Main from "./pages/Cover.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -53,7 +54,7 @@ import zh_tw from "./language_pack/zh_tw.json";
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: "/", component: Login },
+        { path: "/", component: Main },
         { path: "/login", component: Login },
         { path: "/register", component: Register },
         { path: "/dashboard/patient/:id", component: PatientDashboard },
