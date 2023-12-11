@@ -337,7 +337,7 @@
             class="bg-gray flex justify-center p-2 bottom-0 fixed"
             :class="{
                 'w-[180px] lg:w-[240px] pl-0': is_expanding,
-                'w-[60px] lg:w-[80px] pl-1.5': !is_expanding,
+                'w-[60px] lg:w-[80px] lg:pl-1.5 pl-3': !is_expanding,
             }"
         >
             <img

@@ -48,106 +48,96 @@
                         >
                             <p>{{ $t("healthie") }}</p>
                             <p class="mx-1.5">&gt;</p>
-                            <p>{{ $t("incident_report_channel") }}</p>
+                            <p>{{ $t("patient_medical_record") }}</p>
                         </div>
                     </div>
 
-                    <!-- Calendar and events -->
                     <div class="flex justify-center w-full">
-                        <div class="w-full lg:max-w-[950px]">
-                            <!-- Title + Add incident Button -->
+                        <div
+                            class="w-full lg:max-w-[950px] p-2 flex flex-wrap gap-1"
+                        >
+                            <!-- Add file Area Drag and drop-->
+
+                            <!-- Choose Patient -->
+                            <!-- Title -->
+                            <div class="text-[16px]">
+                                {{ $t("patient") }}
+                            </div>
+
+                            <!-- Patient Listing -->
                             <div
-                                class="w-full flex justify-between items-center"
+                                class="resize-y overflow-y-auto min-h-[60px] h-24 bg-gray/10 w-full shadow shadow-gray/50"
                             >
-                                <div>My Incident</div>
+                                <!-- Search bar -->
                                 <div
-                                    class="cursor-pointer bg-red hover:bg-darkred transition text-white p-2 py-1 text-[14px] flex items-center"
+                                    class="w-full p-2 flex justify-end gap-2 items-center h-[50px]"
                                 >
-                                    <img
-                                        src="../assets/add.svg"
-                                        class="w-4 h-4 mr-1"
+                                    <input
+                                        type="text"
+                                        class="h-full items-center flex px-3 p-0.5 text-[16px] focus:outline-none text-gray/70 shadow shadow-gray/50"
+                                        placeholder="Patient ID"
                                     />
-                                    Add Incident
-                                </div>
-                            </div>
 
-                            <!-- Search bar -->
-                            <div class="mt-1 flex items-center p-1 px-0">
-                                <input
-                                    type="text"
-                                    class="w-full focus:outline-none p-1 px-2 text-xs bg-gray text-white"
-                                />
-                                <img
-                                    src="../assets/search.svg"
-                                    class="cursor-pointer w-6 h-6 p-1 bg-gray/80 backdrop-blur transition hover:bg-gray/90"
-                                />
-                            </div>
-
-                            <!-- Incidents -->
-                            <div
-                                class="border-t border-gray/30 mt-2 pt-2 text-[14px]"
-                            >
-                                <!-- Inc Title -->
-                                <div class="grid grid-cols-5">
                                     <div
-                                        class="bg-gray py-1 text-white text-center"
+                                        class="cursor-pointer hover:bg-gray/60 transition h-full items-center flex px-3 p-0.5 text-white text-[16px] bg-gray shadow shadow-gray/50"
                                     >
-                                        <div class="border-r border-white/30">
-                                            ID
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
-                                        <div class="border-r border-white/30">
-                                            Type
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
-                                        <div class="border-r border-white/30">
-                                            Description
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
-                                        <div class="border-r border-white/30">
-                                            Created DateTime
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
-                                        <div class="">Status</div>
+                                        {{ $t("search") }}
                                     </div>
                                 </div>
 
-                                <!-- Inc content blocks -->
-                                <div
-                                    class="hover:bg-gray/10 cursor-pointer transition grid grid-cols-5 slide-in-left-to-right py-2 border-b border-x border-gray/30"
-                                    v-for="(i, index) in incident"
-                                    :key="index"
-                                    :style="{
-                                        'animation-delay': `${
-                                            0.1 + index * 0.2
-                                        }s`,
-                                    }"
-                                >
-                                    <div class="text-center">{{ i.id }}</div>
-                                    <div class="text-center">{{ i.type }}</div>
-                                    <div class="text-center">
-                                        {{ i.description }}
+                                <!-- patient row -->
+                                <div class="w-full"></div>
+                            </div>
+
+                            <!-- Choose Document Type refer to patient side  -->
+                            <div class="mt-4 grid grid-cols-2 gap-2 w-full">
+                                <div class="flex flex-wrap gap-1">
+                                    <!-- Title -->
+                                    <div class="text-[16px]">
+                                        {{ $t("document_type") }}
                                     </div>
-                                    <div class="text-center">
-                                        {{ i.created_datetime }}
-                                    </div>
-                                    <div class="text-center">
-                                        {{ i.status }}
+
+                                    <!-- Nr * 2c -->
+                                    <div class="grid grid-cols-2 gap-2 w-full">
+                                        <div
+                                            class="w-full flex justify-between items-center hover:bg-gray/30 cursor-pointer transition bg-gray/10 shadow shadow-gray/50 pl-1.5 pr-2 p-1 text-[12px]"
+                                            v-for="(t, index) in record_type"
+                                            :key="index"
+                                        >
+                                            <img
+                                                src="../assets/document.svg"
+                                                class="w-5 h-5"
+                                            />
+                                            <!-- At least 2 unit gap -->
+                                            <div class="w-2"></div>
+                                            <div
+                                                class="truncate text-gray h-full flex items-center"
+                                            >
+                                                {{ t }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div class="flex flex-wrap gap-1">
+                                    <!-- Title -->
+                                    <div class="text-[16px] h-fit">
+                                        {{ $t("document_list") }}
+                                    </div>
+
+                                    <div class="bg-gray/10 w-full h-fit"></div>
+                                </div>
                             </div>
+
+                            <!-- List Documents -->
+
+                            <div class="text-[16px] w-full mt-4">
+                                {{ $t("document_viewer") }}
+                            </div>
+                            <DocumentViewer
+                                class="flex justify-center flex-wrap w-full max-h-[500px] h-full overflow-hidden bg-gray/10 p-3 pr-2 pt-8"
+                                source="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
+                            ></DocumentViewer>
                         </div>
                     </div>
                 </div>
@@ -171,28 +161,26 @@ export default {
             is_sidebar_expanding: false,
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
-            records: [],
-            incident: [
+            record_type: ["doctor_clinical_notes", "discussion_recording"],
+            record: [
                 {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "Test Date",
-                    status: "accepted",
-                },
-                {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "",
-                    status: "accepted",
-                },
-                {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "",
-                    status: "accepted",
+                    doctor_clinical_notes: [
+                        {
+                            timestamp: "2023-11-14",
+                            note: "Patient presented with flu-like symptoms. Prescribed antibiotics.",
+                        },
+                        {
+                            timestamp: "2023-11-16",
+                            note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
+                        },
+                    ],
+                    discussion_recording: [
+                        {
+                            content: "Discussion content here",
+                            witness: "Witness name",
+                            timestamp: "2023-11-14",
+                        },
+                    ],
                 },
             ],
         };
@@ -264,6 +252,7 @@ export default {
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
         },
+        updateSelectedNotification() {},
     },
 };
 </script>

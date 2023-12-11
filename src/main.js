@@ -23,6 +23,7 @@ import ScheduleManagement from "./pages/ScheduleManagement.vue";
 import PatientTransfer from "./pages/PatientTransfer.vue";
 import IncidentReportChannel from "./pages/IncidentReportChannel.vue";
 import Main from "./pages/Cover.vue";
+import PatientMedicalRecord from "./pages/PatientMedicalRecord.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -40,6 +41,7 @@ import AI_Loader from "./components/AI_Loader.vue";
 import DoughnutChart from "./components/DoughnutChart.vue";
 import AnimatedModal from "./components/AnimatedModal.vue";
 import Notification from "./components/Notification.vue";
+import DocumentViewer from "./components/DocumentViewer.vue";
 
 // Handling http req
 import axios from "axios";
@@ -65,6 +67,10 @@ const router = createRouter({
             path: "/dashboard/mp/:id",
             component: MedicalPersonnel,
         },
+        {
+            path: "/dashboard/medical-personnel/:id",
+            component: MedicalPersonnel,
+        },
         { path: "/schedule-management/:id", component: ScheduleManagement },
         { path: "/patient-transfer/:id", component: PatientTransfer },
         {
@@ -74,6 +80,14 @@ const router = createRouter({
         {
             path: "/irc/:id",
             component: IncidentReportChannel,
+        },
+        {
+            path: "/patient-medical-record/:id",
+            component: PatientMedicalRecord,
+        },
+        {
+            path: "/pmr/:id",
+            component: PatientMedicalRecord,
         },
     ],
 });
@@ -113,6 +127,7 @@ app.component("AI_Loader", AI_Loader);
 app.component("DoughnutChart", DoughnutChart);
 app.component("AnimatedModal", AnimatedModal);
 app.component("Notification", Notification);
+app.component("DocumentViewer", DocumentViewer);
 
 // Apply dayjs
 app.config.globalProperties.$dayjs = dayjs;

@@ -21,8 +21,10 @@
     "vue-chartjs": "^5.2.0",
     "vue-final-modal": "^4.4.5",
     "vue-i18n": "^9.6.5",
+    "vue-pdf-embed": "^1.2.1",
     "vue-router": "^4.2.5",
-    "vue-sweetalert2": "^5.0.5"
+    "vue-sweetalert2": "^5.0.5",
+    "vue3-pdf-app": "^1.0.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
