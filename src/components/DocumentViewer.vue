@@ -24,7 +24,7 @@
             :width="current_width"
             :annotation-layer="true"
             :scale="current_scale"
-            class="overflow-y-auto max-h-[95%]"
+            class="overflow-y-auto max-h-full w-full p-2"
         />
     </div>
 </template>
@@ -52,20 +52,16 @@ export default {
     },
     methods: {
         zoomIn() {
-            this.$nextTick(() => {
-                if (this.$refs.pdfViewer && this.current_scale < 1.5) {
-                    this.current_scale += 0.1;
-                    this.changeSize();
-                }
-            });
+            if (this.$refs.pdfViewer && this.current_scale < 1.5) {
+                this.current_scale += 0.1;
+                this.changeSize();
+            }
         },
         zoomOut() {
-            this.$nextTick(() => {
-                if (this.$refs.pdfViewer && this.current_scale > 0.6) {
-                    this.current_scale -= 0.1;
-                    this.changeSize();
-                }
-            });
+            if (this.$refs.pdfViewer && this.current_scale > 0.6) {
+                this.current_scale -= 0.1;
+                this.changeSize();
+            }
         },
         changeSize() {
             this.current_height = this.ORIGINAL.HEIGHT * this.current_scale;

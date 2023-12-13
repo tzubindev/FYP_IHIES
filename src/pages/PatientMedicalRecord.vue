@@ -135,7 +135,7 @@
                                 {{ $t("document_viewer") }}
                             </div>
                             <DocumentViewer
-                                class="flex justify-center flex-wrap w-full max-h-[500px] h-full overflow-hidden bg-gray/10 p-3 pr-2 pt-8"
+                                class="flex justify-center flex-wrap w-full resize-y bg-gray/10 h-[500px] min-h-[500px] max-h-[800px] overflow-hidden p-2 pt-10"
                                 source="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
                             ></DocumentViewer>
                         </div>
