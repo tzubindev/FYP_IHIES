@@ -24,6 +24,7 @@ import PatientTransfer from "./pages/PatientTransfer.vue";
 import IncidentReportChannel from "./pages/IncidentReportChannel.vue";
 import Main from "./pages/Cover.vue";
 import PatientMedicalRecord from "./pages/PatientMedicalRecord.vue";
+import AccessManagement from "./pages/AccessManagement.vue";
 
 // Components
 import Button from "./components/Button.vue";
@@ -72,7 +73,9 @@ const router = createRouter({
             component: MedicalPersonnel,
         },
         { path: "/schedule-management/:id", component: ScheduleManagement },
+        { path: "/sm/:id", component: ScheduleManagement },
         { path: "/patient-transfer/:id", component: PatientTransfer },
+        { path: "/pt/:id", component: PatientTransfer },
         {
             path: "/incident-report-channel/:id",
             component: IncidentReportChannel,
@@ -88,6 +91,14 @@ const router = createRouter({
         {
             path: "/pmr/:id",
             component: PatientMedicalRecord,
+        },
+        {
+            path: "/access-management/:id",
+            component: AccessManagement,
+        },
+        {
+            path: "/am/:id",
+            component: AccessManagement,
         },
     ],
 });

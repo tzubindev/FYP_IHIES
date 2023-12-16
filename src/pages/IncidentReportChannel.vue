@@ -92,35 +92,47 @@
                                     <div
                                         class="bg-gray py-1 text-white text-center"
                                     >
-                                        <div class="border-r border-white/30">
+                                        <div
+                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                        >
                                             ID
                                         </div>
                                     </div>
                                     <div
                                         class="bg-gray py-1 text-white text-center"
                                     >
-                                        <div class="border-r border-white/30">
+                                        <div
+                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                        >
                                             Type
                                         </div>
                                     </div>
                                     <div
                                         class="bg-gray py-1 text-white text-center"
                                     >
-                                        <div class="border-r border-white/30">
+                                        <div
+                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                        >
                                             Description
                                         </div>
                                     </div>
                                     <div
                                         class="bg-gray py-1 text-white text-center"
                                     >
-                                        <div class="border-r border-white/30">
+                                        <div
+                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                        >
                                             Created DateTime
                                         </div>
                                     </div>
                                     <div
                                         class="bg-gray py-1 text-white text-center"
                                     >
-                                        <div class="">Status</div>
+                                        <div
+                                            class="h-full flex justify-center items-center"
+                                        >
+                                            Status
+                                        </div>
                                     </div>
                                 </div>
 
