@@ -94,81 +94,87 @@
                                 <!-- Sex -->
                                 <div class="flex flex-wrap">
                                     <!-- label -->
-                                    <div class="font-light w-fit md:w-full">
+                                    <div class="font-light w-full">
                                         {{ $t("sex") }}
                                     </div>
                                     <!-- data -->
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("sex") }}
-                                </div> -->
-                                    <Barloader />
+                                    <div
+                                        class="w-full text-center py-0.5 font-extrabold"
+                                        v-if="profile.sex"
+                                    >
+                                        {{ $t(profile.sex) }}
+                                    </div>
+                                    <Barloader v-if="!profile.sex" />
                                 </div>
                                 <!-- Age -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit md:w-full">
+                                    <div class="font-light w-full">
                                         {{ $t("age") }}
                                     </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("age") }}
-                                </div> -->
-                                    <Barloader />
+                                    <div
+                                        class="w-full text-center py-0.5 font-extrabold"
+                                        v-if="profile.sex"
+                                    >
+                                        {{ profile.age }}
+                                    </div>
+                                    <Barloader v-if="!profile.age" />
                                 </div>
                                 <div>
                                     <!-- blood -->
                                     <div class="flex flex-wrap">
-                                        <div class="font-light w-fit md:w-full">
+                                        <div class="font-light w-full">
                                             {{ $t("blood") }}
                                         </div>
-                                        <!-- <div
-                                        class="w-full text-center py-0.5  font-extrabold"
-                                    >
-                                        {{ $t("blood") }}
-                                    </div> -->
-                                        <Barloader />
+                                        <div
+                                            class="w-full text-center py-0.5 font-extrabold"
+                                            v-if="profile.blood"
+                                        >
+                                            {{ profile.blood }}
+                                        </div>
+                                        <Barloader v-if="!profile.blood" />
                                     </div>
                                 </div>
 
                                 <!-- height -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit md:w-full">
+                                    <div class="font-light w-full">
                                         {{ $t("height") }}
                                     </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("height") }}
-                                </div> -->
-                                    <Barloader />
+                                    <div
+                                        class="w-full text-center py-0.5 font-extrabold"
+                                        v-if="profile.height"
+                                    >
+                                        {{ profile.height }} m
+                                    </div>
+                                    <Barloader v-if="!profile.height" />
                                 </div>
 
                                 <!-- weight -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit md:w-full">
+                                    <div class="font-light w-full">
                                         {{ $t("weight") }}
                                     </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("weight") }}
-                                </div> -->
-                                    <Barloader />
+                                    <div
+                                        class="w-full text-center py-0.5 font-extrabold"
+                                        v-if="profile.weight"
+                                    >
+                                        {{ profile.weight }} kg
+                                    </div>
+                                    <Barloader v-if="!profile.weight" />
                                 </div>
 
                                 <!--last logged in  -->
                                 <div class="flex flex-wrap">
-                                    <div class="font-light w-fit md:w-full">
+                                    <div class="font-light w-full">
                                         {{ $t("last_logged_in") }}
                                     </div>
-                                    <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("last_logged_in") }}
-                                </div> -->
-                                    <Barloader />
+                                    <div
+                                        class="w-full text-center py-0.5 font-extrabold"
+                                        v-if="profile.last"
+                                    >
+                                        {{ profile.last }}
+                                    </div>
+                                    <Barloader v-if="!profile.last" />
                                 </div>
                             </div>
                         </div>
@@ -752,6 +758,7 @@
                     <div class="w-full h-32 flex justify-center">
                         <div
                             class="cursor-pointer transition hover:shadow w-full max-w-[1140px] mb-4 shadow-gray/40 shadow-xl overflow-hidden relative"
+                            @click="this.leadTo('medical-record')"
                         >
                             <img
                                 src="../assets/medical_record.jpg"
@@ -809,6 +816,14 @@ export default {
                 id: null,
                 name: null,
                 passcode: null,
+            },
+            profile: {
+                sex: "something",
+                age: null,
+                blood: null,
+                height: null,
+                weight: 52,
+                last: null,
             },
 
             // modalTitle: "Custom Modal",
@@ -989,6 +1004,9 @@ export default {
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
+        },
+        leadTo(des) {
+            this.$router.push(`/${des}/${this.$route.params.id}`);
         },
     },
 };

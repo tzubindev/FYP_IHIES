@@ -79,6 +79,7 @@
                         'p-2 px-3': is_expanding,
                         'p-2 justify-center lg:py-2.5': !is_expanding,
                     }"
+                    @click="this.leadTo('dashboard/patient')"
                 >
                     <img
                         src="../assets/dashboard.svg"
@@ -99,6 +100,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('medical-record')"
                 >
                     <img
                         src="../assets/record.svg"
@@ -119,6 +121,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('inquiry')"
                 >
                     <img
                         src="../assets/inquiry.svg"
@@ -139,6 +142,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('schedule')"
                 >
                     <img
                         src="../assets/schedule.svg"
