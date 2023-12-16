@@ -35,13 +35,15 @@
 
             <!-- Dashboard -->
             <div
-                class="w-full h-full"
+                class="w-full h-full grid-cols-3 grid"
                 :class="{
                     'pl-[180px]': is_sidebar_expanding,
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-4 px-10 w-full h-fit">
+                <div
+                    class="pt-6 pb-4 px-10 w-full h-fit col-span-3 lg:col-span-2"
+                >
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"
@@ -55,496 +57,33 @@
                         </div>
                     </div>
 
-                    <!-- Medium size -->
-                    <div class="block md:hidden">
-                        <!-- Profile -->
+                    <!-- Profile card & MR quick access -->
+                    <div
+                        class="w-full h-fit justify-center grid grid-cols-2 gap-2"
+                    >
                         <div
-                            class="py-4 w-full grid grid-cols-2 h-fit bg-gray text-white items-center"
+                            class="text-[12px] py-8 bg-gray text-white w-full flex text-center flex-wrap justify-center items-center"
                         >
-                            <!-- Picture -->
-                            <div
-                                class="h-full w-full flex justify-center items-center"
-                            >
-                                <img
-                                    src="../sample_assets/profilePic_tb.jpg"
-                                    class="w-[150px] h-[150px]"
-                                />
+                            <img
+                                src="../sample_assets/profilePic_tb.jpg"
+                                class="w-[150px] h-[150px] rounded-full"
+                            />
+                            <div class="w-full mt-3 text-[18px]">
+                                {{ this.user.name }}
                             </div>
-
-                            <!-- Name and Access -->
+                            <div class="w-full text-white/70">
+                                @{{ this.user.id }}
+                            </div>
                             <div
-                                class="h-full w-full flex flex-wrap items-start pr-4"
+                                class="cursor-pointer transition p-2 px-4 border border-red text-red hover:bg-red hover:text-white mt-3"
                             >
-                                <div
-                                    class="flex w-full items-center justify-between"
-                                >
-                                    <div class="font-extrabold text-xs h-full">
-                                        {{ $t("medical_personnel") }}
-                                    </div>
-                                    <div
-                                        class="p-2 py-1 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
-                                    >
-                                        {{ $t("view_profile") }}
-                                    </div>
-                                </div>
-
-                                <!-- Identity -->
-                                <div
-                                    class="flex flex-wrap h-full items-start flex-col w-full pt-4"
-                                >
-                                    <div
-                                        class="text-xs bg-red p-2 py-0.5 text-center"
-                                    >
-                                        {{ $t("name") }}
-                                    </div>
-                                    <div class="text-xs mt-1 w-full">
-                                        {{ this.user.name }}
-                                    </div>
-                                    <div
-                                        class="text-xs bg-red p-2 py-0.5 text-center mt-2"
-                                    >
-                                        {{ $t("id") }}
-                                    </div>
-                                    <div class="text-xs mt-1 w-full">
-                                        {{ this.user.id }}
-                                    </div>
-                                </div>
+                                {{ $t("view_profile") }}
                             </div>
                         </div>
 
-                        <!-- Statistics -->
-                        <div class="w-full h-full max-h-[500px] py-3">
-                            <div
-                                class="w-full h-full border-y border-gray/20 pb-3 text-[14px]"
-                            >
-                                <div class="w-full my-1.5">
-                                    {{ $t("personal_data") }}
-                                </div>
-
-                                <div
-                                    class="w-full h-5/6 grid grid-cols-2 gap-6"
-                                >
-                                    <!-- SYS -->
-                                    <div
-                                        class="cursor-pointer bg-gray text-white p-4 py-2 w-full shadow shadow-gray"
-                                    >
-                                        <div
-                                            class="h-full flex flex-wrap flex-col justify-start"
-                                        >
-                                            <div
-                                                class="w-full flex h-fit items-center"
-                                            >
-                                                <p class="text-sm">
-                                                    {{ $t("sys") }}
-                                                </p>
-
-                                                <img
-                                                    src="../assets/heart.svg"
-                                                    class="h-5 w-5 mx-1.5"
-                                                />
-                                            </div>
-                                            <div
-                                                class="flex flex-wrap justify-center items-center"
-                                            >
-                                                <div
-                                                    class="h-fit w-full text-[52px] text-center"
-                                                >
-                                                    {{
-                                                        data_sys.datasets[0]
-                                                            .data[
-                                                            data_sys.datasets[0]
-                                                                .data.length - 1
-                                                        ]
-                                                    }}
-                                                </div>
-                                                <div
-                                                    class="text-white/60 italic w-full text-right"
-                                                >
-                                                    {{ $t("mmHg") }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- large size screen -->
-                    <div class="hidden lg:flex justify-center flex-wrap">
-                        <div class="lg:grid grid-cols-2 gap-4 max-w-[1140px]">
-                            <!-- Profile -->
-                            <div
-                                class="shadow-lg shadow-gray/30 p-4 w-full flex h-full flex-wrap bg-gray text-white items-center"
-                            >
-                                <div class="w-full grid grid-cols-2 h-2/5">
-                                    <!-- Picture -->
-                                    <div
-                                        class="h-full w-full flex justify-center items-center"
-                                    >
-                                        <img
-                                            src="../sample_assets/profilePic_tb.jpg"
-                                            class="w-[150px] h-[150px] -full"
-                                        />
-                                    </div>
-
-                                    <!-- Name and Access -->
-                                    <div
-                                        class="h-full w-full flex items-center px-4"
-                                    >
-                                        <div>
-                                            <div class="font-extrabold text-xl">
-                                                {{ $t("user") }}
-                                            </div>
-                                            <div class="text-md">
-                                                {{ this.user.name }}
-                                            </div>
-                                            <div
-                                                class="p-3 py-1.5 mt-4 text-xs w-fit bg-white/20 cursor-pointer transition hover:bg-white hover:text-gray"
-                                            >
-                                                {{ $t("view_profile") }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Profile details -->
-                                <div
-                                    class="h-3/5 w-full p-4 py-2 gap-4 grid grid-cols-1 text-[12px]"
-                                >
-                                    <!-- Sex -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <!-- label -->
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("sex") }}
-                                        </div>
-                                        <!-- data -->
-                                        <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("sex") }}
-                                </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-
-                                    <!-- Age -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("age") }}
-                                        </div>
-                                        <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("age") }}
-                                </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-
-                                    <!-- blood -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("blood") }}
-                                        </div>
-                                        <!-- <div
-                                        class="w-full text-center py-0.5  font-extrabold"
-                                    >
-                                        {{ $t("blood") }}
-                                    </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-
-                                    <!-- height -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("height") }}
-                                        </div>
-                                        <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("height") }}
-                                </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-
-                                    <!-- weight -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("weight") }}
-                                        </div>
-                                        <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("weight") }}
-                                </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-
-                                    <!--last logged in  -->
-                                    <div
-                                        class="grid grid-cols-4 cursor-pointer"
-                                    >
-                                        <div
-                                            class="font-light w-fit pl-0 hover:pl-4 transition-all"
-                                        >
-                                            {{ $t("last_logged_in") }}
-                                        </div>
-                                        <!-- <div
-                                    class="w-full text-center py-0.5  font-extrabold"
-                                >
-                                    {{ $t("last_logged_in") }}
-                                </div> -->
-                                        <Barloader class="w-full col-span-3" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Statistics -->
-                            <div
-                                class="w-full h-full max-h-[600px] pl-4 pr-0 border-l-2 border-gray/20"
-                            >
-                                <div class="w-full text-[14px]">
-                                    <div
-                                        class="w-fit flex items-center pt-2 mb-3 border-b border-gray/40"
-                                    >
-                                        {{ $t("personal_data") }}
-                                    </div>
-
-                                    <div
-                                        class="w-full h-full flex flex-wrap gap-3"
-                                    >
-                                        <!-- SYS -->
-                                        <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer bg-gray text-white p-2 py-2 w-full h-[115px]"
-                                        >
-                                            <!-- summary -->
-                                            <div
-                                                class="h-fit w-1/3 flex flex-wrap"
-                                            >
-                                                <div
-                                                    class="w-full flex h-fit items-center"
-                                                >
-                                                    <p class="text-[12px]">
-                                                        {{ $t("sys") }}
-                                                    </p>
-
-                                                    <img
-                                                        src="../assets/heart.svg"
-                                                        class="h-5 w-5 mx-1.5"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex grow justify-center items-center mt-2"
-                                                >
-                                                    <div
-                                                        class="h-fit text-[40px] mr-1.5"
-                                                    >
-                                                        {{
-                                                            data_sys.datasets[0]
-                                                                .data[
-                                                                data_sys
-                                                                    .datasets[0]
-                                                                    .data
-                                                                    .length - 1
-                                                            ]
-                                                        }}
-                                                    </div>
-                                                    <div
-                                                        class="text-white/60 h-full italic flex items-end text-[10px] pb-2"
-                                                    >
-                                                        {{ $t("mmHg") }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- chart -->
-                                            <div class="w-2/3">
-                                                <Line
-                                                    :data="data_sys"
-                                                    :options="options_sys"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <!-- DIA -->
-                                        <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
-                                        >
-                                            <div
-                                                class="h-fit w-1/3 flex flex-wrap"
-                                            >
-                                                <div
-                                                    class="w-full flex h-fit items-center"
-                                                >
-                                                    <p class="text-[12px]">
-                                                        {{ $t("dia") }}
-                                                    </p>
-
-                                                    <img
-                                                        src="../assets/heart.svg"
-                                                        class="h-5 w-5 mx-1.5"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex grow justify-center items-center mt-2"
-                                                >
-                                                    <div
-                                                        class="h-fit text-[40px] mr-1.5"
-                                                    >
-                                                        {{
-                                                            data_dia.datasets[0]
-                                                                .data[
-                                                                data_dia
-                                                                    .datasets[0]
-                                                                    .data
-                                                                    .length - 1
-                                                            ]
-                                                        }}
-                                                    </div>
-                                                    <div
-                                                        class="text-gray/60 h-full italic flex items-end text-[10px] pb-2"
-                                                    >
-                                                        {{ $t("mmHg") }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <Line
-                                                    :data="data_dia"
-                                                    :options="options_dia"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <!-- Pulse -->
-                                        <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
-                                        >
-                                            <div
-                                                class="h-fit w-1/3 flex flex-wrap"
-                                            >
-                                                <div
-                                                    class="w-full flex h-fit items-center"
-                                                >
-                                                    <p class="text-[12px]">
-                                                        {{ $t("pulse") }}
-                                                    </p>
-
-                                                    <img
-                                                        src="../assets/pulse.svg"
-                                                        class="h-5 w-5 mx-1.5"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex grow justify-center items-center mt-2"
-                                                >
-                                                    <div
-                                                        class="h-fit text-[40px] mr-1.5"
-                                                    >
-                                                        {{
-                                                            data_pulse
-                                                                .datasets[0]
-                                                                .data[
-                                                                data_pulse
-                                                                    .datasets[0]
-                                                                    .data
-                                                                    .length - 1
-                                                            ]
-                                                        }}
-                                                    </div>
-                                                    <div
-                                                        class="text-gray/60 h-full italic flex items-end text-[10px] pb-2"
-                                                    >
-                                                        {{ $t("bpm") }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <Line
-                                                    :data="data_pulse"
-                                                    :options="options_pulse"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <!-- Breath -->
-                                        <div
-                                            class="shadow-lg shadow-gray/30 flex cursor-pointer text-gray border-2 border-gray/40 p-2 py-2 w-full h-[115px]"
-                                        >
-                                            <div
-                                                class="h-fit w-1/3 flex flex-wrap"
-                                            >
-                                                <div
-                                                    class="w-full flex h-fit items-center"
-                                                >
-                                                    <p class="text-[12px]">
-                                                        {{ $t("breath") }}
-                                                    </p>
-
-                                                    <img
-                                                        src="../assets/breath.svg"
-                                                        class="h-5 w-5 mx-1.5"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="flex grow justify-center items-center mt-2"
-                                                >
-                                                    <div
-                                                        class="h-fit text-[40px] mr-1.5"
-                                                    >
-                                                        {{
-                                                            data_breath
-                                                                .datasets[0]
-                                                                .data[
-                                                                data_breath
-                                                                    .datasets[0]
-                                                                    .data
-                                                                    .length - 1
-                                                            ]
-                                                        }}
-                                                    </div>
-                                                    <div
-                                                        class="text-gray/60 h-full italic flex items-end text-[10px] pb-2"
-                                                    >
-                                                        {{ $t("tpm") }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="w-2/3">
-                                                <Line
-                                                    :data="data_breath"
-                                                    :options="options_breath"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Path to view medical record -->
-                    <div class="w-full h-32 flex justify-center">
+                        <!-- Check Patient MR Button -->
                         <div
-                            class="cursor-pointer transition hover:shadow w-full max-w-[1140px] my-4 shadow-gray/40 shadow-xl overflow-hidden relative"
+                            class="h-full cursor-pointer transition hover:shadow w-full max-w-[1140px] shadow-gray/40 shadow-md overflow-hidden relative"
                         >
                             <img
                                 src="../assets/medical_record.jpg"
@@ -552,50 +91,56 @@
                                 alt="Medical Record"
                             />
                             <div
-                                class="absolute inset-0 bg-gray opacity-70"
+                                class="absolute inset-0 bg-gray opacity-60"
                             ></div>
                             <div
-                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-3xl text-2xl"
+                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[30px]"
                             >
                                 {{ $t("view_patient_medical_record") }}
                             </div>
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <!-- Time span -->
+                        <div
+                            class="p-2 pb-4 bg-darkred text-white shadow shadow-gray flex flex-wrap justify-center text-center"
+                        >
+                            <!-- HH:MM:SS - keep changing every second-->
+                            <div class="w-full text-[40px]">
+                                {{ current_time[1] }}
+                            </div>
+                            <!-- Date -->
+                            <div class="text-[14px]">
+                                {{ current_time[0] }}
+                            </div>
+                        </div>
+
+                        <!-- Schedule -->
+                        <div
+                            class="hover:bg-gray hover:text-white cursor-pointer transition p-2 pb-4 bg-white text-gray shadow shadow-gray flex flex-wrap justify-center text-center"
+                            @click="this.leadTo('schedule-management')"
+                        >
+                            <!-- Schedule -->
+                            <div class="w-full text-[40px]">
+                                {{ schedule_number }}
+                            </div>
+                            <!-- label -->
+                            <div class="text-[14px]">{{ $t("schedule") }}</div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Right Sidebar -->
+                <div class="hidden lg:block bg-black"></div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-import { Line } from "vue-chartjs";
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
-
-ChartJS.defaults.plugins.legend.display = false;
-
 export default {
-    components: {
-        Line,
-    },
+    components: {},
     data() {
         return {
             user: {
@@ -603,6 +148,8 @@ export default {
                 name: null,
                 passcode: null,
             },
+            current_time: this.getCurrentTime(),
+            schedule_number: "N/A",
 
             // modalTitle: "Custom Modal",
             // show: false,
@@ -611,113 +158,6 @@ export default {
             is_access_denied: false,
             is_sidebar_expanding: false,
             api_url: "http://127.0.0.1:3000",
-
-            // Chart
-            // SYS
-            data_sys: {
-                labels: ["", "", ""],
-                datasets: [
-                    {
-                        borderColor: "#fb5b25",
-                        data: [99, 110, 106],
-                    },
-                ],
-            },
-            options_sys: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(255,255,255,0.5)",
-                        },
-                    },
-                    y: {
-                        grid: {
-                            color: "rgba(255,255,255,0.5)",
-                        },
-                    },
-                },
-            },
-            // DIA
-            data_dia: {
-                labels: ["", "", ""],
-                datasets: [
-                    {
-                        borderColor: "#fb5b25",
-                        data: [140, 110, 96],
-                    },
-                ],
-            },
-            options_dia: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                    y: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                },
-            },
-            // pulse
-            data_pulse: {
-                labels: ["", "", ""],
-                datasets: [
-                    {
-                        borderColor: "#fb5b25",
-                        data: [72, 84, 80],
-                    },
-                ],
-            },
-            options_pulse: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                    y: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                },
-            },
-
-            // breath
-            data_breath: {
-                labels: ["", "", ""],
-                datasets: [
-                    {
-                        borderColor: "#fb5b25",
-                        data: [16, 18, 24],
-                    },
-                ],
-            },
-            options_breath: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                    y: {
-                        grid: {
-                            color: "rgba(0,0,0,0.1)",
-                        },
-                    },
-                },
-            },
         };
     },
     async created() {
@@ -777,6 +217,9 @@ export default {
                 // Handle error as needed
             }
         }
+
+        this.updateTime();
+        setInterval(this.updateTime, 1000);
     },
 
     methods: {
@@ -785,6 +228,30 @@ export default {
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
+        },
+        updateTime() {
+            this.current_time = this.getCurrentTime();
+        },
+        getCurrentTime() {
+            const now = new Date();
+            const options = {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            };
+            return now.toLocaleDateString("en-UK", options).split(" at ");
+        },
+        leadTo(des) {
+            switch (des) {
+                case "schedule-management":
+                    this.$router.push({
+                        path: `/schedule-management/${this.user.id}`,
+                    });
+                    break;
+            }
         },
     },
 };

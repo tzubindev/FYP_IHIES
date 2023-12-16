@@ -3,6 +3,7 @@
         <router-view></router-view>
     </div>
     <div
+        v-if="isFooterVisible"
         class="absolute bottom-0 w-full text-center p-1 text-xs bg-black/30 text-white"
     >
         &copy; 2023 -HEALTHIE-
@@ -36,5 +37,18 @@
 </style>
 
 <script>
-export default {};
+export default {
+    computed: {
+        isFooterVisible() {
+            // Get the current route from the $route object provided by Vue Router
+            const currentRoute = this.$route.path;
+
+            // Define an array of routes where the footer should not be hidden
+            const routes = ["/login", "/", "/register"];
+
+            // Check if the current route is in the array of routes
+            return routes.includes(currentRoute);
+        },
+    },
+};
 </script>

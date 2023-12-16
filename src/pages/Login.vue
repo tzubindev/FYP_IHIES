@@ -1,44 +1,30 @@
 <template>
     <div class="min-h-screen relative">
         <div
-            class="flex-wrap font-serif overflow-hidden h-screen flex justify-center items-end bg-gray/5"
+            class="flex-wrap font-serif overflow-hidden h-screen flex-col flex justify-start items-center bg-gray/5"
         >
             <h1
-                class="md:hidden absolute top-0 pt-4 font-extrabold text-2xl text-gray w-full text-center"
+                class="font-extrabold text-2xl text-gray w-full text-center pt-4"
             >
                 HEALTHIE
             </h1>
             <!-- small Upper -->
-            <div class="sm:hidden w-full h-1/3 flex justify-center items-end">
+            <div class="w-full h-1/3 flex justify-center items-end">
                 <img src="../assets/login_cover_mobile.svg" class="h-full" />
-            </div>
-
-            <!-- Mid or above upper -->
-            <div class="hidden sm:flex w-1/2 h-full justify-center">
-                <div class="w-full overflow-hidden relative">
-                    <img
-                        src="../assets/medical_record.jpg"
-                        class="h-full w-full object-cover blur-sm"
-                        alt="Medical Record"
-                    />
-                    <!-- <div class="absolute inset-0 bg-white opacity-5"></div> -->
-                </div>
             </div>
 
             <!-- Lower -->
             <div
-                class="sm:w-1/2 sm:h-full flex-wrap bg-gray lg:p-7 pt-4 pb-12 flex flex-col justify-center items-start w-full h-2/3"
+                class="md:w-3/4 md:grow-0 md:p-10 md:pt-4 backdrop-blur md:bg-gray/80 text-sm flex-wrap bg-gray/90 flex flex-col justify-start items-center w-full py-4 grow"
             >
                 <h2
-                    class="md:text-center md:mb-10 w-full mb-3 text-center text-2xl font-bold leading-9 tracking-tight text-white"
+                    class="w-full text-center text-sm font-bold leading-9 tracking-tight text-white mb-4"
                 >
                     Sign in to your account
                 </h2>
 
                 <!-- Main panel -->
-                <div
-                    class="w-full text-center :max-w-full px-4 lg:px-10 xl:px-24 flex flex-wrap justify-center"
-                >
+                <div class="w-full text-center px-4 lg:px-10 xl:px-24">
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
@@ -66,105 +52,104 @@
                         />
                         <div class="w-full mt-3 mb-6 flex justify-end px-2">
                             <p
-                                @click="openModal('FORGOT PASSOWRD')"
+                                @click="openModal('FORGOT PASSWORD')"
                                 class="text-white cursor-pointer hover:text-red -full transition-all p-1 px-4"
                             >
                                 Forgot your password?
                             </p>
                         </div>
 
-                        <!-- Add TYPE SUBMIT HERE -->
                         <Button
                             title="LOGIN"
                             customClass="mt-5 bg-red hover:bg-red/70 text-white"
                             submit
-                            large
+                            medium
                         />
                         <Button
                             title="REGISTER"
-                            large
-                            customClass="mt-5 bg-white hover:bg-mintage/90 hover:text-white text-gray"
+                            medium
+                            customClass="mt-3 bg-white hover:bg-mintage/90 hover:text-white text-gray"
                             @click="leadTo('Register')"
                         />
                     </form>
                 </div>
             </div>
+
+            <div
+                class="absolute top-1/2 w-full -z-10 h-full bg-mintage hidden sm:block"
+            ></div>
         </div>
 
         <!-- Forget Password Modal -->
-        <Modal
-            v-model="show"
-            :title="modal_title"
-            @confirm="handleOTP('receive')"
-            @cancel="cancel"
-            modalType="error"
-        >
-            <div class="mb-2" v-if="!is_auth">
-                Please Type In Your ID Number
-            </div>
-            <Textbox
-                placeholder="ID No."
-                colour="white"
-                v-model="forget_password_id"
-                v-if="!is_auth"
-                class="mb-4"
-            />
-            <!-- Hidden part, will be shown after the otp is sent -->
-            <div class="mb-2" v-if="is_otp_sent || is_auth">
-                Please Type In Your OTP
-            </div>
-            <div class="mb-4">
-                <!-- OTP Span -->
-                <div
-                    class="w-full p-2 pr-4 bg-orange/30 -3xl shadow-md"
-                    v-if="is_otp_sent"
-                >
-                    <div class="flex justify-start items-center">
-                        <input
-                            v-model="otp.id"
-                            readonly
-                            class="max-w-[80px] p-1 bg-transparent outline-none text-center"
-                        />
-                        <input
-                            type="text"
-                            v-model="otp.code"
-                            class="w-full bg-gray p-2 border-b-2 outline-none text-center"
-                        />
-                    </div>
+        <Transition>
+            <Modal
+                v-if="show"
+                :title="modal_title"
+                @confirm="handleOTP('receive')"
+                @cancel="cancel"
+                modalType="error"
+            >
+                <div class="mb-2" v-if="!is_auth">
+                    Please Type In Your ID Number
                 </div>
-                <div class="flex justify-end mt-4">
-                    <Button
-                        medium
-                        title="Send OTP"
-                        customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
-                        @click="handleOTP('send')"
-                        v-if="!is_otp_sent && !is_auth && !is_sending_otp"
-                    />
-
-                    <!-- Loading animation -->
+                <Textbox
+                    placeholder="ID No."
+                    colour="white"
+                    v-model="forget_password_id"
+                    v-if="!is_auth"
+                    class="mb-4"
+                />
+                <!-- Hidden part, will be shown after the otp is sent -->
+                <div class="mb-2" v-if="is_otp_sent || is_auth">
+                    Please Type In Your OTP
+                </div>
+                <div class="mb-4">
+                    <!-- OTP Span -->
                     <div
-                        class="animate-pulse bg-white/20 shadow p-4 max-w-sm w-full mx-auto"
-                        v-if="(!otp.id && is_auth) || is_sending_otp"
+                        class="w-full p-2 pr-4 bg-orange/30 -3xl shadow-md"
+                        v-if="is_otp_sent"
                     >
-                        <div class="flex justify-center items-center">
-                            <p>Sending OTP...</p>
+                        <div class="flex justify-start items-center">
+                            <input
+                                v-model="otp.id"
+                                readonly
+                                class="max-w-[80px] p-1 bg-transparent outline-none text-center"
+                            />
+                            <input
+                                type="text"
+                                v-model="otp.code"
+                                class="w-full bg-gray p-2 border-b-2 outline-none text-center"
+                            />
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <Button
+                            medium
+                            title="Send OTP"
+                            customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
+                            @click="handleOTP('send')"
+                            v-if="!is_otp_sent && !is_auth && !is_sending_otp"
+                        />
+
+                        <!-- Loading animation -->
+                        <div
+                            class="animate-pulse bg-white/20 shadow p-4 max-w-sm w-full mx-auto"
+                            v-if="(!otp.id && is_auth) || is_sending_otp"
+                        >
+                            <div class="flex justify-center items-center">
+                                <p>Sending OTP...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </Modal>
+            </Modal>
+        </Transition>
 
         <!-- Loader -->
         <Loader
             :loading="is_loading && !show"
             class="z-20 w-4/5 absolute"
         ></Loader>
-
-        <!-- Modal background -->
-        <div
-            v-if="show"
-            class="z-10 h-screen w-screen bg-white/70 absolute top-0 left-0"
-        ></div>
     </div>
 </template>
 

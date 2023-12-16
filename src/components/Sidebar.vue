@@ -184,6 +184,7 @@
                         'p-2 px-3': is_expanding,
                         'p-2 justify-center lg:py-2.5': !is_expanding,
                     }"
+                    @click="this.leadTo('dashboard/medical-personnel')"
                 >
                     <img
                         src="../assets/dashboard.svg"
@@ -204,6 +205,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('schedule-management')"
                 >
                     <img
                         src="../assets/schedule.svg"
@@ -224,6 +226,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('patient-transfer')"
                 >
                     <img
                         src="../assets/transfer.svg"
@@ -244,6 +247,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('incident-report-channel')"
                 >
                     <img
                         src="../assets/report.svg"
@@ -264,6 +268,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('patient-medical-record')"
                 >
                     <img
                         src="../assets/record.svg"
@@ -284,6 +289,7 @@
                         'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
                             !is_expanding,
                     }"
+                    @click="this.leadTo('access-management')"
                 >
                     <img
                         src="../assets/access.svg"
@@ -324,6 +330,7 @@
                     'p-2 px-3 justify-start': is_expanding,
                     'p-2 justify-center lg:p-3 ': !is_expanding,
                 }"
+                @click="logout"
             >
                 <img src="../assets/logout.svg" class="w-4 h-4 lg:w-5 lg:h-5" />
                 <span class="text-[14px] ml-3 font-bold" v-if="is_expanding">{{
@@ -378,6 +385,9 @@ export default {
         return {
             is_searching: false,
             is_expanding: false,
+            user: {
+                id: this.$route.params.id,
+            },
         };
     },
     mounted() {
@@ -400,6 +410,14 @@ export default {
         toggleExpanding() {
             this.is_expanding = !this.is_expanding;
             this.$emit("toggled", this.is_expanding);
+        },
+        leadTo(des) {
+            if (des !== "login") this.$router.push(`/${des}/${this.user.id}`);
+            else this.$router.push(`/${des}`);
+        },
+        async logout() {
+            await sessionStorage.removeItem("passcode");
+            this.leadTo("login");
         },
     },
 };

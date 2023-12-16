@@ -71,7 +71,7 @@
 
                             <!-- List -->
                             <!-- Headers -->
-                            <div class="grid grid-cols-7 text-[12px]">
+                            <div class="grid grid-cols-7 text-[12px] w-full">
                                 <div
                                     v-for="(h, index) in headers"
                                     :key="index"

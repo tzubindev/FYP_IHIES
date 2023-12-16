@@ -107,7 +107,7 @@
 }
 .form input:focus + .label-name .content-name,
 .form input:valid + .label-name .content-name {
-    transform: translateY(-40%);
+    transform: translateY(-20%);
     font-size: 10px;
     left: 10px;
 }
