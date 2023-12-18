@@ -84,6 +84,7 @@
                         <!-- Check Patient MR Button -->
                         <div
                             class="h-full cursor-pointer transition hover:shadow w-full max-w-[1140px] shadow-gray/40 shadow-md overflow-hidden relative"
+                            @click="this.leadTo('patient-medical-record')"
                         >
                             <img
                                 src="../assets/medical_record.jpg"
@@ -101,6 +102,7 @@
                         </div>
                     </div>
 
+                    <!-- Time span and schedule summary -->
                     <div class="grid grid-cols-2 gap-2 mt-2">
                         <!-- Time span -->
                         <div
@@ -245,13 +247,9 @@ export default {
             return now.toLocaleDateString("en-UK", options).split(" at ");
         },
         leadTo(des) {
-            switch (des) {
-                case "schedule-management":
-                    this.$router.push({
-                        path: `/schedule-management/${this.user.id}`,
-                    });
-                    break;
-            }
+            this.$router.push({
+                path: `/${des}/${this.user.id}`,
+            });
         },
     },
 };

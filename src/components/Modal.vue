@@ -1,10 +1,10 @@
 <template>
     <div
-        class="w-full h-full absolute top-0 left-0 bg-gray/80 backdrop-blur-lg"
+        class="w-full h-full absolute top-0 left-0 bg-gray/80 backdrop-blur-lg z-40"
     ></div>
 
     <div
-        class="abs-centre bg-gray p-8 py-4 w-fit min-w-[70%] max-w-[90%] text-white shadow shadow-white/40"
+        class="z-50 abs-centre bg-gray p-8 py-4 w-fit max-w-[90%] text-white shadow shadow-white/40"
     >
         <div class="w-full flex justify-center mb-10">
             <h1
@@ -15,7 +15,7 @@
                     'bg-yellow text-gray': modalType == 'warning',
                 }"
             >
-                {{ title }}
+                {{ $t(title) }}
             </h1>
         </div>
         <slot />
@@ -23,6 +23,7 @@
         <div class="flex justify-end">
             <button
                 class="px-3 py-1 mr-2 text-white font-bold hover:underline hover:text-red transition-all"
+                v-if="!noCancelButton"
                 @click="cancel"
             >
                 Cancel
@@ -57,6 +58,10 @@ export default {
         modalType: {
             type: String,
             default: "info", // info, error, warning
+        },
+        noCancelButton: {
+            type: Boolean,
+            default: false,
         },
     },
     components: {},
