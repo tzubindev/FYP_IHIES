@@ -132,16 +132,6 @@
                                     >
                                         Transferring
                                     </div>
-                                    <div
-                                        class="w-fit transition cursor-pointer hover:bg-gray/10 p-2"
-                                        :class="{
-                                            'border-b-4 border-red':
-                                                selected_tab === 2,
-                                        }"
-                                        @click="selected_tab = 2"
-                                    >
-                                        Transferred
-                                    </div>
                                 </div>
 
                                 <!--Viewer Body-->
@@ -172,7 +162,7 @@
 
                                         <!-- Info blocks -->
                                         <div
-                                            class="overflow-y-auto max-h-[600px] p-0.5"
+                                            class="overflow-y-auto max-h-[500px] p-0.5"
                                         >
                                             <div
                                                 class="mb-2 shadow shadow-gray p-2 py-2 grid grid-cols-4"
@@ -235,16 +225,46 @@
                                 <Transition>
                                     <div
                                         v-if="selected_tab === 1"
-                                        class="p-3"
-                                    ></div>
-                                </Transition>
-
-                                <!-- Transferred -->
-                                <Transition>
-                                    <div
-                                        v-if="selected_tab === 2"
-                                        class="p-3"
-                                    ></div>
+                                        class="p-3 flex gap-0.5 flex-wrap"
+                                    >
+                                        <div
+                                            class="grid grid-cols-4 w-full text-white text-center"
+                                        >
+                                            <div
+                                                v-for="(
+                                                    h, index
+                                                ) in transferring_headers"
+                                                :key="index"
+                                                class="w-full bg-gray py-1"
+                                            >
+                                                <div
+                                                    :class="{
+                                                        'border-r border-white/50':
+                                                            index !==
+                                                            transferring_headers.length -
+                                                                1,
+                                                    }"
+                                                >
+                                                    {{ h }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            v-for="(t, index) in transferring"
+                                            :key="index"
+                                            class="w-full bg-gray/30 grid grid-cols-4 p-1"
+                                        >
+                                            <div
+                                                class="flex justify-center items-center p-1"
+                                                v-for="(
+                                                    v, index
+                                                ) in Object.values(t)"
+                                                :key="index"
+                                            >
+                                                {{ v }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </Transition>
                             </div>
 
@@ -295,7 +315,7 @@
                                         v-if="request.length"
                                     >
                                         <div
-                                            class="grid grid-cols-2 gap-2 ursor-pointer mb-1 p-1 text-[12px] text-white text-left bg-gray/70 slide-in-left-to-right"
+                                            class="hover:bg-gray transition cursor-pointer grid grid-cols-2 gap-2 ursor-pointer mb-1 p-1 text-[12px] text-white text-left bg-gray/70 slide-in-left-to-right"
                                             v-for="(r, index) in request"
                                             :key="index"
                                             :style="{
@@ -442,6 +462,7 @@ export default {
                     since: new Date().toISOString(),
                 },
             ],
+            transferring_headers: ["name", "id", "from", "since"],
             request: [
                 {
                     request_id: 1,

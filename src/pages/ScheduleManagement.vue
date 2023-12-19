@@ -154,7 +154,7 @@
 
                                     <!-- Table Body -->
                                     <div
-                                        class="hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-4 text-[14px] py-1 text-center"
+                                        class="border-gray/70 hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-4 text-[14px] py-1 text-center"
                                         v-for="(h, index) in incoming_schedules"
                                         :key="index"
                                         :class="{
@@ -242,7 +242,7 @@
 
                                     <!-- Table Body -->
                                     <div
-                                        class="hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-6 text-[14px] py-1 text-center"
+                                        class="border-gray/70 hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-6 text-[14px] py-1 text-center"
                                         v-for="(h, index) in pending_schedules"
                                         :key="index"
                                         :class="{

@@ -1,16 +1,11 @@
 <template>
     <div class="min-h-screen relative">
+        <!-- Main Panel -->
         <div
-            class="flex-wrap font-serif overflow-hidden h-screen flex-col flex justify-start items-center bg-gray/5"
+            class="flex-wrap font-serif overflow-hidden h-screen flex-col flex justify-start items-center bg-gray"
         >
-            <!-- small Upper -->
-            <!-- <div class="w-full h-1/3 flex justify-center items-end">
-                <img src="../assets/login_cover_mobile.svg" class="h-full" />
-            </div> -->
-
-            <!-- Lower -->
             <div
-                class="abs-centre w-full sm:w-3/5 sm:p-8 sm:pt-0 pt-0 backdrop-blur bg-gray/80 p-4 h-full sm:h-fit sm:bg-gray/80 text-sm flex-wrap flex flex-col justify-center items-center"
+                class="z-20 abs-centre w-full sm:w-3/5 sm:p-8 sm:pt-0 pt-0 backdrop-blur sm:bg-white/20 bg-gray/20 p-4 h-full sm:h-fit text-sm flex-wrap flex flex-col justify-center items-center"
             >
                 <img
                     src="../assets/login_cover_mobile.svg"
@@ -75,7 +70,7 @@
             </div>
 
             <div
-                class="absolute top-1/2 -translate-y-1/2 w-[200%] -z-10 h-1/2 bg-mintage/60 rotate-[15deg]"
+                class="absolute top-1/2 -translate-y-1/2 w-[200%] z-0 h-1/2 bg-darkred rotate-[15deg]"
             ></div>
         </div>
 
@@ -105,7 +100,7 @@
                 <div class="mb-4">
                     <!-- OTP Span -->
                     <div
-                        class="w-full p-2 pr-4 bg-orange/30 -3xl shadow-md"
+                        class="w-full p-2 pr-4 bg-white/30 -3xl"
                         v-if="is_otp_sent"
                     >
                         <div class="flex justify-start items-center">

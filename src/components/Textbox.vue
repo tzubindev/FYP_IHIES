@@ -3,7 +3,7 @@
         <!-- Normal Textbox -->
         <div
             v-if="!isPassword"
-            class="px-4 p-1 flex items-center cursor-pointer transition w-full h-12 bg-transparent border-b-2 shadow-lg"
+            class="px-4 p-1 flex items-center cursor-pointer transition w-full h-12 bg-transparent border-b-2"
             :class="[customClass]"
         >
             <div v-if="hasIcon">
@@ -30,7 +30,7 @@
         <!-- Password Textbox -->
         <div
             v-if="isPassword"
-            class="px-4 p-1 flex items-center cursor-pointer transition w-full h-12 bg-transparent border-b-2 shadow-lg"
+            class="px-4 p-1 flex items-center cursor-pointer transition w-full h-12 bg-transparent border-b-2"
             :class="[customClass]"
         >
             <div v-if="hasIcon">
