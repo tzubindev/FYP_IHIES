@@ -59,7 +59,7 @@
                             <div
                                 class="w-full flex justify-between items-center"
                             >
-                                <div>My Incident</div>
+                                <div>{{ $t("my_incident") }}</div>
                                 <div
                                     class="cursor-pointer bg-red hover:bg-darkred transition text-white p-2 py-1 text-[14px] flex items-center"
                                 >
@@ -67,7 +67,7 @@
                                         src="../assets/add.svg"
                                         class="w-4 h-4 mr-1"
                                     />
-                                    Add Incident
+                                    {{ $t("add_incident") }}
                                 </div>
                             </div>
 
@@ -95,7 +95,7 @@
                                         <div
                                             class="border-r border-white/30 h-full flex justify-center items-center"
                                         >
-                                            ID
+                                            {{ $t("id") }}
                                         </div>
                                     </div>
                                     <div
@@ -104,7 +104,7 @@
                                         <div
                                             class="border-r border-white/30 h-full flex justify-center items-center"
                                         >
-                                            Type
+                                            {{ $t("type") }}
                                         </div>
                                     </div>
                                     <div
@@ -113,7 +113,7 @@
                                         <div
                                             class="border-r border-white/30 h-full flex justify-center items-center"
                                         >
-                                            Description
+                                            {{ $t("description") }}
                                         </div>
                                     </div>
                                     <div
@@ -122,7 +122,7 @@
                                         <div
                                             class="border-r border-white/30 h-full flex justify-center items-center"
                                         >
-                                            Created DateTime
+                                            {{ $t("created_dateTime") }}
                                         </div>
                                     </div>
                                     <div
@@ -131,7 +131,7 @@
                                         <div
                                             class="h-full flex justify-center items-center"
                                         >
-                                            Status
+                                            {{ $t("status") }}
                                         </div>
                                     </div>
                                 </div>

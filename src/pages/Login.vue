@@ -3,28 +3,27 @@
         <div
             class="flex-wrap font-serif overflow-hidden h-screen flex-col flex justify-start items-center bg-gray/5"
         >
-            <h1
-                class="font-extrabold text-2xl text-gray w-full text-center pt-4"
-            >
-                HEALTHIE
-            </h1>
             <!-- small Upper -->
-            <div class="w-full h-1/3 flex justify-center items-end">
+            <!-- <div class="w-full h-1/3 flex justify-center items-end">
                 <img src="../assets/login_cover_mobile.svg" class="h-full" />
-            </div>
+            </div> -->
 
             <!-- Lower -->
             <div
-                class="md:w-3/4 md:grow-0 md:p-10 md:pt-4 backdrop-blur md:bg-gray/80 text-sm flex-wrap bg-gray/90 flex flex-col justify-start items-center w-full py-4 grow"
+                class="abs-centre w-full sm:w-3/5 sm:p-8 sm:pt-0 pt-0 backdrop-blur bg-gray/80 p-4 h-full sm:h-fit sm:bg-gray/80 text-sm flex-wrap flex flex-col justify-center items-center"
             >
-                <h2
-                    class="w-full text-center text-sm font-bold leading-9 tracking-tight text-white mb-4"
+                <img
+                    src="../assets/login_cover_mobile.svg"
+                    class="sm:h-40 h-60 sm:pl-4 pl-10 w-full mb-2"
+                />
+                <h1
+                    class="font-extrabold text-2xl text-white w-full text-center mb-8"
                 >
-                    Sign in to your account
-                </h2>
+                    {{ $t("healthie") }}
+                </h1>
 
                 <!-- Main panel -->
-                <div class="w-full text-center px-4 lg:px-10 xl:px-24">
+                <div class="w-full text-center">
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
@@ -76,7 +75,7 @@
             </div>
 
             <div
-                class="absolute top-1/2 w-full -z-10 h-full bg-mintage hidden sm:block"
+                class="absolute top-1/2 -translate-y-1/2 w-[200%] -z-10 h-1/2 bg-mintage/60 rotate-[15deg]"
             ></div>
         </div>
 

@@ -104,11 +104,11 @@
                                 class="text-gray/60 w-full flex text-[14px] gap-2 mt-2 border-b border-gray/40"
                             >
                                 <div
-                                    class="hover:text-gray cursor-pointer p-1 px-2"
+                                    class="hover:bg-gray/10 cursor-pointer p-1 px-2"
                                     v-for="t in tabs"
                                     :key="t.id"
                                     :class="{
-                                        'border-b-2 border-gray text-gray':
+                                        'border-b-4 border-red text-gray':
                                             selected_tab === t,
                                     }"
                                     @click="selected_tab = t"

@@ -5,7 +5,7 @@
     >
         <div
             v-if="is_access_denied"
-            class="flex-wrap access-denied-overlay z-100 absolute w-full h-screen bg-black text-red flex justify-center items-center"
+            class="flex-wrap access-denied-overlay z-100 absolute w-full h-screen bg-black text-yellow flex justify-center items-center"
         >
             <p class="access-denied-text font-extrabold">ACCESS DENIED</p>
         </div>
@@ -52,12 +52,12 @@
                         </div>
                     </div>
 
-                    <!-- Calendar and events -->
-                    <div class="flex justify-center w-full h-[700px]">
+                    <div class="flex justify-center w-full">
                         <div
-                            class="w-full grid grid-cols-1 lg:grid-cols-3 lg:max-w-[950px]"
+                            class="w-full grid grid-cols-1 lg:grid-cols-3 lg:max-w-[1100px]"
                         >
-                            <div class="col-span-2 text-[14px] pr-4">
+                            <!-- Viewers -->
+                            <div class="lg:col-span-2 text-[14px] pr-4">
                                 <!-- Summary -->
                                 <div class="w-full grid grid-cols-3 gap-2">
                                     <div
@@ -144,10 +144,26 @@
                                     </div>
                                 </div>
 
-                                <!--Viewer -->
-
+                                <!--Viewer Body-->
+                                <!-- Available beds -->
                                 <Transition>
                                     <div v-if="selected_tab === 0" class="p-3">
+                                        <!-- Manage bed button -->
+                                        <div class="w-full flex justify-end">
+                                            <div
+                                                class="shadow shadow-gray cursor-pointer hover:bg-gray transition p-1 pl-1 pr-2 bg-cool text-white flex items-center gap-1"
+                                            >
+                                                <img
+                                                    src="../assets/add.svg"
+                                                    class="w-5 h-5"
+                                                />
+                                                <div>
+                                                    {{ $t("manage_bed") }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Department-bed title -->
                                         <div
                                             class="border-b-2 px-2 border-gray/30 w-fit mb-2"
                                         >
@@ -156,7 +172,7 @@
 
                                         <!-- Info blocks -->
                                         <div
-                                            class="overflow-y-auto max-h-[600px] p-1"
+                                            class="overflow-y-auto max-h-[600px] p-0.5"
                                         >
                                             <div
                                                 class="mb-2 shadow shadow-gray p-2 py-2 grid grid-cols-4"
@@ -214,11 +230,27 @@
                                         </div>
                                     </div>
                                 </Transition>
+
+                                <!-- Transferring -->
+                                <Transition>
+                                    <div
+                                        v-if="selected_tab === 1"
+                                        class="p-3"
+                                    ></div>
+                                </Transition>
+
+                                <!-- Transferred -->
+                                <Transition>
+                                    <div
+                                        v-if="selected_tab === 2"
+                                        class="p-3"
+                                    ></div>
+                                </Transition>
                             </div>
 
                             <!-- Right status bar -->
                             <div
-                                class="text-[12px] border-l border-gray/20 h-full flex justify-start flex-col flex-wrap pl-4"
+                                class="text-[12px] lg:border-l border-gray/20 h-full flex justify-start flex-col flex-wrap lg:pl-4"
                             >
                                 <!-- Request Button -->
                                 <div
@@ -232,7 +264,7 @@
                                 </div>
 
                                 <div
-                                    class="mt-4 flex text-center h-fit bg-gray w-full text-white py-1"
+                                    class="mt-4 mb-1 flex text-center h-fit bg-gray w-full text-white py-1"
                                 >
                                     <div class="grow">Transfer Request</div>
                                     <span
@@ -256,13 +288,14 @@
                                         No Request
                                     </div>
                                 </Transition>
+
                                 <Transition name="fade">
                                     <div
                                         class="overflow-y-auto max-h-[600px] p-1"
                                         v-if="request.length"
                                     >
                                         <div
-                                            class="cursor-pointer mb-1 p-1 text-[12px] text-white text-left bg-gray/70 slide-in-left-to-right"
+                                            class="grid grid-cols-2 gap-2 ursor-pointer mb-1 p-1 text-[12px] text-white text-left bg-gray/70 slide-in-left-to-right"
                                             v-for="(r, index) in request"
                                             :key="index"
                                             :style="{
@@ -275,7 +308,7 @@
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
                                                 <strong>Request ID:</strong>
-                                                <div class="text-red ml-2">
+                                                <div class="text-yellow ml-2">
                                                     {{ r.request_id }}
                                                 </div>
                                             </div>
@@ -284,7 +317,7 @@
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
                                                 <strong>From:</strong>
-                                                <div class="text-red ml-2">
+                                                <div class="text-yellow ml-2">
                                                     {{ r.from }}
                                                 </div>
                                             </div>
@@ -293,7 +326,7 @@
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
                                                 <strong>Patient ID:</strong>
-                                                <div class="text-red ml-2">
+                                                <div class="text-yellow ml-2">
                                                     {{ r.patient_id }}
                                                 </div>
                                             </div>
@@ -304,17 +337,19 @@
                                                 <strong
                                                     >Current Condition:</strong
                                                 >
-                                                <div class="text-red ml-2">
+                                                <div class="text-yellow ml-2">
                                                     {{ r.current_condition }}
                                                 </div>
                                             </div>
 
-                                            <div class="backdrop-blur p-2 py-1">
+                                            <div
+                                                class="backdrop-blur p-2 py-1 col-span-2"
+                                            >
                                                 <strong>
                                                     Reason for Transfer:
                                                 </strong>
                                                 <div
-                                                    class="text-red text-right"
+                                                    class="text-yellow text-right"
                                                 >
                                                     {{
                                                         r.additional_info
@@ -326,7 +361,7 @@
                                                     Note:
                                                 </strong>
                                                 <div
-                                                    class="italic text-red text-right"
+                                                    class="italic text-yellow text-right"
                                                 >
                                                     {{ r.additional_info.note }}
                                                 </div>
