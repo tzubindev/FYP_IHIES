@@ -68,9 +68,11 @@
                                 class="mt-2 grid grid-cols-5 gap-2 text-[12px] p-1"
                             >
                                 <div class="col-span-2 w-full">
-                                    Medical Personnel ID / Name
+                                    {{ $t("medical_personnel_id_/_name") }}
                                 </div>
-                                <div class="col-span-2 w-full">Date</div>
+                                <div class="col-span-2 w-full">
+                                    {{ $t("date") }}
+                                </div>
                             </div>
                             <div class="grid grid-cols-5 gap-1 h-[40px]">
                                 <div class="col-span-2 w-full">
@@ -89,7 +91,7 @@
                                     />
                                 </div>
                                 <Button
-                                    title="Search"
+                                    :title="$t('search')"
                                     customClass="text-center bg-gray/70 hover:bg-gray/90 text-white shadow"
                                     medium
                                 ></Button>
@@ -107,7 +109,7 @@
                             >
                                 <!-- Reminder -->
                                 <p class="italic text-right mb-0.5">
-                                    *MP = Medical Personnel
+                                    {{ $t("*mp_=_medical_personnel") }}
                                 </p>
 
                                 <!-- Title -->
@@ -117,17 +119,17 @@
                                     <div
                                         class="flex items-center justify-center w-full font-semibold p-1"
                                     >
-                                        MP ID
+                                        {{ $t("mp_id") }}
                                     </div>
                                     <div
                                         class="flex items-center justify-center col-span-2 w-full font-semibold p-1"
                                     >
-                                        MP Name
+                                        {{ $t("mp_name") }}
                                     </div>
                                     <div
                                         class="flex items-center justify-center w-full font-semibold p-1"
                                     >
-                                        Created on
+                                        {{ $t("created_on") }}
                                     </div>
                                 </div>
 
@@ -182,12 +184,14 @@
                                         <div
                                             class="bg-gray text-white w-full flex justify-between p-2"
                                         >
-                                            <p class="">Record Details</p>
+                                            <p class="">
+                                                {{ $t("record_details") }}
+                                            </p>
                                             <div
                                                 class="bg-red px-2 cursor-pointer"
                                                 @click="clearRecord"
                                             >
-                                                Close
+                                                {{ $t("close") }}
                                             </div>
                                         </div>
 
@@ -250,7 +254,7 @@
                                             class="justify-center p-1 px-3 font-bold text-md flex items-center w-full bg-[#fcd53f] text-gray"
                                         >
                                             <div class="px-1 mr-2 bg-white/70">
-                                                Record
+                                                {{ $t("record") }}
                                             </div>
                                             {{ selected_record.mp_id }}_
                                             {{ selected_record.mp_name }}_{{
@@ -354,7 +358,7 @@
                                     v-if="!selected_record"
                                     class="flex justify-center items-center h-20 w-full bg-white col-span-5 shadow shadow-gray/50"
                                 >
-                                    No Record Is Selected
+                                    {{ $t("no_record_is_selected") }}
                                 </div>
                             </div>
                         </div>

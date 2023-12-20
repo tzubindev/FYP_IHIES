@@ -15,9 +15,6 @@
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
-        <!-- Small screen size -->
-        <div></div>
-
         <!-- Medium screen and above size-->
         <div
             v-if="is_verified && is_initiated"

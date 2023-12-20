@@ -3,7 +3,7 @@
     <div class="max-w-[600px] mx-auto">
         <!-- Top calendar bar -->
         <div
-            class="flex justify-between text-center items-center p-4 text-white bg-gray"
+            class="flex justify-between text-center items-center p-4 pb-2 text-white bg-gray"
         >
             <button
                 @click="prevMonth"
@@ -23,15 +23,15 @@
         </div>
 
         <!-- Day columns -->
-        <div class="bg-gray/90 text-white p-2">
-            <div class="grid grid-cols-7">
+        <div class="bg-gray text-white p-2">
+            <div class="grid grid-cols-7 mb-2">
                 <div
-                    class="w-full h-full flex justify-center items-center p-1 py-0.5 bg-red/80 text-white"
+                    class="border-t border-white/30 w-full h-full flex justify-center items-center py-0.5 pt-2 text-white"
                     v-for="day in weekdays"
                     :key="day.id"
                 >
                     <div
-                        class="text-sm p-1 py-0.5 w-full h-full flex justify-center items-center"
+                        class="text-sm w-full h-full flex justify-center items-center"
                     >
                         {{ day }}
                     </div>
@@ -46,10 +46,10 @@
                 <div
                     v-for="day in week"
                     :key="day.date"
-                    class="p-1 flex justify-center items-center -full cursor-pointer transition-all duration-300"
+                    class="flex justify-center items-center cursor-pointer transition-all duration-300"
                     @click="selectDate(day)"
                     :class="{
-                        'bg-none -none': !day,
+                        'bg-none': !day,
                     }"
                     style="aspect-ratio: 1"
                 >

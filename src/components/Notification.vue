@@ -24,6 +24,12 @@
                         {{ $t(item) }}
                     </p>
                 </a>
+
+                <a
+                    v-if="!items.length"
+                    class="text-gray/70 w-full flex justify-center"
+                    >{{ $t("no_notification") }}</a
+                >
             </div>
         </div>
     </transition>

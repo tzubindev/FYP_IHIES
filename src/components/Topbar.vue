@@ -32,7 +32,7 @@
         </div>
     </div>
     <Notification
-        :items="languages"
+        :items="[]"
         :show="is_notification_shown"
         @selectedItem="updateSelectedNotification"
     ></Notification>

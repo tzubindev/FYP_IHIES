@@ -71,7 +71,7 @@
                                                 class="w-5 h-5"
                                             />
                                         </div>
-                                        <p>Available Beds</p>
+                                        <p>{{ $t("available_beds") }}</p>
 
                                         <div class="text-[26px]">{{ 17 }}</div>
                                     </div>
@@ -86,9 +86,11 @@
                                                 class="w-5 h-5"
                                             />
                                         </div>
-                                        <p>Transferring</p>
+                                        <p>{{ $t("transferring") }}</p>
 
-                                        <div class="text-[26px]">{{ 2 }}</div>
+                                        <div class="text-[26px]">
+                                            {{ this.transferring.length }}
+                                        </div>
                                     </div>
                                     <div
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-blue to-cool text-white"
@@ -101,7 +103,7 @@
                                                 class="w-5 h-5"
                                             />
                                         </div>
-                                        <p>Transferred</p>
+                                        <p>{{ $t("transferred") }}</p>
 
                                         <div class="text-[26px]">{{ 6 }}</div>
                                     </div>
@@ -120,7 +122,7 @@
                                         }"
                                         @click="selected_tab = 0"
                                     >
-                                        Available Beds
+                                        {{ $t("available_beds") }}
                                     </div>
                                     <div
                                         class="w-fit transition cursor-pointer hover:bg-gray/10 p-2"
@@ -130,7 +132,7 @@
                                         }"
                                         @click="selected_tab = 1"
                                     >
-                                        Transferring
+                                        {{ $t("transferring") }}
                                     </div>
                                 </div>
 
@@ -157,7 +159,11 @@
                                         <div
                                             class="border-b-2 px-2 border-gray/30 w-fit mb-2"
                                         >
-                                            Accident and emergency (A&E)
+                                            {{
+                                                $t(
+                                                    "accident_and_emergency_(A&E)"
+                                                )
+                                            }}
                                         </div>
 
                                         <!-- Info blocks -->
@@ -182,7 +188,7 @@
                                                     <div
                                                         class="bg-gray text-white p-1 px-2"
                                                     >
-                                                        Bed No
+                                                        {{ $t("bed_no") }}
                                                     </div>
                                                     {{ bed.no }}
                                                 </div>
@@ -194,7 +200,7 @@
                                                         class="bg-gray text-white p-1 px-2"
                                                         v-if="!bed.available"
                                                     >
-                                                        Patient ID
+                                                        {{ $t("patient_id") }}
                                                     </div>
                                                     {{ bed.patient_id }}
                                                 </div>
@@ -205,14 +211,18 @@
                                                         <div
                                                             class="bg-darkgreen p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-mintage/80 transition"
                                                         >
-                                                            Place Patient
+                                                            {{
+                                                                $t(
+                                                                    "place_patient"
+                                                                )
+                                                            }}
                                                         </div>
                                                     </div>
                                                     <div v-else>
                                                         <div
                                                             class="bg-gray p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-gray/80 transition"
                                                         >
-                                                            Resolved
+                                                            {{ $t("resolved") }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -245,7 +255,7 @@
                                                                 1,
                                                     }"
                                                 >
-                                                    {{ h }}
+                                                    {{ $t(h) }}
                                                 </div>
                                             </div>
                                         </div>
@@ -270,13 +280,13 @@
 
                             <!-- Right status bar -->
                             <div
-                                class="text-[12px] lg:border-l border-gray/20 h-full flex justify-start flex-col flex-wrap lg:pl-4"
+                                class="text-[12px] lg:border-l border-t pt-4 border-gray/20 h-full flex justify-start flex-col flex-wrap lg:pl-4"
                             >
                                 <!-- Request Button -->
                                 <div
                                     class="cursor-pointer hover:bg-red transition text-[16px] bg-darkred text-white flex p-2 justify-center items-center"
                                 >
-                                    Request Transfer
+                                    {{ $t("request_transfer") }}
                                     <img
                                         src="../assets/request.svg"
                                         class="w-5 h-5 ml-2"
@@ -286,7 +296,9 @@
                                 <div
                                     class="mt-4 mb-1 flex text-center h-fit bg-gray w-full text-white py-1"
                                 >
-                                    <div class="grow">Transfer Request</div>
+                                    <div class="grow">
+                                        {{ $t("transfer_request") }}
+                                    </div>
                                     <span
                                         class="relative flex h-3 w-3 -mt-2.5 -mr-1"
                                         v-if="request.length"
@@ -305,7 +317,7 @@
                                         v-if="!request.length"
                                         class="bg-gray/80 p-2 flex justify-center text-white/60"
                                     >
-                                        No Request
+                                        {{ $t("no_request") }}
                                     </div>
                                 </Transition>
 
@@ -327,7 +339,9 @@
                                             <div
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
-                                                <strong>Request ID:</strong>
+                                                <strong>{{
+                                                    $t("request_id")
+                                                }}</strong>
                                                 <div class="text-yellow ml-2">
                                                     {{ r.request_id }}
                                                 </div>
@@ -336,7 +350,9 @@
                                             <div
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
-                                                <strong>From:</strong>
+                                                <strong>{{
+                                                    $t("from")
+                                                }}</strong>
                                                 <div class="text-yellow ml-2">
                                                     {{ r.from }}
                                                 </div>
@@ -345,7 +361,9 @@
                                             <div
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
-                                                <strong>Patient ID:</strong>
+                                                <strong>{{
+                                                    $t("patient_id")
+                                                }}</strong>
                                                 <div class="text-yellow ml-2">
                                                     {{ r.patient_id }}
                                                 </div>
@@ -354,9 +372,9 @@
                                             <div
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
                                             >
-                                                <strong
-                                                    >Current Condition:</strong
-                                                >
+                                                <strong>{{
+                                                    $t("current_condition")
+                                                }}</strong>
                                                 <div class="text-yellow ml-2">
                                                     {{ r.current_condition }}
                                                 </div>
@@ -366,7 +384,11 @@
                                                 class="backdrop-blur p-2 py-1 col-span-2"
                                             >
                                                 <strong>
-                                                    Reason for Transfer:
+                                                    {{
+                                                        $t(
+                                                            "reason_for_transfer"
+                                                        )
+                                                    }}
                                                 </strong>
                                                 <div
                                                     class="text-yellow text-right"
@@ -378,7 +400,7 @@
                                                 </div>
 
                                                 <strong class="italic">
-                                                    Note:
+                                                    {{ $t("note") }}
                                                 </strong>
                                                 <div
                                                     class="italic text-yellow text-right"

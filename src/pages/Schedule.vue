@@ -61,13 +61,7 @@
                             class="w-full grid grid-cols-5 gap-1 lg:max-w-[950px]"
                         >
                             <!-- Statistics -->
-                            <div class="col-span-5 w-full p-2 pb-0">
-                                <div
-                                    class="col-span-5 w-full py-1 text-center bg-gray text-white"
-                                >
-                                    Overview
-                                </div>
-                            </div>
+
                             <div
                                 class="col-span-5 grid-cols-3 grid w-full text-xs border-b-2 border-gray/20 pb-2 mb-2"
                             >
@@ -81,7 +75,7 @@
                                         <p
                                             class="bg-red w-fit h-fit p-1 px-2 text-white shadow shadow-white/20"
                                         >
-                                            Total
+                                            {{ $t("total") }}
                                         </p>
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
@@ -101,7 +95,7 @@
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
                                         >
-                                            Events
+                                            {{ $t("events") }}
                                         </p>
                                     </div>
                                 </div>
@@ -114,7 +108,7 @@
                                         <p
                                             class="bg-darkgreen w-fit h-fit p-1 px-2 text-white shadow shadow-gray"
                                         >
-                                            Today
+                                            {{ $t("today") }}
                                         </p>
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
@@ -124,7 +118,7 @@
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
                                         >
-                                            Events
+                                            {{ $t("events") }}
                                         </p>
                                     </div>
                                 </div>
@@ -137,7 +131,7 @@
                                         <p
                                             class="bg-darkyellow w-fit h-fit p-1 px-2 text-white shadow shadow-gray"
                                         >
-                                            In Future
+                                            {{ $t("in_future") }}
                                         </p>
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
@@ -147,7 +141,7 @@
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
                                         >
-                                            Events
+                                            {{ $t("events") }}
                                         </p>
                                     </div>
                                 </div>
@@ -166,7 +160,7 @@
                                         src="../assets/add.svg"
                                         class="w-5 h-5"
                                     />
-                                    Add New Schedule
+                                    {{ $t("add_new_schedule") }}
                                 </div>
                             </div>
 
@@ -177,7 +171,7 @@
                                 <div
                                     class="w-full bg-white/10 text-white text-center"
                                 >
-                                    Events
+                                    {{ $t("events") }}
                                 </div>
                                 <Transition>
                                     <div

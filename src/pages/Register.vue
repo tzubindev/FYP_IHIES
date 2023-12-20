@@ -1,62 +1,67 @@
 <template>
     <div
-        class="flex h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gradient-to-br from-mintage to-violet/50"
+        class="flex min-h-screen relative justify-center items-center bg-gray overflow-hidden"
     >
-        <div class="bg-white/70 p-5 py-10 -2xl backdrop-blur-sm">
-            <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-                <img
-                    class="w-[80px] m-auto"
-                    src="../assets/app_logo.png"
-                    alt="HEALTHIE"
-                />
-                <h2
-                    class="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
-                >
-                    Registration
-                </h2>
+        <div
+            class="p-8 pt-0 max-h-[90%] overflow-y-auto h-fit bg-white/20 backdrop-blur z-[5] flex flex-wrap justify-center items-center w-full sm:w-3/5 overflow-hidden"
+        >
+            <img
+                src="../assets/login_cover_mobile.svg"
+                class="h-32 sm:pl-4 pl-10 w-full"
+            />
+            <div class="w-full mt-2 text-center text-2xl font-bold text-white">
+                {{ $t("registration") }}
             </div>
 
-            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div class="w-full">
                 <form
                     id="login-form"
-                    class="mt-8"
+                    class=""
                     @submit.prevent="register"
                     novalidate="true"
                 >
                     <Textbox
-                        placeholder="ID No."
+                        :placeholder="$t('id_no')"
                         v-model="user.id"
                         hasIcon
                         iconSrc="../assets/uid.svg"
+                        customClass="border-white/60"
+                        colour="white"
                     />
                     <Textbox
-                        placeholder="Password"
-                        class="mt-3"
+                        :placeholder="$t('password')"
+                        class="mt-2"
                         isPassword
                         v-model="user.pw"
                         hasIcon
                         iconSrc="../assets/pw.svg"
+                        customClass="border-white/60"
+                        colour="white"
                     />
                     <Textbox
-                        placeholder="Confirmed Password"
-                        class="mt-3"
+                        :placeholder="$t('confimred_password')"
+                        class="mt-2"
                         isPassword
                         v-model="user.confirmed_pw"
                         hasIcon
                         iconSrc="../assets/pw.svg"
+                        customClass="border-white/60"
+                        colour="white"
                     />
                     <Textbox
-                        placeholder="Email"
-                        class="mt-3"
+                        :placeholder="$t('email')"
+                        class="mt-2"
                         v-model="user.email"
                         hasIcon
                         iconSrc="../assets/email.svg"
+                        customClass="border-white/60"
+                        colour="white"
                     />
 
                     <!-- Erro message span -->
                     <div
                         v-if="errors.length"
-                        class="text-left text-red mt-1 p-1 pb-0"
+                        class="text-left text-white mt-2 p-2 py-0.5 bg-red/60 backdrop-blur"
                     >
                         <div
                             v-for="item in errors"
@@ -70,25 +75,27 @@
 
                     <!-- Add TYPE SUBMIT HERE -->
                     <Button
-                        title="REGISTER"
-                        customClass="mt-2 bg-mintage hover:bg-gray/30 text-white"
+                        :title="$t('register')"
+                        customClass="mt-2 bg-red hover:bg-red/70  text-white"
                         submit
-                        large
+                        medium
                     />
                 </form>
 
-                <div class="mt-6 flex">
-                    <hr class="grow" />
+                <div class="border-t mt-4 pt-4 border-white/70">
+                    <Button
+                        :title="$t('sign_in')"
+                        medium
+                        customClass="hover:bg-mintage bg-white text-gray hover:text-white text-center "
+                        @click="leadTo('Login')"
+                    />
                 </div>
-
-                <Button
-                    title="SIGN IN"
-                    medium
-                    customClass="mt-4 hover:bg-white bg-cool text-white hover:text-black text-center"
-                    @click="leadTo('Login')"
-                />
             </div>
         </div>
+
+        <div
+            class="absolute top-1/2 -translate-y-1/2 w-[200%] z-0 h-1/2 bg-darkred rotate-[15deg]"
+        ></div>
     </div>
 </template>
 

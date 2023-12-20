@@ -95,7 +95,7 @@
                                 class="absolute inset-0 bg-gray opacity-60"
                             ></div>
                             <div
-                                class="hover:bg-gray/40 text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[30px]"
+                                class="hover:bg-gray/40 text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[30px]"
                             >
                                 {{ $t("view_patient_medical_record") }}
                             </div>
@@ -134,6 +134,7 @@
                 </div>
 
                 <!-- Right Sidebar -->
+                <!-- Transferring -->
                 <div class="hidden lg:block bg-black"></div>
             </div>
         </div>

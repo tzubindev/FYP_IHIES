@@ -27,7 +27,7 @@
                         novalidate="true"
                     >
                         <Textbox
-                            placeholder="ID No."
+                            :placeholder="$t('id_no')"
                             v-model="user.id"
                             hasIcon
                             iconSrc="../assets/uid.svg"
@@ -35,7 +35,7 @@
                             colour="white"
                         />
                         <Textbox
-                            placeholder="Password"
+                            :placeholder="$t('password')"
                             class="mt-5"
                             isPassword
                             v-model="user.pw"
@@ -49,18 +49,18 @@
                                 @click="openModal('FORGOT PASSWORD')"
                                 class="text-white cursor-pointer hover:text-red -full transition-all p-1 px-4"
                             >
-                                Forgot your password?
+                                {{ $t("forgot_your_password_?") }}
                             </p>
                         </div>
 
                         <Button
-                            title="LOGIN"
+                            :title="$t('login')"
                             customClass="mt-5 bg-red hover:bg-red/70 text-white"
                             submit
                             medium
                         />
                         <Button
-                            title="REGISTER"
+                            :title="$t('register')"
                             medium
                             customClass="mt-3 bg-white hover:bg-mintage/90 hover:text-white text-gray"
                             @click="leadTo('Register')"
@@ -84,7 +84,7 @@
                 modalType="error"
             >
                 <div class="mb-2" v-if="!is_auth">
-                    Please Type In Your ID Number
+                    {{ $t("please_type_in_your_id_number") }}
                 </div>
                 <Textbox
                     placeholder="ID No."
@@ -95,7 +95,7 @@
                 />
                 <!-- Hidden part, will be shown after the otp is sent -->
                 <div class="mb-2" v-if="is_otp_sent || is_auth">
-                    Please Type In Your OTP
+                    {{ $t("please_type_in_your_otp") }}
                 </div>
                 <div class="mb-4">
                     <!-- OTP Span -->
@@ -119,7 +119,7 @@
                     <div class="flex justify-end mt-4">
                         <Button
                             medium
-                            title="Send OTP"
+                            :title="$t('send_otp')"
                             customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
                             @click="handleOTP('send')"
                             v-if="!is_otp_sent && !is_auth && !is_sending_otp"
@@ -131,7 +131,7 @@
                             v-if="(!otp.id && is_auth) || is_sending_otp"
                         >
                             <div class="flex justify-center items-center">
-                                <p>Sending OTP...</p>
+                                <p>{{ $t("sending_otp_...") }}</p>
                             </div>
                         </div>
                     </div>

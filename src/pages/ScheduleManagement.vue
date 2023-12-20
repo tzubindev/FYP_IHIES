@@ -32,13 +32,13 @@
 
             <!-- Schedule slot -->
             <div
-                class="w-full h-full"
+                class="w-full h-full flex justify-center"
                 :class="{
                     'pl-[180px]': is_sidebar_expanding,
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-8 px-10 w-full h-fit">
+                <div class="pt-6 pb-8 px-10 w-full h-fit max-w-[950px]">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"
@@ -52,8 +52,8 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-center w-full min-w-[700px]">
-                        <div class="w-full lg:max-w-[950px] flex flex-wrap p-2">
+                    <div class="flex justify-center w-full">
+                        <div class="w-full p-2">
                             <!-- Summary span -->
                             <div class="w-full grid grid-cols-3 gap-2">
                                 <!-- Incoming -->

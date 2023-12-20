@@ -1,10 +1,11 @@
 <template>
-    <!-- TRANSLATION -->
     <div class="max-w-[1000px] w-full mx-auto grid grid-cols-2 gap-4">
         <!-- Risk Analysis -->
         <div class="w-full h-fit p-1 px-3 flex col-span-2 flex-wrap">
             <!-- Title -->
-            <div class="text-xs font-semibold p-2">Risk Analysis</div>
+            <div class="text-xs font-semibold p-2">
+                {{ $t("risk_analysis") }}
+            </div>
 
             <!-- Analysis Cards -->
             <div class="grid grid-cols-4 gap-2 w-full">
@@ -30,7 +31,7 @@
                             <div
                                 class="flex text-xs lg:text-[16px] text-ellipsis overflow-hidden"
                             >
-                                {{ r.name }}
+                                {{ $t(r.name) }}
                             </div>
                             <div class="w-full grow h-10 lg:h-3"></div>
                             <div
@@ -57,7 +58,9 @@
                         v-if="show_disclaimer"
                     >
                         <div class="flex">
-                            <p class="font-semibold grow">Disclaimer</p>
+                            <p class="font-semibold grow">
+                                {{ $t("disclaimer") }}
+                            </p>
                             <div
                                 class="transition text-sm cursor-pointer text-gray/60 hover:text-red"
                                 @click="show_disclaimer = false"
@@ -66,8 +69,9 @@
                             </div>
                         </div>
 
-                        <p>
-                            This AI-based system offers general guidance on
+                        <div>
+                            {{
+                                $t(`This AI-based system offers general guidance on
                             potential hospital departments based on reported
                             symptoms and is not a substitute for professional
                             medical advice, diagnosis, or treatment. Users
@@ -75,8 +79,9 @@
                             professional for personalized guidance. The
                             recommendations are based solely on reported
                             symptoms and do not consider other factors and they
-                            serve as initial guidance.
-                        </p>
+                            serve as initial guidance.`)
+                            }}
+                        </div>
                     </div>
                 </Transition>
 
@@ -98,7 +103,7 @@
                         />
                         <input
                             class="placeholder:text-xs bg-transparent grow mx-3 px-2 focus:outline-none text-white text-sm"
-                            placeholder="Enter Symptoms Here"
+                            :placeholder="$t('enter_symptoms_here')"
                             v-model="input_symptom"
                             @keyup.enter="handleEnterSymptom"
                         />
@@ -106,7 +111,7 @@
                             class="cursor-pointer bg-red text-gray font-semibold h-fit p-1 px-2 text-[10px]"
                             @click="insert_symptom"
                         >
-                            Enter
+                            {{ $t("enter") }}
                         </div>
                     </div>
 
@@ -119,7 +124,7 @@
                             <div
                                 v-for="(s, index) in symptoms"
                                 :key="s.id"
-                                class="cursor-pointer transition hover:bg-red px-3 py-0.5 text-center text-sm bg-red/80 w-full truncate"
+                                class="cursor-pointer transition hover:bg-gray hover:text-white px-3 py-0.5 text-center text-sm bg-white shadow w-full truncate"
                                 @click="symptoms.splice(index, 1)"
                             >
                                 {{ s }}
@@ -134,7 +139,7 @@
                         class="items-center cursor-pointer transition hover:bg-red/80 hover:text-gray w-full py-1 text-xs mt-2 bg-red text-white flex justify-center"
                         v-if="symptoms.length"
                     >
-                        Recommend
+                        {{ $t("recommend") }}
                         <img
                             src="../assets/recommend.png"
                             class="w-5 h-5 ml-1"
@@ -143,7 +148,7 @@
 
                 <!-- AI DepReco model Footer -->
                 <div class="w-full text-right italic text-[12px] pr-2 mt-2">
-                    Powered by AI model
+                    {{ $t("powered_by_ai_model") }}
                 </div>
 
                 <!-- COMMENT: add demonstration here if possible -->
@@ -157,7 +162,9 @@
                     'h-full': recommendations.length,
                 }"
             >
-                <div class="text-xs font-semibold">Recommendation</div>
+                <div class="text-xs font-semibold">
+                    {{ $t("recommendation") }}
+                </div>
 
                 <Transition name="fade">
                     <div v-if="!recommendations.length">
@@ -178,19 +185,19 @@ export default {
             RISK_LEVEL: ["LOW", "MODERATE", "HIGH", "VERY HIGH"],
             risk_analysis: [
                 {
-                    name: "Ischaemic Heart Disease",
+                    name: "ischaemic_heart_disease",
                     risk: 0,
                 },
                 {
-                    name: "Lower Respiratory Infections",
+                    name: "lower_respiratory_infections",
                     risk: 1,
                 },
                 {
-                    name: "Cerebrovascular Disease",
+                    name: "cerebrovascular_disease",
                     risk: 2,
                 },
                 {
-                    name: "Diabetes Mellitus",
+                    name: "diabetes_mellitus",
                     risk: 3,
                 },
             ],
@@ -203,6 +210,8 @@ export default {
 
     methods: {
         insert_symptom() {
+            console.log(this.input_symptom);
+            if (!this.input_symptom) return;
             if (!this.symptoms.filter((s) => s === this.input_symptom).length)
                 this.symptoms.push(this.input_symptom);
             this.input_symptom = null;

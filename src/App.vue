@@ -4,7 +4,7 @@
     </div>
     <div
         v-if="isFooterVisible"
-        class="absolute bottom-0 w-full text-center p-1 text-xs bg-black/30 text-white"
+        class="z-20 absolute bottom-0 w-full text-center p-1 text-xs bg-black/30 text-white"
     >
         &copy; 2023 -HEALTHIE-
     </div>
