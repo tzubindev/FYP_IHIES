@@ -43,6 +43,7 @@ import DoughnutChart from "./components/DoughnutChart.vue";
 import AnimatedModal from "./components/AnimatedModal.vue";
 import Notification from "./components/Notification.vue";
 import DocumentViewer from "./components/DocumentViewer.vue";
+import AccessDenied from "./components/AccessDenied.vue";
 
 // Handling http req
 import axios from "axios";
@@ -139,6 +140,7 @@ app.component("DoughnutChart", DoughnutChart);
 app.component("AnimatedModal", AnimatedModal);
 app.component("Notification", Notification);
 app.component("DocumentViewer", DocumentViewer);
+app.component("AccessDenied", AccessDenied);
 
 // Apply dayjs
 app.config.globalProperties.$dayjs = dayjs;

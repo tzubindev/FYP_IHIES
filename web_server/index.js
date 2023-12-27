@@ -58,6 +58,21 @@ const client = new MongoClient(process.env.MONGODB_URI, {
 // Login end point
 app.post("/login", async (request, response) => {
     try {
+        // Get Request Details
+        console.log(
+            "\n[LOGIN REQUEST]",
+            `
+        IP                ${request.ip}
+        Method            ${request.method}
+        Query Params      ${JSON.stringify(request.query)}
+        Cookies           ${JSON.stringify(request.cookies)}
+        URL               ${request.url}
+        Path              ${request.path}
+        Host Name         ${request.hostname}
+        Protocol          ${request.protocol}
+                    `
+        );
+
         // Get request data
         const requestData = request.body;
         response.send(await authentication.authenticate(client, requestData));

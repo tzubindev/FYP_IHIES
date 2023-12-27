@@ -174,12 +174,6 @@ export default {
     },
     methods: {
         async login(e) {
-            // Temp dev purpose
-            // this.leadTo("Patient");
-            // return;
-
-            // End here
-
             this.errors = [];
 
             if (this.user.id && this.user.pw) {

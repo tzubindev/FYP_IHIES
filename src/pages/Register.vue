@@ -61,7 +61,7 @@
                     <!-- Erro message span -->
                     <div
                         v-if="errors.length"
-                        class="text-left text-white mt-2 p-2 py-0.5 bg-red/60 backdrop-blur"
+                        class="text-left text-red mt-2 p-2 py-0.5 bg-yellow backdrop-blur"
                     >
                         <div
                             v-for="item in errors"

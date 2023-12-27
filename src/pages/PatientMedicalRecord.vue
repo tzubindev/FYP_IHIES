@@ -3,12 +3,7 @@
     <div
         class="font-serif bg-red/5 min-h-screen relative flex justify-center items-center"
     >
-        <div
-            v-if="is_access_denied"
-            class="flex-wrap access-denied-overlay z-100 absolute w-full h-screen bg-black text-red flex justify-center items-center"
-        >
-            <p class="access-denied-text font-extrabold">ACCESS DENIED</p>
-        </div>
+        <AccessDenied v-if="is_access_denied"></AccessDenied>
 
         <Loader
             :loading="!(is_verified && is_initiated) && !is_access_denied"
