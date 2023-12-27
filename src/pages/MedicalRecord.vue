@@ -240,8 +240,8 @@
                                         </div>
 
                                         <!-- Select a record animation -->
-                                    </div></Transition
-                                >
+                                    </div>
+                                </Transition>
 
                                 <!-- View panel -->
                                 <Transition>

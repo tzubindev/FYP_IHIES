@@ -32,7 +32,7 @@
         </div>
     </div>
     <Notification
-        :items="[]"
+        :items="notifications"
         :show="is_notification_shown"
         @selectedItem="updateSelectedNotification"
     ></Notification>
@@ -47,6 +47,23 @@ export default {
             languages: ["en", "zh_tw", "my", "jp", "kr"],
             is_language_shown: false,
             is_notification_shown: false,
+            notifications: [
+                {
+                    type: "schedule",
+                    from: "Hospital1",
+                    sender: "Dep1",
+                    message:
+                        "This is a long message. This is a long message. This is a long message. This is a long message. This is a long message.",
+                    created_timestamp: 1703131976542,
+                },
+                {
+                    type: "record",
+                    from: "Hospital2",
+                    sender: "Dep2",
+                    message: "Message2",
+                    created_timestamp: 1703130966542,
+                },
+            ],
         };
     },
     methods: {

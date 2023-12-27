@@ -2,6 +2,7 @@ const express = require("express");
 const mongodb = require("mongodb");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
+const { Blockchain, Block } = require("./blockchain");
 
 const formattedResponse = require("./formattedJsonData");
 const authentication = require("./authentication");
@@ -14,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+const blockchain = new Blockchain();
 
 // Middleware: To allow access from a specific address and port
 app.use(function (req, res, next) {
@@ -50,6 +53,8 @@ const client = new MongoClient(process.env.MONGODB_URI, {
     },
 });
 
+// =====================================================================
+// VERIFICATION & AUTHENTICATION
 // Login end point
 app.post("/login", async (request, response) => {
     try {
@@ -100,6 +105,7 @@ Protocol          ${request.protocol}
     }
 });
 
+// =====================================================================
 // Profile Initiation - short
 // NEED INCLUSION IN 1 endpoint instead of many points
 app.post("/username", async (request, response) => {
@@ -198,7 +204,26 @@ app.get("/locale/:uid", async (request, response) => {
 //     }
 // });
 
-// Listener
+// =====================================================================
+// BLOCKCHAIN
+app.get("/blocks", (req, res) => {
+    res.json(blockchain.chain);
+});
+
+// Add a new block
+app.post("/addBlock", (req, res) => {
+    const newBlock = new Block(
+        blockchain.chain.length,
+        Date.now(),
+        req.body.data
+    );
+
+    blockchain.addBlock(newBlock);
+    res.json(newBlock);
+});
+
+// =====================================================================
+// LISTENER
 app.listen(PORT, () => {
     console.log("Server Listening on PORT:", PORT);
 });
