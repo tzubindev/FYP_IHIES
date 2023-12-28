@@ -1,20 +1,19 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const mysql = require("mysql2/promise");
 const formattedResponse = require("./formattedJsonData");
 const emailHandler = require("./emailHandler");
 
-async function authenticate(client, requestData) {
+async function authenticate(pool, requestData) {
     try {
-        // Connection to mongodb and send query
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll = db.collection("Authentication");
-        const cursor = coll.find({ "user.id": requestData.id });
+        // Query the MySQL database
+        const [rows] = await pool.query(
+            "SELECT pw, role, salt FROM auth WHERE id = ?",
+            [requestData.id]
+        );
 
-        // Get query result from mongodb
-        const data = await cursor.toArray();
-
-        // check if uid exists
-        if (!data.length) {
+        // Check if user id exists
+        if (!rows.length) {
             return formattedResponse.errorMsg(
                 "Authentication Failed",
                 "/login",
@@ -22,11 +21,11 @@ async function authenticate(client, requestData) {
             );
         }
 
-        // only one uid will be matched
-        const pw = data[0].user.pw;
-        const role = data[0].user.role;
-        const salt = data[0].user.salt;
+        const pw = rows[0].pw;
+        const role = rows[0].role;
+        const salt = rows[0].salt;
 
+        // Verify the password
         const isAuthenticated = await compare_passwords_async(
             requestData.pw,
             pw,
@@ -35,7 +34,10 @@ async function authenticate(client, requestData) {
 
         // Add role into result
         const result = isAuthenticated
-            ? { authentication: isAuthenticated, role: role }
+            ? {
+                  authentication: isAuthenticated,
+                  user: { id: requestData.id, role: role },
+              }
             : { authentication: isAuthenticated };
 
         return formattedResponse.successMsg(result);
@@ -45,9 +47,6 @@ async function authenticate(client, requestData) {
             "/login",
             error.message
         );
-    } finally {
-        // Ensure that the client will close when you finish/error
-        await client.close();
     }
 }
 
@@ -324,7 +323,7 @@ async function compare_passwords_async(
         const userEnteredHash = await hash(userEnteredPassword, salt);
         return userEnteredHash === hashedPassword;
     } catch (err) {
-        throw err; // Handle the error as needed
+        throw err;
     }
 }
 
@@ -342,4 +341,28 @@ async function hash(target, salt) {
     }
 }
 
-module.exports = { authenticate, two_factor_authenticate, check_passcode };
+// Function to generate a new token
+const generate_token = (user) => {
+    return jwt.sign(user, secretKey, { expiresIn: "8h" });
+};
+
+// Function to verify a token
+const verify_token = (token) => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, secretKey, (err, user) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(user);
+            }
+        });
+    });
+};
+
+module.exports = {
+    authenticate,
+    two_factor_authenticate,
+    check_passcode,
+    generate_token,
+    verify_token,
+};

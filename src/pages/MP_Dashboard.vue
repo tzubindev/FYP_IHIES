@@ -125,6 +125,15 @@
                             <!-- label -->
                             <div class="text-[14px]">{{ $t("schedule") }}</div>
                         </div>
+
+                        <!-- Vital Sign -->
+                        <div
+                            class="hover:bg-gray cursor-pointer transition p-2 bg-cool text-white shadow shadow-gray flex flex-wrap justify-center text-center"
+                        >
+                            <div class="text-[28px] w-full">
+                                {{ $t("create_vital_sign") }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -148,9 +157,6 @@ export default {
             },
             current_time: this.getCurrentTime(),
             schedule_number: "N/A",
-
-            // modalTitle: "Custom Modal",
-            // show: false,
             is_verified: false,
             is_initiated: false,
             is_access_denied: false,
@@ -165,9 +171,6 @@ export default {
         console.log("MOUNTED");
 
         this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
 
         if (!this.user.passcode) {
             this.is_access_denied = true;

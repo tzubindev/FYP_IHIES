@@ -17,4 +17,7 @@ module.exports = {
             message: msg,
         };
     },
+    logJsonToString(logMessage) {
+        return JSON.stringify(logMessage);
+    },
 };

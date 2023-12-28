@@ -70,17 +70,7 @@
                         </div>
 
                         <div>
-                            {{
-                                $t(`This AI-based system offers general guidance on
-                            potential hospital departments based on reported
-                            symptoms and is not a substitute for professional
-                            medical advice, diagnosis, or treatment. Users
-                            should consult with a qualified healthcare
-                            professional for personalized guidance. The
-                            recommendations are based solely on reported
-                            symptoms and do not consider other factors and they
-                            serve as initial guidance.`)
-                            }}
+                            {{ $t("disclaimer_content") }}
                         </div>
                     </div>
                 </Transition>

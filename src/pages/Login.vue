@@ -22,12 +22,12 @@
                     <!-- ADD ICONS FOR UID AND PASSWORD -->
                     <form
                         id="login-form"
-                        class="w-full"
+                        class="w-full text-[14px]"
                         @submit.prevent="login"
                         novalidate="true"
                     >
                         <Textbox
-                            :placeholder="$t('id_no')"
+                            :placeholder="$t('id_no_or_pp')"
                             v-model="user.id"
                             hasIcon
                             iconSrc="../assets/uid.svg"
@@ -46,8 +46,8 @@
                         />
                         <div class="w-full mt-3 mb-6 flex justify-end px-2">
                             <p
-                                @click="openModal('FORGOT PASSWORD')"
-                                class="text-white cursor-pointer hover:text-red -full transition-all p-1 px-4"
+                                @click="openModal('forgot_password')"
+                                class="text-white cursor-pointer hover:text-gray hover:underline transition-all p-1 px-4"
                             >
                                 {{ $t("forgot_your_password_?") }}
                             </p>
@@ -75,6 +75,7 @@
         </div>
 
         <!-- Forget Password Modal -->
+        <!-- eslint-disable-next-line vue/valid-template-root -->
         <Transition>
             <Modal
                 v-if="show"
@@ -185,7 +186,7 @@ export default {
                     .then((response) => {
                         console.log("start auth");
                         this.show = false;
-                        console.log(response.data);
+                        console.log(response);
                         if (
                             response.data.type === "Error" &&
                             response.data.message === "Authentication Failed"

@@ -16,12 +16,12 @@
             <div class="w-full">
                 <form
                     id="login-form"
-                    class=""
+                    class="text-[14px]"
                     @submit.prevent="register"
                     novalidate="true"
                 >
                     <Textbox
-                        :placeholder="$t('id_no')"
+                        :placeholder="$t('id_no_or_pp')"
                         v-model="user.id"
                         hasIcon
                         iconSrc="../assets/uid.svg"
@@ -39,7 +39,7 @@
                         colour="white"
                     />
                     <Textbox
-                        :placeholder="$t('confimred_password')"
+                        :placeholder="$t('confirmed_password')"
                         class="mt-2"
                         isPassword
                         v-model="user.confirmed_pw"

@@ -816,7 +816,7 @@ export default {
                 passcode: null,
             },
             profile: {
-                sex: "something",
+                sex: "male",
                 age: null,
                 blood: null,
                 height: null,
