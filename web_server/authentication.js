@@ -4,6 +4,13 @@ const mysql = require("mysql2/promise");
 const formattedResponse = require("./formattedJsonData");
 const emailHandler = require("./emailHandler");
 
+const dotenv = require("dotenv");
+
+// Load environment variables from .env file
+dotenv.config();
+
+const secretKey = process.env.TOKEN_SECRET_KEY;
+
 async function authenticate(pool, requestData) {
     try {
         // Query the MySQL database
@@ -32,11 +39,15 @@ async function authenticate(pool, requestData) {
             salt
         );
 
+        const confirmedUser = isAuthenticated
+            ? { id: requestData.id, role: role }
+            : null;
+
         // Add role into result
         const result = isAuthenticated
             ? {
                   authentication: isAuthenticated,
-                  user: { id: requestData.id, role: role },
+                  user: confirmedUser,
               }
             : { authentication: isAuthenticated };
 
@@ -59,14 +70,11 @@ async function authenticate(pool, requestData) {
 //      send
 // ]
 
-async function two_factor_authenticate(client, requestData) {
+async function two_factor_authenticate(pool, requestData) {
+    let connection;
     try {
-        // Connection to mongodb and send query
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll_auth = db.collection("Authentication");
-        const coll_otp = db.collection("OTP");
-        const coll_passcode = db.collection("Passcode");
+        // Get a MySQL connection from the pool
+        connection = await pool.getConnection();
 
         // SEND
         if (
@@ -74,13 +82,18 @@ async function two_factor_authenticate(client, requestData) {
                 requestData.type === "login") &&
             requestData.mode === "send"
         ) {
-            const cursor = coll_auth.find({ "user.id": requestData.id });
+            // Query the user data from the MySQL database
+            const table =
+                requestData.role === "patient"
+                    ? "patient_profile"
+                    : "mp_profile";
+            const [userDataRows] = await connection.execute(
+                `SELECT email FROM ${table} WHERE id = ?`,
+                [requestData.id]
+            );
 
-            // Get query result from mongodb
-            const data = await cursor.toArray();
-
-            // check if uid exists
-            if (!data.length) {
+            // Check if user id exists
+            if (!userDataRows.length) {
                 return formattedResponse.errorMsg(
                     "Authentication Failed",
                     "/login",
@@ -89,98 +102,72 @@ async function two_factor_authenticate(client, requestData) {
             }
 
             // only one uid will be matched
-            const email = data[0].user.email;
+            const email = userDataRows[0].email;
 
             // Generate random otp
             const otp = OTP_generator();
 
-            // Send e-mail for otp
+            // Send e-mail for otp (your email sending logic goes here)
             await emailHandler.sendOTP(email, `${otp.id}-${otp.code}`);
 
             // Store otp to database
             // The otp will be valid for 5 mins
+            const expirationDate = new Date(Date.now() + 5 * 60 * 1000);
+            expirationDate.setHours(expirationDate.getHours() + 8); // Adding 8 hours for UTC+8
 
+            const formattedExpirationDate = expirationDate
+                .toISOString()
+                .slice(0, 19)
+                .replace("T", " ");
             const otpData = {
-                expired: Date.now() + 1 * 60 * 1000,
+                expired: formattedExpirationDate,
                 id: otp.id,
                 code: otp.code,
             };
 
-            const filter = { [requestData.id]: { $exists: true } };
-            const updateData = {
-                $set: { [requestData.id]: otpData },
-            };
-
-            const result = await coll_otp.updateOne(filter, updateData, {
-                upsert: true,
-            });
+            const [result] = await connection.execute(
+                "INSERT INTO otp (id, code, expired) VALUES (?, ?, ?)",
+                [otpData.id, otpData.code, otpData.expired]
+            );
 
             let response;
 
             // Res to Req
-            if (result.modifiedCount === 1 || result.upsertedCount === 1) {
+            if (result.affectedRows === 1) {
                 response = { id: otp.id };
             } else {
-                response = "Failed to update or create OTP data";
+                response = "Failed to insert OTP data";
             }
+
             return formattedResponse.successMsg(response);
         }
 
         // RECEIVE
-        // id: otp_uid,
-        // type: otp_type,
-        // mode: "receive",
-        // otp:  {
-        //     id,
-        //     code,
-        // }
         if (requestData.mode === "receive") {
             // Verify otp and take action correspondingly
             if (
                 requestData.type === "login" ||
                 requestData.type === "forgetPassword"
             ) {
-                // Query the OTP data from the MongoDB collection
-                const keyToFind = requestData.id;
-                const filter = { [keyToFind]: { $exists: true } };
-                const otpDataCursor = await coll_otp.find(filter);
-
-                // Convert the cursor results to an array
-                const otpDataArray = await otpDataCursor.toArray();
+                const [otpDataRows] = await connection.execute(
+                    "SELECT * FROM otp WHERE id = ?",
+                    [requestData.otp.id]
+                );
 
                 // Verification
                 let result;
-                if (otpDataArray.length === 1) {
-                    const target = otpDataArray[0][requestData.id];
+                if (otpDataRows.length === 1) {
+                    const target = otpDataRows[0];
 
                     if (
-                        target.expired > Date.now() &&
+                        target.expired > new Date() &&
                         target.id === requestData.otp.id &&
                         target.code == requestData.otp.code
                     ) {
-                        result = "VER_SUCCESS";
-                        const passcode = random_password_generator();
-                        const filter = { [requestData.id]: { $exists: true } };
-                        const updateData = {
-                            $set: {
-                                [requestData.id]: passcode,
-                            },
-                        };
-
-                        const updateResult = await coll_passcode.updateOne(
-                            filter,
-                            updateData,
-                            {
-                                upsert: true,
-                            }
-                        );
-
-                        if (
-                            updateResult.modifiedCount === 1 ||
-                            updateResult.upsertedCount === 1
-                        ) {
-                            result += "|" + passcode;
-                        }
+                        result =
+                            "VER_SUCCESS" +
+                            "|" +
+                            generate_token(requestData.user);
                     } else {
                         result = "VER_FAILED";
                     }
@@ -190,16 +177,9 @@ async function two_factor_authenticate(client, requestData) {
 
                 // If it is forgetPassword req, additional actions needed
                 if (requestData.type === "forgetPassword") {
-                    // 1. verify otp DONE
-
-                    // 3. store rand pw into the specific user's data
-                    // 4. send email encompassing the rand pw to the user
-                    // 5. return VER_SUCCESS / VER_FAILED
-
-                    // 2. generate rand pw
+                    // Additional actions for forgetPassword
                     const randomPassword = random_password_generator();
 
-                    console.log(random_password_generator());
                     return formattedResponse.successMsg({
                         msgType: "forgetPassword",
                     });
@@ -215,47 +195,8 @@ async function two_factor_authenticate(client, requestData) {
             error.message
         );
     } finally {
-        // Ensure that the client will close when you finish/error
-        await client.close();
-    }
-}
-
-async function check_passcode(client, requestData) {
-    try {
-        // Connection to mongodb and send query
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll_passcode = db.collection("Passcode");
-        const keyToFind = requestData.id;
-        const filter = { [keyToFind]: { $exists: true } };
-        const passcodeDataCursor = await coll_passcode.find(filter);
-
-        // Get query result from mongodb
-        const data = await passcodeDataCursor.toArray();
-
-        // check if uid exists
-        if (!data.length) {
-            return formattedResponse.errorMsg(
-                "Verification Failed",
-                "/username",
-                "Unmatched passcode."
-            );
-        }
-        const result = {
-            passcode_verification:
-                data[0][requestData.id] === requestData.passcode,
-        };
-
-        return formattedResponse.successMsg(result);
-    } catch (error) {
-        return formattedResponse.errorMsg(
-            "Verification Error",
-            "/username",
-            error.message
-        );
-    } finally {
-        // Ensure that the client will close when you finish/error
-        await client.close();
+        // Release the MySQL connection back to the pool
+        if (connection) connection.release();
     }
 }
 
@@ -347,22 +288,27 @@ const generate_token = (user) => {
 };
 
 // Function to verify a token
-const verify_token = (token) => {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, secretKey, (err, user) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        });
-    });
+const verify_token = (req, res, next) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({ message: "Token is missing" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        req.user = decoded; // Attach user information to the request
+        delete req.user.pw;
+        console.log(req.user);
+        next();
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid token" });
+    }
 };
 
 module.exports = {
     authenticate,
     two_factor_authenticate,
-    check_passcode,
     generate_token,
     verify_token,
 };

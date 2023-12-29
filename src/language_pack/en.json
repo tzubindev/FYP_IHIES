@@ -38,7 +38,6 @@
     "access_management": "Access Management",
     "medical_personnel": "Medical Personnel",
     "view_patient_medical_record": "View Patient Medical Record",
-    "male": "Male",
     "medical_personnel_id_/_name": "Medical Personnel ID / Name",
     "date": "Date",
     "*mp_=_medical_personnel": "*MP = Medical Personnel",
@@ -120,5 +119,8 @@
     "read_mr": "Read MR",
     "forgot_password": "Forgot Password",
     "please_type_in_your_id_number": "Please Type In Your ID Number",
-    "send_otp": "Send OTP"
+    "send_otp": "Send OTP",
+    "access_denied": "Access Denied",
+    "male": "Male",
+    "female": "Female"
 }

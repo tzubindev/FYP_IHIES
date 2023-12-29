@@ -7,10 +7,10 @@
         ></div
     ></transition>
     <div
-        class="overflow-y-auto overflow-x-hidden z-40 bg-gray text-white fixed top-0 bottom-0 lg:left-0 text-center"
+        class="overflow-y-auto overflow-x-hidden z-40 bg-gray text-white fixed top-0 bottom-0 text-center"
         :class="{
-            'w-[180px] lg:w-[240px]': is_expanding,
-            'w-[70px] lg:w-[80px]': !is_expanding,
+            'w-[180px] ': is_expanding,
+            'w-[70px] ': !is_expanding,
         }"
     >
         <!-- Company Logo -->
@@ -34,15 +34,15 @@
                 </div>
 
                 <div
-                    class="absolute -left-[60px] top-[60px] w-[200px] h-[140px] lg:w-[240px] bg-orange rounded-t-full"
+                    class="absolute -left-[60px] top-[60px] w-[200px] h-[140px] bg-orange rounded-t-full"
                 ></div>
 
                 <div
-                    class="absolute left-[40px] top-[60px] w-[140px] h-[140px] lg:w-[180px] lg:left-[60px] bg-red rounded-tl-full"
+                    class="absolute left-[40px] top-[60px] w-[140px] h-[140px] bg-red rounded-tl-full"
                 ></div>
 
                 <div
-                    class="absolute left-[110px] top-[130px] w-[70px] h-[70px] lg:w-[100px] lg:left-[140px] bg-gradient-to-br from-red to-white/40 rounded-tl-full"
+                    class="absolute left-[110px] top-[130px] w-[70px] h-[70px] bg-gradient-to-br from-red to-white/40 rounded-tl-full"
                 ></div>
             </div>
         </transition>
@@ -69,7 +69,7 @@
 
             <!-- Feature Buttons - Patient -->
             <div
-                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl lg:gap-1.5"
+                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl"
                 v-if="!medicalPersonnel"
             >
                 <!-- Dashboard -->
@@ -77,14 +77,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5': !is_expanding,
+                        'p-2 justify-center ': !is_expanding,
                     }"
                     @click="this.leadTo('dashboard/patient')"
                 >
-                    <img
-                        src="../assets/dashboard.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/dashboard.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -97,15 +94,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('medical-record')"
                 >
-                    <img
-                        src="../assets/record.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/record.svg" class="w-4 h-4" />
                     <span
                         class="text-[12px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -118,15 +111,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('inquiry')"
                 >
-                    <img
-                        src="../assets/inquiry.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/inquiry.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -139,15 +128,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('schedule')"
                 >
-                    <img
-                        src="../assets/schedule.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/schedule.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -160,14 +145,10 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                 >
-                    <img
-                        src="../assets/setting.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/setting.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -178,7 +159,7 @@
 
             <!-- Feature Buttons - Medical Personnel -->
             <div
-                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl lg:gap-1.5"
+                class="grid grid-cols-1 mt-3 gap-1 p-1 bg-white/10 shadow-xl"
                 v-if="medicalPersonnel"
             >
                 <!-- Dashboard -->
@@ -186,14 +167,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5': !is_expanding,
+                        'p-2 justify-center ': !is_expanding,
                     }"
                     @click="this.leadTo('dashboard/medical-personnel')"
                 >
-                    <img
-                        src="../assets/dashboard.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/dashboard.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -206,15 +184,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('schedule-management')"
                 >
-                    <img
-                        src="../assets/schedule.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/schedule.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -227,15 +201,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('patient-transfer')"
                 >
-                    <img
-                        src="../assets/transfer.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/transfer.svg" class="w-4 h-4" />
                     <span
                         class="text-[12px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -248,15 +218,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('incident-report-channel')"
                 >
-                    <img
-                        src="../assets/report.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/report.svg" class="w-4 h-4" />
                     <span
                         class="text-[12px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -269,15 +235,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('patient-medical-record')"
                 >
-                    <img
-                        src="../assets/record.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/record.svg" class="w-4 h-4" />
                     <span
                         class="text-[12px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -290,15 +252,11 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                     @click="this.leadTo('access-management')"
                 >
-                    <img
-                        src="../assets/access.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/access.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold text-left"
                         v-if="is_expanding"
@@ -311,14 +269,10 @@
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
                         'p-2 px-3': is_expanding,
-                        'p-2 justify-center lg:py-2.5 my-1 lg:my-0':
-                            !is_expanding,
+                        'p-2 justify-center  my-1 ': !is_expanding,
                     }"
                 >
-                    <img
-                        src="../assets/setting.svg"
-                        class="w-4 h-4 lg:w-5 lg:h-5"
-                    />
+                    <img src="../assets/setting.svg" class="w-4 h-4" />
                     <span
                         class="text-[13px] ml-3 font-bold"
                         v-if="is_expanding"
@@ -332,11 +286,11 @@
                 class="mt-3 bg-red hover:bg-red/40 transition flex items-center cursor-pointer"
                 :class="{
                     'p-2 px-3 justify-start': is_expanding,
-                    'p-2 justify-center lg:p-3 ': !is_expanding,
+                    'p-2 justify-center  ': !is_expanding,
                 }"
                 @click="logout"
             >
-                <img src="../assets/logout.svg" class="w-4 h-4 lg:w-5 lg:h-5" />
+                <img src="../assets/logout.svg" class="w-4 h-4" />
                 <span class="text-[14px] ml-3 font-bold" v-if="is_expanding">{{
                     $t("logout")
                 }}</span>
@@ -347,8 +301,8 @@
         <div
             class="bg-gray flex justify-center p-2 bottom-0 fixed"
             :class="{
-                'w-[180px] lg:w-[240px] pl-0': is_expanding,
-                'w-[60px] lg:w-[80px] lg:pl-1.5 pl-3': !is_expanding,
+                'w-[180px]  pl-0': is_expanding,
+                'w-[60px]   pl-3': !is_expanding,
             }"
         >
             <img

@@ -171,15 +171,15 @@ export default {
         console.log("MOUNTED");
 
         this.user.passcode = await sessionStorage.getItem("passcode");
+        const obtainedUser = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = obtainedUser.id;
+        this.user.role = obtainedUser.role;
 
         if (!this.user.passcode) {
             this.is_access_denied = true;
         } else {
-            this.user.id = this.$route.params.id;
-            console.log(this.user.id);
-            console.log(this.user.passcode);
-
-            if (!(this.user.passcode && this.user.id)) {
+            // LAST CHECK
+            if (!(this.user.passcode && this.user.id && this.user.role)) {
                 this.is_verified = true;
                 this.is_access_denied = true;
                 this.is_initiated = false;
@@ -187,35 +187,26 @@ export default {
             }
 
             try {
-                const response = await this.axios.post(
-                    `${this.api_url}/username`,
-                    this.user
+                const response = await this.axios.get(
+                    `${this.api_url}/profile`,
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                        data: {
+                            user: this.user,
+                        },
+                    }
                 );
-                console.log("Start verification");
 
+                console.log("Start Initiation");
                 this.is_verified = true;
-
-                if (response.data.message.passcode_verification) {
-                    this.user.name = response.data.message.name;
-                    this.is_access_denied = false;
-                } else {
-                    this.is_initiated = false;
-                    this.is_access_denied = true;
-                }
-
-                if (!this.is_access_denied) {
-                    // Get user preference language
-                    const localeResponse = await this.axios.get(
-                        `${this.api_url}/locale/${this.user.id}`
-                    );
-                    console.log(localeResponse);
-
-                    this.$i18n.locale = localeResponse.data.message.locale;
-                    this.is_initiated = true;
-                }
+                await this.initiateDashboard(response.data.message.profile);
+                this.is_initiated = true;
             } catch (error) {
                 console.error("An error occurred:", error);
-                // Handle error as needed
+                this.is_initiated = false;
+                this.is_access_denied = true;
             }
         }
 
@@ -224,11 +215,64 @@ export default {
     },
 
     methods: {
-        async initiateDashboard(id) {
-            this.$axios();
+        async initiateDashboard(profile) {
+            // Format
+            //  name: null,
+            //  sex: null,
+            //  age: null,
+            //  blood: null,
+            //  height: null,
+            //  weight: null,
+            //  last: null,
+
+            // Initialise Language
+            this.$i18n.locale = profile.language;
+
+            // Standardise
+            profile.age = this.calculateAge(profile.born_date);
+            profile.last = this.formatDateTime(profile.last);
+            delete profile.language;
+            delete profile.born_date;
+
+            // Initiation
+            this.profile = profile;
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
+        },
+        calculateAge(birthDateString) {
+            const birthDate = new Date(birthDateString);
+            const currentDate = new Date();
+
+            // Calculate the difference in years
+            let age = currentDate.getFullYear() - birthDate.getFullYear();
+
+            // Check if the birthday has occurred this year
+            if (
+                currentDate.getMonth() < birthDate.getMonth() ||
+                (currentDate.getMonth() === birthDate.getMonth() &&
+                    currentDate.getDate() < birthDate.getDate())
+            ) {
+                age--;
+            }
+
+            return age;
+        },
+        formatDateTime(isoString) {
+            const date = new Date(isoString);
+
+            // Get individual date and time components
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            const seconds = String(date.getSeconds()).padStart(2, "0");
+
+            // Create the formatted string
+            const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+
+            return formattedDateTime;
         },
         updateTime() {
             this.current_time = this.getCurrentTime();

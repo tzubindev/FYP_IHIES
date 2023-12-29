@@ -1,55 +1,47 @@
+const { request } = require("express");
 const formattedResponse = require("./formattedJsonData");
 
 class ProfileController {
-    async get_name(client, requestData) {
-        console.log("Getting name");
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll_auth = db.collection("Authentication");
-        // const coll_otp = db.collection("OTP");
-        // const coll_passcode = db.collection("Passcode");
-        const cursor = coll_auth.find({ "user.id": requestData.id });
+    async get_all(pool, requestUser) {
+        let connection;
+        try {
+            // Get a MySQL connection from the pool
+            connection = await pool.getConnection();
+            const table =
+                requestUser.role === "patient"
+                    ? "patient_profile"
+                    : "mp_profile";
 
-        // Get query result from mongodb
-        const data = await cursor.toArray();
-
-        // check if uid exists
-        if (!data.length) {
-            return formattedResponse.errorMsg(
-                "Profile Info Retrieval Failed",
-                "/username",
-                "Profile does not exist."
+            // Query the MySQL database for all relevant data
+            const [rows] = await connection.execute(
+                `SELECT name, language, sex, blood, weight, born_date, height, last_login FROM ${table} WHERE id = ?`,
+                [requestUser.id]
             );
-        }
 
-        const result = { passcode_verification: true, name: data[0].user.name };
-
-        return formattedResponse.successMsg(result);
-    }
-
-    async get_locale(client, requestData) {
-        console.log("Getting locale");
-        await client.connect();
-        const db = client.db("FYP-IHIES");
-        const coll_prof = db.collection("Profile");
-
-        const cursor = coll_prof.find({ "user.id": requestData.id });
-
-        // Get query result from mongodb
-        const data = await cursor.toArray();
-
-        // check if uid exists
-        if (!data.length) {
+            // Process the query result as needed
+            const result = {
+                profile: {
+                    name: rows[0].name,
+                    language: rows[0].language,
+                    sex: rows[0].sex,
+                    blood: rows[0].blood,
+                    weight: rows[0].weight,
+                    born_date: rows[0].born_date,
+                    height: rows[0].height,
+                    last: rows[0].last_login,
+                },
+            };
+            return formattedResponse.successMsg(result);
+        } catch (error) {
             return formattedResponse.errorMsg(
-                "Profile Info Retrieval Failed",
-                "/locale",
-                "Locale does not exist."
+                "Profile Info Retrieval Error",
+                "/profile",
+                error.message
             );
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
         }
-
-        const result = { locale: data[0].user.language };
-
-        return formattedResponse.successMsg(result);
     }
 }
 

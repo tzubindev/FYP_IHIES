@@ -76,69 +76,68 @@
 
         <!-- Forget Password Modal -->
         <!-- eslint-disable-next-line vue/valid-template-root -->
-        <Transition>
-            <Modal
-                v-if="show"
-                :title="modal_title"
-                @confirm="handleOTP('receive')"
-                @cancel="cancel"
-                modalType="error"
-            >
-                <div class="mb-2" v-if="!is_auth">
-                    {{ $t("please_type_in_your_id_number") }}
-                </div>
-                <Textbox
-                    placeholder="ID No."
-                    colour="white"
-                    v-model="forget_password_id"
-                    v-if="!is_auth"
-                    class="mb-4"
-                />
-                <!-- Hidden part, will be shown after the otp is sent -->
-                <div class="mb-2" v-if="is_otp_sent || is_auth">
-                    {{ $t("please_type_in_your_otp") }}
-                </div>
-                <div class="mb-4">
-                    <!-- OTP Span -->
-                    <div
-                        class="w-full p-2 pr-4 bg-white/30 -3xl"
-                        v-if="is_otp_sent"
-                    >
-                        <div class="flex justify-start items-center">
-                            <input
-                                v-model="otp.id"
-                                readonly
-                                class="max-w-[80px] p-1 bg-transparent outline-none text-center"
-                            />
-                            <input
-                                type="text"
-                                v-model="otp.code"
-                                class="w-full bg-gray p-2 border-b-2 outline-none text-center"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex justify-end mt-4">
-                        <Button
-                            medium
-                            :title="$t('send_otp')"
-                            customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
-                            @click="handleOTP('send')"
-                            v-if="!is_otp_sent && !is_auth && !is_sending_otp"
-                        />
 
-                        <!-- Loading animation -->
-                        <div
-                            class="animate-pulse bg-white/20 shadow p-4 max-w-sm w-full mx-auto"
-                            v-if="(!otp.id && is_auth) || is_sending_otp"
-                        >
-                            <div class="flex justify-center items-center">
-                                <p>{{ $t("sending_otp_...") }}</p>
-                            </div>
+        <Modal
+            v-if="show"
+            :title="modal_title"
+            @confirm="handleOTP('receive')"
+            @cancel="cancel"
+            modalType="error"
+        >
+            <div class="mb-2" v-if="!is_auth">
+                {{ $t("please_type_in_your_id_number") }}
+            </div>
+            <Textbox
+                placeholder="ID No."
+                colour="white"
+                v-model="forget_password_id"
+                v-if="!is_auth"
+                class="mb-4"
+            />
+            <!-- Hidden part, will be shown after the otp is sent -->
+            <div class="mb-2" v-if="is_otp_sent || is_auth">
+                {{ $t("please_type_in_your_otp") }}
+            </div>
+            <div class="mb-4">
+                <!-- OTP Span -->
+                <div
+                    class="w-full p-2 pr-4 bg-white/30 -3xl"
+                    v-if="is_otp_sent"
+                >
+                    <div class="flex justify-start items-center">
+                        <input
+                            v-model="otp.id"
+                            readonly
+                            class="max-w-[80px] p-1 bg-transparent outline-none text-center"
+                        />
+                        <input
+                            type="text"
+                            v-model="otp.code"
+                            class="w-full bg-gray p-2 border-b-2 outline-none text-center"
+                        />
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <Button
+                        medium
+                        :title="$t('send_otp')"
+                        customClass="bg-white hover:bg-mintage hover:text-white transition text-center hover w-1/2"
+                        @click="handleOTP('send')"
+                        v-if="!is_otp_sent && !is_auth && !is_sending_otp"
+                    />
+
+                    <!-- Loading animation -->
+                    <div
+                        class="animate-pulse bg-white/20 shadow p-4 max-w-sm w-full mx-auto"
+                        v-if="(!otp.id && is_auth) || is_sending_otp"
+                    >
+                        <div class="flex justify-center items-center">
+                            <p>{{ $t("sending_otp_...") }}</p>
                         </div>
                     </div>
                 </div>
-            </Modal>
-        </Transition>
+            </div>
+        </Modal>
 
         <!-- Loader -->
         <Loader
@@ -185,8 +184,9 @@ export default {
                     .post(`${this.api_url}/login`, this.user)
                     .then((response) => {
                         console.log("start auth");
-                        this.show = false;
                         console.log(response);
+                        this.show = false;
+
                         if (
                             response.data.type === "Error" &&
                             response.data.message === "Authentication Failed"
@@ -207,8 +207,8 @@ export default {
                             this.has_error = true;
                         }
 
-                        this.user.role = response.data.message.role
-                            ? response.data.message.role
+                        this.user.role = response.data.message.user.role
+                            ? response.data.message.user.role
                             : null;
                     });
             }
@@ -264,6 +264,7 @@ export default {
             await this.axios
                 .post(`${this.api_url}/otp`, {
                     id: otp_uid,
+                    role: this.user.role,
                     type: otp_type,
                     mode: "send",
                 })
@@ -271,7 +272,6 @@ export default {
                     response_data = response.data;
                 });
 
-            console.log(response_data);
             this.otp.id = response_data.message.id + " - ";
             this.is_otp_sent = true;
             this.$swal({
@@ -307,11 +307,12 @@ export default {
                     type: otp_type,
                     mode: "receive",
                     otp: this.otp,
+                    user: this.user,
                 })
                 .then((response) => {
                     response_data = response.data;
                 });
-            console.log(response_data);
+
             return response_data;
         },
         async handleOTP(mode) {
@@ -329,10 +330,9 @@ export default {
             }
             if (mode === "receive") {
                 if (this.is_auth) {
-                    console.log("Login: ", this.user.id);
                     const msg = await this.receiveOTP(this.user.id, "login");
                     console.log("Two-Factor Auth:", msg);
-                    console.log(msg.message === "VER_SUCCESS");
+
                     if (msg.message.split("|")[0] === "VER_SUCCESS") {
                         if (this.user.role === "patient")
                             this.leadTo("Patient", {
@@ -344,7 +344,6 @@ export default {
                             });
                     }
                 } else {
-                    console.log("Forget Password: ", this.forget_password_id);
                     await this.receiveOTP(
                         this.forget_password_id,
                         "forgetPassword"
@@ -376,6 +375,13 @@ export default {
                 case "Patient":
                     console.log(`Redirect to ${targetPage} Dashboard.`);
                     sessionStorage.setItem("passcode", params.passcode);
+                    sessionStorage.setItem(
+                        "user",
+                        JSON.stringify({
+                            id: this.user.id,
+                            role: this.user.role,
+                        })
+                    );
                     this.$router.push({
                         path: `/dashboard/patient/${this.user.id}`,
                     });
@@ -383,6 +389,13 @@ export default {
                 case "MedicalPersonnel":
                     console.log(`Redirect to ${targetPage} Dashboard.`);
                     sessionStorage.setItem("passcode", params.passcode);
+                    sessionStorage.setItem(
+                        "user",
+                        JSON.stringify({
+                            id: this.user.id,
+                            role: this.user.role,
+                        })
+                    );
                     this.$router.push({
                         path: `/dashboard/medical-personnel/${this.user.id}`,
                     });

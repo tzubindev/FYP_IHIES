@@ -29,23 +29,23 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // =====================================================================
 // [MIDDLEWARE] allow access from a specific address and port *** for dev
 app.use(function (req, res, next) {
-    // Website  wish to allow to connect
+    // Website wish to allow to connect
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
 
-    // Request methods  wish to allow
+    // Request methods wish to allow
     res.setHeader(
         "Access-Control-Allow-Methods",
         "GET, POST, OPTIONS, PUT, PATCH, DELETE"
     );
 
-    // Request headers  wish to allow
+    // Request headers wish to allow, including Authorization
     res.setHeader(
         "Access-Control-Allow-Headers",
-        "X-Requested-With,content-type"
+        "X-Requested-With,content-type,Authorization"
     );
 
-    // Set to true if  need the website to include cookies in the requests sent
-    // to the API (e.g. in case  use sessions)
+    // Set to true if need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
     res.setHeader("Access-Control-Allow-Credentials", true);
 
     // Pass to next layer of middleware
@@ -111,137 +111,52 @@ app.post("/otp", async (request, response) => {
         // Get request data
         const requestData = request.body;
         // Get Auth result
-        const result = await Authentication.two_factor_authenticate(
-            client,
-            requestData
+        Authentication.two_factor_authenticate(MySQLPool, requestData).then(
+            (result) => {
+                // Log
+                const logStr = Formatter.logJsonToString({
+                    type: RequestType.OTP,
+                    from: {
+                        ID: requestData.id,
+                        IP: request.ip,
+                        Method: request.method,
+                        "Query Params": JSON.stringify(request.query),
+                        Cookies: JSON.stringify(request.cookies),
+                        URL: request.url,
+                        Path: request.path,
+                        "Host Name": request.hostname,
+                        Protocol: request.protocol,
+                        Result: result,
+                    },
+                });
+                logger.log(logStr);
+
+                response.send(result);
+            }
         );
-
-        // Log
-        const logStr = Formatter.logJsonToString({
-            type: RequestType.OTP,
-            from: {
-                ID: requestData.id,
-                IP: request.ip,
-                Method: request.method,
-                "Query Params": JSON.stringify(request.query),
-                Cookies: JSON.stringify(request.cookies),
-                URL: request.url,
-                Path: request.path,
-                "Host Name": request.hostname,
-                Protocol: request.protocol,
-                Result: result,
-            },
-        });
-        logger.log(logStr);
-
-        response.send(result);
     } catch (e) {
         response.send(Formatter.errorMsg("Authentication Error", "/login"));
-    } finally {
-        // Ensures that the client will close when finish/error
-        await client.close();
     }
 });
 
-app.post("/verify", async (request, response) => {});
-
 // =====================================================================
-// Profile Initiation - short
-// NEED INCLUSION IN 1 endpoint instead of many points
-app.post("/username", async (request, response) => {
+// [PROFILE INITIALISATION]
+app.get("/profile", Authentication.verify_token, async (request, response) => {
     try {
         // Get request data
-        const requestData = request.body;
-        const passcode_check = await Authentication.check_passcode(
-            client,
-            requestData
+        response.send(
+            await new ProfileController().get_all(MySQLPool, request.user)
         );
-
-        if (passcode_check.message.passcode_verification) {
-            response.send(
-                await new ProfileController().get_name(client, requestData)
-            );
-        } else response.send(passcode_check);
+        console.log("Finished getting");
     } catch (e) {
         response.send(
-            Formatter.errorMsg("Get Info Error", "/patient/:id/query?")
+            Formatter.errorMsg("Get Info Error", "/profile", e.message)
         );
-    } finally {
-        // Ensures that the client will close when finish/error
-        await client.close();
     }
 });
-
-// Get User Language Preference
-// NEED INCLUSION IN 1 endpoint instead of many points
-app.get("/locale/:uid", async (request, response) => {
-    try {
-        // Get Request Details
-        console.log(
-            "\n\t[LOCALE GET REQUEST]\n",
-            `
-    IP                ${request.ip}
-    Method            ${request.method}
-    Query Params      ${JSON.stringify(request.query)}
-    Cookies           ${JSON.stringify(request.cookies)}
-    URL               ${request.url}
-    Path              ${request.path}
-    Host Name         ${request.hostname}
-    Protocol          ${request.protocol}
-                `
-        );
-
-        let requestData = request.body;
-        requestData.id = request.params.uid;
-        response.send(
-            await new ProfileController().get_locale(client, requestData)
-        );
-    } catch (e) {
-        response.send(
-            Formatter.errorMsg("Get Info Error", "/locale/:id", e.message)
-        );
-    } finally {
-        // Ensures that the client will close when finish/error
-        await client.close();
-    }
-});
-
-// Change locale
-// app.post("/locale/:uid", async (request, response) => {
-//     try {
-//         // Get Request Details
-//         console.log(
-//             "\n\t[LOCALE POST REQUEST]\n",
-//             `
-//     IP                ${request.ip}
-//     Method            ${request.method}
-//     Query Params      ${JSON.stringify(request.query)}
-//     Cookies           ${JSON.stringify(request.cookies)}
-//     URL               ${request.url}
-//     Path              ${request.path}
-//     Host Name         ${request.hostname}
-//     Protocol          ${request.protocol}
-//                 `
-//         );
-
-//         let requestData = request.body;
-//         requestData.id = request.params.uid;
-//         // change get_locale to set_locale here
-//         response.send(
-//             await new ProfileController().get_locale(client, requestData)
-//         );
-//     } catch (e) {
-//         response.send(
-//             Formatter.errorMsg("Get Info Error", "/locale/:id")
-//         );
-//     } finally {
-//         // Ensures that the client will close when  finish/error
-//         await client.close();
-//     }
-// });
 
 // =====================================================================
-// BLOCKCHAIN
+// [BLOCKCHAIN RECORD, INCOMPLETE]
 app.get("/blocks", (req, res) => {
     res.json(blockchain.chain);
 });
@@ -259,7 +174,7 @@ app.post("/addBlock", (req, res) => {
 });
 
 // =====================================================================
-// [NOT COMPLETED]
+// [INCOMPLETED]
 app.post("/vital-sign/add", async (req, res) => {
     const sampleData = [
         { patientid: "123", sys: 120.5, dia: 80.2, pulse: 70, breath: 16 },
