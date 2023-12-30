@@ -346,6 +346,7 @@ export default {
             user: {
                 id: this.$route.params.id,
             },
+            api_url: "http://127.0.0.1:3000",
         };
     },
     mounted() {
@@ -374,7 +375,14 @@ export default {
             else this.$router.push(`/${des}`);
         },
         async logout() {
-            await sessionStorage.removeItem("passcode");
+            await this.axios.put(`${this.api_url}/last-login`, {
+                data: {
+                    user: await JSON.parse(sessionStorage.getItem("user")),
+                },
+            });
+            await sessionStorage.clear();
+            await localStorage.clear();
+
             this.leadTo("login");
         },
     },

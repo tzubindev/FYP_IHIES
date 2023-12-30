@@ -75,8 +75,6 @@ app.post("/login", async (request, response) => {
         const requestData = request.body;
         // Get Auth Result
         Authentication.authenticate(MySQLPool, requestData).then((result) => {
-            console.log(result);
-
             // Log
             const logStr = Formatter.logJsonToString({
                 type: RequestType.LOGIN,
@@ -143,17 +141,101 @@ app.post("/otp", async (request, response) => {
 // [PROFILE INITIALISATION]
 app.get("/profile", Authentication.verify_token, async (request, response) => {
     try {
-        // Get request data
-        response.send(
-            await new ProfileController().get_all(MySQLPool, request.user)
+        const result = await new ProfileController().get_all(
+            MySQLPool,
+            request.user
         );
-        console.log("Finished getting");
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.PROFILE_INIT,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(result);
     } catch (e) {
         response.send(
             Formatter.errorMsg("Get Info Error", "/profile", e.message)
         );
     }
 });
+
+// =====================================================================
+// [PROFILE UPDATES]
+app.put("/last-login", async (request, response) => {
+    try {
+        const requestData = request.body.data;
+        const result = await new ProfileController().update_last_login(
+            MySQLPool,
+            requestData.user
+        );
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.LLI,
+            from: {
+                ID: requestData.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(result);
+    } catch (e) {
+        response.send(
+            Formatter.errorMsg("Update Info Error", "/last-login", e.message)
+        );
+    }
+});
+
+app.put(
+    "/lang/:language",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const result = await new ProfileController().update_language(
+                request.params.language,
+                MySQLPool,
+                request.user
+            );
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.LLI,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(result);
+        } catch (e) {
+            response.send(
+                Formatter.errorMsg("Update Info Error", "/lang", e.message)
+            );
+        }
+    }
+);
 
 // =====================================================================
 // [BLOCKCHAIN RECORD, INCOMPLETE]

@@ -206,10 +206,10 @@ export default {
                             });
                             this.has_error = true;
                         }
-
-                        this.user.role = response.data.message.user.role
-                            ? response.data.message.user.role
-                            : null;
+                        if (response.data.message.user)
+                            this.user.role = response.data.message.user.role
+                                ? response.data.message.user.role
+                                : null;
                     });
             }
             console.log("finish auth");
@@ -218,9 +218,7 @@ export default {
                 this.show = true;
                 this.modal_title = "LOGIN";
                 await this.handleOTP("send");
-                this.is_loading = false;
             } else {
-                this.is_loading = false;
                 this.is_auth = false;
                 this.has_error = false;
                 if (!this.user.id) this.errors.push("ID No. Required");
@@ -246,6 +244,7 @@ export default {
                     icon: "error",
                 });
             }
+            this.is_loading = false;
 
             e.preventDefault();
         },

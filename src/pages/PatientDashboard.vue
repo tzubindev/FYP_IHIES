@@ -16,6 +16,12 @@
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
+        <Profile
+            v-show="is_profile_opened"
+            :profile="profile"
+            @close="toggleProfile"
+        ></Profile>
+
         <!-- Medium screen and above size-->
         <div
             v-if="is_verified && is_initiated"
@@ -70,7 +76,7 @@
                                 </div>
                                 <img
                                     src="../sample_assets/profilePic_tb.jpg"
-                                    class="w-[120px] h-[120px] mx-auto rounded-full"
+                                    class="w-[120px] h-[120px] lg:w-[200px] lg:h-[200px] mx-auto rounded-full"
                                 />
 
                                 <div
@@ -84,6 +90,9 @@
                                 </div>
                                 <div
                                     class="cursor-pointer transition p-2 px-4 border border-red text-red hover:bg-red hover:text-white mt-3"
+                                    @click="
+                                        is_profile_opened = !is_profile_opened
+                                    "
                                 >
                                     {{ $t("view_profile") }}
                                 </div>
@@ -471,8 +480,9 @@ export default {
                 id: null,
                 passcode: null,
             },
+
             profile: {
-                name: null,
+                name: "",
                 sex: null,
                 age: null,
                 blood: null,
@@ -487,6 +497,7 @@ export default {
             is_initiated: false,
             is_access_denied: false,
             is_sidebar_expanding: false,
+            is_profile_opened: false,
             api_url: "http://127.0.0.1:3000",
 
             // Chart
@@ -496,7 +507,7 @@ export default {
                 datasets: [
                     {
                         borderColor: "#fb5b25",
-                        data: [99, 110, 106],
+                        data: [],
                     },
                 ],
             },
@@ -522,7 +533,7 @@ export default {
                 datasets: [
                     {
                         borderColor: "#fb5b25",
-                        data: [140, 110, 96],
+                        data: [],
                     },
                 ],
             },
@@ -548,7 +559,7 @@ export default {
                 datasets: [
                     {
                         borderColor: "#fb5b25",
-                        data: [72, 84, 80],
+                        data: [],
                     },
                 ],
             },
@@ -575,7 +586,7 @@ export default {
                 datasets: [
                     {
                         borderColor: "#fb5b25",
-                        data: [16, 18, 24],
+                        data: [],
                     },
                 ],
             },
@@ -599,9 +610,6 @@ export default {
     },
     async created() {
         console.log("CREATED");
-    },
-    async mounted() {
-        console.log("MOUNTED");
 
         this.user.passcode = await sessionStorage.getItem("passcode");
         const obtainedUser = await JSON.parse(sessionStorage.getItem("user"));
@@ -654,15 +662,28 @@ export default {
             //  height: null,
             //  weight: null,
             //  last: null,
-
             // Initialise Language
             this.$i18n.locale = profile.language;
+
+            // Initialise statistic data
+            this.data_sys.datasets[0].data = profile.sys.map((e) =>
+                parseFloat(e)
+            );
+            this.data_dia.datasets[0].data = profile.dia.map((e) =>
+                parseFloat(e)
+            );
+            this.data_pulse.datasets[0].data = profile.pulse;
+            this.data_breath.datasets[0].data = profile.breath;
 
             // Standardise
             profile.age = this.calculateAge(profile.born_date);
             profile.last = this.formatDateTime(profile.last);
-            delete profile.language;
-            delete profile.born_date;
+
+            // Remove unnecessary data
+            delete profile.sys;
+            delete profile.dia;
+            delete profile.pulse;
+            delete profile.breath;
 
             // Initiation
             this.profile = profile;
@@ -706,6 +727,9 @@ export default {
             const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 
             return formattedDateTime;
+        },
+        toggleProfile() {
+            this.is_profile_opened = !this.is_profile_opened;
         },
     },
 };

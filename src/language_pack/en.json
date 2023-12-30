@@ -122,5 +122,14 @@
     "send_otp": "Send OTP",
     "access_denied": "Access Denied",
     "male": "Male",
-    "female": "Female"
+    "female": "Female",
+    "name": "Name",
+    "language": "Language",
+    "born_date": "Born Date",
+    "address": "Address",
+    "emergency_contact_no": "Emergency Contact No.",
+    "emergency_contact_name": "Emergency Contact Name",
+    "update": "Update",
+    "profile_picture": "Profile Picture",
+    "edit_profile": "Edit Profile"
 }
