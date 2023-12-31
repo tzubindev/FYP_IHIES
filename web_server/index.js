@@ -13,6 +13,7 @@ const Logger = require("./logger");
 const MySQLPool = require("./database");
 const RequestType = require("./requestType");
 const { ProfileController } = require("./profileController");
+const { RecordController } = require("./recordController");
 
 require("dotenv").config();
 
@@ -20,8 +21,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger(MySQLPool);
 const blockchain = new Blockchain();
-const upload = multer();
+const upload = multer({});
 const profileController = new ProfileController();
+const recordController = new RecordController();
 
 // =====================================================================
 // [APP INITIATION]
@@ -149,6 +151,7 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
             await profileController.read_profile_picture(client, request.user);
 
         result.message.profile.picture = resultGetProfilePic;
+        console.log(result);
         response.send(result);
 
         delete result.message.profile.picture.buffer;
@@ -172,6 +175,8 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
         response.send(
             Formatter.errorMsg("Get Info Error", "/profile", e.message)
         );
+    } finally {
+        client.close();
     }
 });
 
@@ -318,7 +323,121 @@ app.put(
 // =====================================================================
 // [MEDICAL RECORD]
 // Upload
-app.post("/medical-record/upload", async (request, response) => {});
+app.post(
+    "/medical-record/upload",
+    Authentication.verify_token,
+    upload.array("records"),
+    async (request, response) => {
+        try {
+            // Assuming the records are sent as an array in the request body
+            const records = request.files;
+
+            // Get the user information from the authenticated token
+            const requestUser = request.user;
+
+            // Call the RecordController to handle the upload
+            const result = await recordController.upload(
+                client,
+                requestUser,
+                records
+            );
+
+            response.send(await Formatter.successMsg(result));
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.MRU,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+        } catch (error) {
+            console.error("Error uploading medical records:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.get(
+    "/medical-record/:id",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            // Assuming the records are sent as an array in the request body
+            const { id } = request.params;
+
+            // Call the RecordController to handle the upload
+            const result = await recordController.get_all_filename_by_id(
+                client,
+                id
+            );
+
+            response.send(await Formatter.successMsg(result));
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.MRR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+        } catch (error) {
+            console.error("Error retrieving medical records:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.get(
+    "/medical-record/id/:recordobjid",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            // Assuming the records are sent as an array in the request body
+            const id = request.params.recordobjid;
+
+            // Call the RecordController to handle the upload
+            const result = await recordController.get_record_by_id(client, id);
+
+            response.send(await Formatter.successMsg(result));
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.MRR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result ? "Retrieve Successfully" : "Failed",
+                },
+            });
+            logger.log(logStr);
+        } catch (error) {
+            console.error("Error retrieving medical records:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
 
 // =====================================================================
 // [BLOCKCHAIN RECORD, INCOMPLETE]

@@ -8,9 +8,9 @@
         <AccessDenied v-if="is_access_denied"></AccessDenied>
 
         <Loader
-            :loading="!(is_verified && is_initiated) && !is_access_denied"
+            :loading="is_loading"
             class="w-4/5 z-30 absolute"
-            v-if="!(is_verified && is_initiated) && !is_access_denied"
+            v-if="is_loading"
         ></Loader>
 
         <!-- Small screen size -->
@@ -98,100 +98,70 @@
                         <div
                             class="shadow shadow-gray font-sans w-full max-w-[1140px] mt-3 text-[12px] mb-3"
                         >
-                            <div class="w-full h-[1000px] grid grid-cols-5">
+                            <div
+                                class="w-full min-h-[600px] max-h-[1200px] grid grid-cols-5"
+                            >
                                 <!-- Directory Tree -->
-                                <Transition>
+
+                                <div
+                                    class="col-span-2 pb-3 overflow-y-auto bg-gray/90"
+                                >
+                                    <!-- Tree title -->
                                     <div
-                                        class="col-span-2 pb-3 overflow-y-auto bg-gray/90"
-                                        v-if="selected_record"
+                                        class="bg-gray text-white w-full flex justify-center p-2"
                                     >
-                                        <!-- Tree title -->
-                                        <div
-                                            class="bg-gray text-white w-full flex justify-center p-2"
-                                        >
-                                            <p class="">
-                                                {{ $t("record_type") }}
-                                            </p>
-                                        </div>
-
-                                        <!-- Tree bar -->
-                                        <div class="">
-                                            <details
-                                                v-for="(
-                                                    record, recordKey
-                                                ) in selected_record.record"
-                                                :key="recordKey"
-                                                class="text-[12px] pb-0.5 text-white w-full"
-                                            >
-                                                <summary
-                                                    class="px-3 truncate hover:bg-white/20 cursor-pointer transition"
-                                                    :title="
-                                                        standardiseString(
-                                                            recordKey
-                                                        )
-                                                    "
-                                                >
-                                                    &#128193;
-                                                    {{
-                                                        standardiseString(
-                                                            recordKey
-                                                        )
-                                                    }}
-                                                </summary>
-                                                <div
-                                                    class="flex pl-9 hover:bg-white/20 cursor-pointer transition"
-                                                    v-for="recordItem in record"
-                                                    :key="recordItem.id"
-                                                    @click="
-                                                        selected_record_item =
-                                                            recordItem
-                                                    "
-                                                >
-                                                    📄
-                                                    {{
-                                                        createViewFileID(
-                                                            recordKey,
-                                                            recordItem.timestamp
-                                                        )
-                                                    }}
-                                                </div>
-                                            </details>
-                                        </div>
-
-                                        <!-- Select a record animation -->
+                                        <p class="">
+                                            {{ $t("record_type") }}
+                                        </p>
                                     </div>
-                                </Transition>
+
+                                    <!-- Tree bar -->
+                                    <div class="">
+                                        <details
+                                            v-for="(
+                                                record, recordKey
+                                            ) in records"
+                                            :key="recordKey"
+                                            class="text-[12px] pb-0.5 text-white w-full"
+                                        >
+                                            <summary
+                                                class="px-3 truncate hover:bg-white/20 cursor-pointer transition"
+                                                :title="$t(recordKey)"
+                                            >
+                                                &#128193;
+                                                {{ $t(recordKey) }}
+                                            </summary>
+                                            <div
+                                                class="flex pl-9 hover:bg-white/20 cursor-pointer transition"
+                                                v-for="recordItem in record"
+                                                :key="recordItem.id"
+                                                @click="
+                                                    selectRecord(recordItem)
+                                                "
+                                            >
+                                                📄
+                                                {{ recordItem.name }}
+                                            </div>
+                                        </details>
+                                    </div>
+                                </div>
 
                                 <!-- View panel -->
-                                <Transition>
-                                    <div
-                                        class="col-span-3 bg-gray/10 text-white overflow-y-auto"
-                                        v-if="selected_record"
-                                    >
-                                        <!-- View Panel Title -->
-                                        <div
-                                            class="justify-center p-1 px-3 font-bold text-md flex items-center w-full bg-[#fcd53f] text-gray"
-                                        >
-                                            <div class="px-1 mr-2 bg-white/70">
-                                                {{ $t("record") }}
-                                            </div>
-                                            {{ selected_record.mp_id }}_
-                                            {{ selected_record.mp_name }}_{{
-                                                selected_record.created_timestamp
-                                            }}
-                                        </div>
 
-                                        <!-- View panel data -->
-                                        <DocumentViewer></DocumentViewer>
-                                    </div>
-                                </Transition>
-
-                                <!-- No data message -->
                                 <div
-                                    v-if="!selected_record"
-                                    class="flex justify-center items-center h-20 w-full bg-white col-span-5 shadow shadow-gray/50"
+                                    class="col-span-3 bg-gray/10 text-white overflow-y-auto"
                                 >
-                                    {{ $t("no_record_is_selected") }}
+                                    <!-- View Panel Title -->
+                                    <div
+                                        class="justify-center p-1 px-3 font-bold text-md flex items-center w-full bg-[#fcd53f] text-gray"
+                                    >
+                                        <div class="px-1 mr-2 bg-white/70">
+                                            {{ $t("record") }}
+                                        </div>
+                                    </div>
+
+                                    <!-- View panel data -->
+                                    <DocumentViewer></DocumentViewer>
                                 </div>
                             </div>
                         </div>
@@ -218,727 +188,107 @@ export default {
 
             // modalTitle: "Custom Modal",
             // show: false,
+            is_loading: false,
             is_verified: true, // false in default
             is_initiated: true, // false in default
             is_access_denied: false,
             is_sidebar_expanding: false,
-            is_record_modal_open: false,
-            is_record_bar_expanding: false,
-            selected_record: {
-                mp_id: "12345678",
-                mp_name: "sample mp",
-                created_timestamp: 1700018917663,
-                record: {
-                    doctor_clinical_notes: [
-                        {
-                            timestamp: "2023-11-14",
-                            note: "Patient presented with flu-like symptoms. Prescribed antibiotics.",
-                        },
-                        {
-                            timestamp: "2023-11-16",
-                            note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
-                        },
-                    ],
-                    discussion_recording: [
-                        {
-                            content: "Discussion content here",
-                            witness: "Witness name",
-                            timestamp: "2023-11-14",
-                        },
-                    ],
-                    referral_notes: [
-                        {
-                            timestamp: "2023-11-14",
-                            referring_doctor: "Dr. Smith",
-                            specialist: "Cardiologist",
-                            reason: "Suspected heart condition",
-                        },
-                        {
-                            timestamp: "2023-11-16",
-                            referring_doctor: "Dr. Johnson",
-                            specialist: "Orthopedic Surgeon",
-                            reason: "Evaluation for joint surgery",
-                        },
-                    ],
-                    lab_histopathological_reports: [
-                        {
-                            timestamp: "2023-11-14",
-                            test_type: "Blood Test",
-                            result: "Normal",
-                            lab_technician: "Lab Tech A",
-                        },
-                        {
-                            timestamp: "2023-11-16",
-                            test_type: "Biopsy",
-                            result: "Benign",
-                            lab_technician: "Lab Tech B",
-                        },
-                    ],
-                    imaging_records: [
-                        {
-                            url: "https://example.com/download/imaging_record_1.jpg",
-                            description: "X-ray of the chest",
-                            timestamp: "2023-11-14",
-                        },
-                        {
-                            url: "https://example.com/download/imaging_record_2.png",
-                            description: "MRI of the brain",
-                            timestamp: "2023-11-15",
-                        },
-                    ],
-                    clinical_photographs: [
-                        {
-                            url: "https://example.com/download/clinical_photo_1.jpg",
-                            description: "Before surgery",
-                            timestamp: "2023-11-14",
-                        },
-                        {
-                            url: "https://example.com/download/clinical_photo_2.png",
-                            description: "After surgery",
-                            timestamp: "2023-11-16",
-                        },
-                    ],
-                    drug_prescriptions: [
-                        {
-                            url: "https://example.com/download/prescription_1.pdf",
-                            timestamp: "2023-11-14",
-                            prescribed_by: "Dr. Smith",
-                        },
-                        {
-                            url: "https://example.com/download/prescription_2.pdf",
-                            timestamp: "2023-11-15",
-                            prescribed_by: "Dr. Johnson",
-                        },
-                    ],
-                    nurses_reports: [
-                        {
-                            url: "https://example.com/download/nurse_report_1.pdf",
-                            timestamp: "2023-11-14",
-                            nurse_name: "Nurse Amy",
-                        },
-                        {
-                            url: "https://example.com/download/nurse_report_2.pdf",
-                            timestamp: "2023-11-16",
-                            nurse_name: "Nurse Bob",
-                        },
-                    ],
-                    consent_forms: [
-                        {
-                            url: "https://example.com/download/consent_form_1.pdf",
-                            timestamp: "2023-11-14",
-                            patient_signature: "John Doe",
-                        },
-                        {
-                            url: "https://example.com/download/consent_form_2.pdf",
-                            timestamp: "2023-11-15",
-                            patient_signature: "Jane Doe",
-                        },
-                    ],
-                    at_own_risk_discharge_forms: [
-                        {
-                            url: "https://example.com/download/discharge_form_1.pdf",
-                            timestamp: "2023-11-14",
-                            discharge_by: "Dr. Johnson",
-                        },
-                        {
-                            url: "https://example.com/download/discharge_form_2.pdf",
-                            timestamp: "2023-11-16",
-                            discharge_by: "Dr. Smith",
-                        },
-                    ],
-                    operation_notes: [
-                        {
-                            url: "https://example.com/download/operation_note_1.pdf",
-                            timestamp: "2023-11-14",
-                            surgeon: "Dr. Brown",
-                        },
-                        {
-                            url: "https://example.com/download/operation_note_2.pdf",
-                            timestamp: "2023-11-15",
-                            surgeon: "Dr. Davis",
-                        },
-                    ],
-                    anaesthetic_notes: [
-                        {
-                            url: "https://example.com/download/anaesthetic_note_1.pdf",
-                            timestamp: "2023-11-14",
-                            anaesthetist: "Dr. White",
-                        },
-                        {
-                            url: "https://example.com/download/anaesthetic_note_2.pdf",
-                            timestamp: "2023-11-16",
-                            anaesthetist: "Dr. Black",
-                        },
-                    ],
-                    video_recordings: [
-                        {
-                            url: "https://example.com/download/video_recording_1.mp4",
-                            description: "Pre-surgery briefing",
-                            timestamp: "2023-11-14",
-                        },
-                        {
-                            url: "https://example.com/download/video_recording_2.mp4",
-                            description: "Post-surgery recovery",
-                            timestamp: "2023-11-16",
-                        },
-                    ],
-                    monitoring_equipment_printouts: [
-                        {
-                            url: "https://example.com/download/equipment_printout_1.pdf",
-                            description: "Heart rate monitoring",
-                            timestamp: "2023-11-14",
-                        },
-                        {
-                            url: "https://example.com/download/equipment_printout_2.pdf",
-                            description: "Blood pressure monitoring",
-                            timestamp: "2023-11-15",
-                        },
-                    ],
-                    letters_to_and_from_health_professionals: [
-                        {
-                            url: "https://example.com/download/letter_1.pdf",
-                            sender: "Dr. Smith",
-                            recipient: "Patient",
-                            timestamp: "2023-11-14",
-                        },
-                        {
-                            url: "https://example.com/download/letter_2.pdf",
-                            sender: "Patient",
-                            recipient: "Dr. Johnson",
-                            timestamp: "2023-11-15",
-                        },
-                    ],
-                    telephone_consultation_recordings: [
-                        {
-                            url: "https://example.com/download/consultation_recording_1.mp3",
-                            timestamp: "2023-11-14",
-                            participants: ["Dr. Smith", "Patient"],
-                        },
-                        {
-                            url: "https://example.com/download/consultation_recording_2.mp3",
-                            timestamp: "2023-11-15",
-                            participants: ["Dr. Johnson", "Patient's Family"],
-                        },
-                    ],
-                },
-            },
             selected_record_item: null,
             api_url: "http://127.0.0.1:3000",
-            records: [
-                {
-                    mp_id: "12345678",
-                    mp_name: "sample mp",
-                    created_timestamp: 1700018917663,
-                    record: {
-                        doctor_clinical_notes: [
-                            {
-                                timestamp: "2023-11-14",
-                                note: "Patient presented with flu-like symptoms. Prescribed antibiotics.",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
-                            },
-                        ],
-                        discussion_recording: [
-                            {
-                                content: "Discussion content here",
-                                witness: "Witness name",
-                                timestamp: "2023-11-14",
-                            },
-                        ],
-                        referral_notes: [
-                            {
-                                timestamp: "2023-11-14",
-                                referring_doctor: "Dr. Smith",
-                                specialist: "Cardiologist",
-                                reason: "Suspected heart condition",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                referring_doctor: "Dr. Johnson",
-                                specialist: "Orthopedic Surgeon",
-                                reason: "Evaluation for joint surgery",
-                            },
-                        ],
-                        lab_histopathological_reports: [
-                            {
-                                timestamp: "2023-11-14",
-                                test_type: "Blood Test",
-                                result: "Normal",
-                                lab_technician: "Lab Tech A",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                test_type: "Biopsy",
-                                result: "Benign",
-                                lab_technician: "Lab Tech B",
-                            },
-                        ],
-                        imaging_records: [
-                            {
-                                url: "https://example.com/download/imaging_record_1.jpg",
-                                description: "X-ray of the chest",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/imaging_record_2.png",
-                                description: "MRI of the brain",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        clinical_photographs: [
-                            {
-                                url: "https://example.com/download/clinical_photo_1.jpg",
-                                description: "Before surgery",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/clinical_photo_2.png",
-                                description: "After surgery",
-                                timestamp: "2023-11-16",
-                            },
-                        ],
-                        drug_prescriptions: [
-                            {
-                                url: "https://example.com/download/prescription_1.pdf",
-                                timestamp: "2023-11-14",
-                                prescribed_by: "Dr. Smith",
-                            },
-                            {
-                                url: "https://example.com/download/prescription_2.pdf",
-                                timestamp: "2023-11-15",
-                                prescribed_by: "Dr. Johnson",
-                            },
-                        ],
-                        nurses_reports: [
-                            {
-                                url: "https://example.com/download/nurse_report_1.pdf",
-                                timestamp: "2023-11-14",
-                                nurse_name: "Nurse Amy",
-                            },
-                            {
-                                url: "https://example.com/download/nurse_report_2.pdf",
-                                timestamp: "2023-11-16",
-                                nurse_name: "Nurse Bob",
-                            },
-                        ],
-                        consent_forms: [
-                            {
-                                url: "https://example.com/download/consent_form_1.pdf",
-                                timestamp: "2023-11-14",
-                                patient_signature: "John Doe",
-                            },
-                            {
-                                url: "https://example.com/download/consent_form_2.pdf",
-                                timestamp: "2023-11-15",
-                                patient_signature: "Jane Doe",
-                            },
-                        ],
-                        at_own_risk_discharge_forms: [
-                            {
-                                url: "https://example.com/download/discharge_form_1.pdf",
-                                timestamp: "2023-11-14",
-                                discharge_by: "Dr. Johnson",
-                            },
-                            {
-                                url: "https://example.com/download/discharge_form_2.pdf",
-                                timestamp: "2023-11-16",
-                                discharge_by: "Dr. Smith",
-                            },
-                        ],
-                        operation_notes: [
-                            {
-                                url: "https://example.com/download/operation_note_1.pdf",
-                                timestamp: "2023-11-14",
-                                surgeon: "Dr. Brown",
-                            },
-                            {
-                                url: "https://example.com/download/operation_note_2.pdf",
-                                timestamp: "2023-11-15",
-                                surgeon: "Dr. Davis",
-                            },
-                        ],
-                        anaesthetic_notes: [
-                            {
-                                url: "https://example.com/download/anaesthetic_note_1.pdf",
-                                timestamp: "2023-11-14",
-                                anaesthetist: "Dr. White",
-                            },
-                            {
-                                url: "https://example.com/download/anaesthetic_note_2.pdf",
-                                timestamp: "2023-11-16",
-                                anaesthetist: "Dr. Black",
-                            },
-                        ],
-                        video_recordings: [
-                            {
-                                url: "https://example.com/download/video_recording_1.mp4",
-                                description: "Pre-surgery briefing",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/video_recording_2.mp4",
-                                description: "Post-surgery recovery",
-                                timestamp: "2023-11-16",
-                            },
-                        ],
-                        monitoring_equipment_printouts: [
-                            {
-                                url: "https://example.com/download/equipment_printout_1.pdf",
-                                description: "Heart rate monitoring",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/equipment_printout_2.pdf",
-                                description: "Blood pressure monitoring",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        letters_to_and_from_health_professionals: [
-                            {
-                                url: "https://example.com/download/letter_1.pdf",
-                                sender: "Dr. Smith",
-                                recipient: "Patient",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/letter_2.pdf",
-                                sender: "Patient",
-                                recipient: "Dr. Johnson",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        telephone_consultation_recordings: [
-                            {
-                                url: "https://example.com/download/consultation_recording_1.mp3",
-                                timestamp: "2023-11-14",
-                                participants: ["Dr. Smith", "Patient"],
-                            },
-                            {
-                                url: "https://example.com/download/consultation_recording_2.mp3",
-                                timestamp: "2023-11-15",
-                                participants: [
-                                    "Dr. Johnson",
-                                    "Patient's Family",
-                                ],
-                            },
-                        ],
-                    },
-                },
-                {
-                    mp_id: "6508102616",
-                    mp_name: "sample mp",
-                    created_timestamp: 1700018917663,
-                    record: {
-                        doctor_clinical_notes: [
-                            {
-                                timestamp: "2023-11-14",
-                                note: "Patient presented with flu-like symptoms. Prescribed antibiotics.",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
-                            },
-                        ],
-                        discussion_recording: [
-                            {
-                                content: "Discussion content here",
-                                witness: "Witness name",
-                                timestamp: "2023-11-14",
-                            },
-                        ],
-                        referral_notes: [
-                            {
-                                timestamp: "2023-11-14",
-                                referring_doctor: "Dr. Smith",
-                                specialist: "Cardiologist",
-                                reason: "Suspected heart condition",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                referring_doctor: "Dr. Johnson",
-                                specialist: "Orthopedic Surgeon",
-                                reason: "Evaluation for joint surgery",
-                            },
-                        ],
-                        lab_histopathological_reports: [
-                            {
-                                timestamp: "2023-11-14",
-                                test_type: "Blood Test",
-                                result: "Normal",
-                                lab_technician: "Lab Tech A",
-                            },
-                            {
-                                timestamp: "2023-11-16",
-                                test_type: "Biopsy",
-                                result: "Benign",
-                                lab_technician: "Lab Tech B",
-                            },
-                        ],
-                        imaging_records: [
-                            {
-                                url: [
-                                    "https://example.com/download/imaging_record_1.jpg",
-                                    "https://example.com/download/imaging_record_3.jpg",
-                                ],
-                                description: "X-ray of the chest",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/imaging_record_2.png",
-                                description: "MRI of the brain",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        clinical_photographs: [
-                            {
-                                url: "https://example.com/download/clinical_photo_1.jpg",
-                                description: "Before surgery",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/clinical_photo_2.png",
-                                description: "After surgery",
-                                timestamp: "2023-11-16",
-                            },
-                        ],
-                        drug_prescriptions: [
-                            {
-                                url: "https://example.com/download/prescription_1.pdf",
-                                timestamp: "2023-11-14",
-                                prescribed_by: "Dr. Smith",
-                            },
-                            {
-                                url: "https://example.com/download/prescription_2.pdf",
-                                timestamp: "2023-11-15",
-                                prescribed_by: "Dr. Johnson",
-                            },
-                        ],
-                        nurses_reports: [
-                            {
-                                url: "https://example.com/download/nurse_report_1.pdf",
-                                timestamp: "2023-11-14",
-                                nurse_name: "Nurse Amy",
-                            },
-                            {
-                                url: "https://example.com/download/nurse_report_2.pdf",
-                                timestamp: "2023-11-16",
-                                nurse_name: "Nurse Bob",
-                            },
-                        ],
-                        consent_forms: [
-                            {
-                                url: "https://example.com/download/consent_form_1.pdf",
-                                timestamp: "2023-11-14",
-                                patient_signature: "John Doe",
-                            },
-                            {
-                                url: "https://example.com/download/consent_form_2.pdf",
-                                timestamp: "2023-11-15",
-                                patient_signature: "Jane Doe",
-                            },
-                        ],
-                        at_own_risk_discharge_forms: [
-                            {
-                                url: "https://example.com/download/discharge_form_1.pdf",
-                                timestamp: "2023-11-14",
-                                discharge_by: "Dr. Johnson",
-                            },
-                            {
-                                url: "https://example.com/download/discharge_form_2.pdf",
-                                timestamp: "2023-11-16",
-                                discharge_by: "Dr. Smith",
-                            },
-                        ],
-                        operation_notes: [
-                            {
-                                url: "https://example.com/download/operation_note_1.pdf",
-                                timestamp: "2023-11-14",
-                                surgeon: "Dr. Brown",
-                            },
-                            {
-                                url: "https://example.com/download/operation_note_2.pdf",
-                                timestamp: "2023-11-15",
-                                surgeon: "Dr. Davis",
-                            },
-                        ],
-                        anaesthetic_notes: [
-                            {
-                                url: "https://example.com/download/anaesthetic_note_1.pdf",
-                                timestamp: "2023-11-14",
-                                anaesthetist: "Dr. White",
-                            },
-                            {
-                                url: "https://example.com/download/anaesthetic_note_2.pdf",
-                                timestamp: "2023-11-16",
-                                anaesthetist: "Dr. Black",
-                            },
-                        ],
-                        video_recordings: [
-                            {
-                                url: "https://example.com/download/video_recording_1.mp4",
-                                description: "Pre-surgery briefing",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/video_recording_2.mp4",
-                                description: "Post-surgery recovery",
-                                timestamp: "2023-11-16",
-                            },
-                        ],
-                        monitoring_equipment_printouts: [
-                            {
-                                url: "https://example.com/download/equipment_printout_1.pdf",
-                                description: "Heart rate monitoring",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/equipment_printout_2.pdf",
-                                description: "Blood pressure monitoring",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        letters_to_and_from_health_professionals: [
-                            {
-                                url: "https://example.com/download/letter_1.pdf",
-                                sender: "Dr. Smith",
-                                recipient: "Patient",
-                                timestamp: "2023-11-14",
-                            },
-                            {
-                                url: "https://example.com/download/letter_2.pdf",
-                                sender: "Patient",
-                                recipient: "Dr. Johnson",
-                                timestamp: "2023-11-15",
-                            },
-                        ],
-                        telephone_consultation_recordings: [
-                            {
-                                url: "https://example.com/download/consultation_recording_1.mp3",
-                                timestamp: "2023-11-14",
-                                participants: ["Dr. Smith", "Patient"],
-                            },
-                            {
-                                url: "https://example.com/download/consultation_recording_2.mp3",
-                                timestamp: "2023-11-15",
-                                participants: [
-                                    "Dr. Johnson",
-                                    "Patient's Family",
-                                ],
-                            },
-                        ],
-                    },
-                },
-            ],
+            records: null,
         };
     },
     async created() {
         console.log("CREATED");
+        this.user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.passcode = await sessionStorage.getItem("passcode");
+
+        await this.fetch();
     },
-    async mounted() {
-        console.log("MOUNTED");
-
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
-    },
-
     methods: {
-        async initiateDashboard(id) {
-            this.$axios();
+        convertToFormatedRecord(records) {
+            const resultObject = {};
+
+            records.forEach(({ _id, type, name }) => {
+                const typeKey = type;
+                const recordInfo = { _id, name };
+
+                if (!resultObject[typeKey]) {
+                    resultObject[typeKey] = [recordInfo];
+                } else {
+                    resultObject[typeKey].push(recordInfo);
+                }
+            });
+
+            return resultObject;
+        },
+        async fetch() {
+            console.log("FETCH");
+            const result = await this.axios.get(
+                `${this.api_url}/medical-record/${this.user.id}`,
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                    data: {},
+                }
+            );
+            console.log(result);
+
+            this.records = this.convertToFormatedRecord(result.data.message);
+            console.log(this.records);
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
         },
-        // specifc format to specific formatted date
-        standardiseDate(timestamp) {
-            const dateObject = new Date(timestamp);
-            const day = String(dateObject.getDate()).padStart(2, "0");
-            const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-            const year = dateObject.getFullYear();
-            const hours = String(dateObject.getHours()).padStart(2, "0");
-            const minutes = String(dateObject.getMinutes()).padStart(2, "0");
 
-            return `${day}/${month}/${year} ${hours}:${minutes}`;
-        },
-        standardiseString(title) {
-            return title
-                .split("_")
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ");
-        },
-        openRecord(r) {
-            this.selected_record = r;
-            this.is_record_modal_open = true;
-        },
-        updateModal(v) {
-            this.is_record_modal_open = v;
-        },
-        toggleRecordBar() {
-            this.is_record_bar_expanding = !this.is_record_bar_expanding;
-        },
-        createViewFileID(infoType, timestamp) {
-            return `${infoType
-                .split("_")
-                .map((w) => w.charAt(0))
-                .join("")}_${new Date(timestamp)
-                .toISOString()
-                .slice(0, 10)
-                .replace(/-/g, "")}`;
-        },
         clearRecord() {
-            this.selected_record = null;
             this.selected_record_item = null;
+        },
+        async selectRecord(r) {
+            this.selected_record_item = r;
+            console.log(r);
+
+            // Download data if no buffer data
+            if (!r.buffer) {
+                this.is_loading = true;
+                const result = await this.axios.get(
+                    `${this.api_url}/medical-record/id/${r._id}`,
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                const newData = { buffer: result.data.message };
+
+                // Dynamically search and replace based on type and _id
+                await this.searchAndReplaceByObjectID(r._id, newData);
+                console.log(this.records);
+
+                this.is_loading = false;
+            }
+        },
+        searchAndReplaceByObjectID(_id, newData) {
+            // Iterate over the properties of this.records
+            for (const type in this.records) {
+                if (this.records[type] instanceof Array) {
+                    // Find the index of the object with the matching _id
+                    const index = this.records[type].findIndex(
+                        (item) => item._id === _id
+                    );
+
+                    if (index !== -1) {
+                        // Update the object with the new data
+                        this.records[type][index] = {
+                            ...this.records[type][index],
+                            ...newData,
+                        };
+                        // Break out of the loop once the update is done
+                        break;
+                    }
+                }
+            }
         },
     },
 };

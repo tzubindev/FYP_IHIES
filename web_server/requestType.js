@@ -4,6 +4,8 @@ const RequestType = {
     PROFILE_INIT: "PROFILE INITIATION REQ",
     LLI: "LAST LOGIN INFO UPDATE REQ",
     LC: "LANGUAGE CHANGE REQ",
+    MRU: "MEDICAL RECORD UPLOAD",
+    MRR: "MEDICAL RECORD RETRIEVAL",
 };
 
 module.exports = RequestType;
