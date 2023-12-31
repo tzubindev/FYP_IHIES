@@ -12,7 +12,7 @@
                 <div class="bg-white w-[400px]">
                     <div
                         v-if="is_editing"
-                        class="p-4 px-6 flex flex-wrap text-[14px]"
+                        class="p-4 px-6 flex flex-wrap text-[14px] max-h-[800px] overflow-y-auto"
                     >
                         <div
                             class="w-full text-center text-[18px] font-bold border-b border-gray/30 pb-1 mb-4"
@@ -33,13 +33,12 @@
                             >
                                 <input
                                     type="file"
-                                    multiple
                                     name="fields[assetsFieldHandle][]"
                                     id="assetsFieldHandle"
                                     class="w-px h-px opacity-0 overflow-hidden absolute"
                                     @change="onChange"
                                     ref="file"
-                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    accept=".jpg,.jpeg,.png"
                                 />
 
                                 <label
@@ -56,7 +55,11 @@
                                     <div
                                         class="text-[14px] text-center text-gray w-full mt-1"
                                     >
-                                        {{ $t("drop_files_in_here") }}
+                                        {{
+                                            $t(
+                                                "drop_your_profile_picture_in_here"
+                                            )
+                                        }}
                                         <p>{{ $t("or") }}</p>
                                         <span
                                             class="underline cursor-pointer"
@@ -66,23 +69,21 @@
                                 </label>
                                 <div
                                     v-if="this.filelist.length"
-                                    class="flex flex-wrap justify-center gap-0.5 items-center max-h-[200px] overflow-y-auto px-1"
+                                    class="flex flex-wrap justify-center items-center"
                                 >
+                                    <img
+                                        v-if="image_url"
+                                        :src="image_url"
+                                        class="w-full h-full aspect-auto mb-1"
+                                    />
+
                                     <div
-                                        class="gap-1 cursor-pointer hover:bg-gray/80 bg-gray transition text-white text-[11px] py-1 border-b border-gray/30 w-full grid grid-cols-12"
+                                        class="cursor-pointer hover:bg-gray/80 bg-gray transition text-white text-[11px] p-1.5 py-1 border-b border-gray/30 w-full flex justify-between items-center"
                                         v-for="file in filelist"
                                         :key="file.id"
                                     >
-                                        <!-- Icons group -->
-
+                                        <!-- Icon -->
                                         <div>
-                                            <img
-                                                src="../assets/pdf.png"
-                                                v-if="
-                                                    isFileType(file.type, 'pdf')
-                                                "
-                                                class="w-6 h-6 mx-auto"
-                                            />
                                             <img
                                                 src="../assets/imagefile.png"
                                                 v-if="
@@ -96,72 +97,36 @@
                                                     ) ||
                                                     isFileType(file.type, 'jpg')
                                                 "
-                                                class="w-6 h-6 mr-1 ml-auto"
-                                            />
-                                            <img
-                                                src="../assets/wordfile.png"
-                                                v-if="
-                                                    isFileType(
-                                                        file.type,
-                                                        'docx'
-                                                    )
-                                                "
-                                                class="w-6 h-6 mr-1 ml-auto"
-                                            />
-                                            <img
-                                                src="../assets/file.png"
-                                                v-if="
-                                                    isFileType(file.type, null)
-                                                "
-                                                class="w-6 h-6 mr-1 ml-auto"
+                                                class="w-7 h-6"
                                             />
                                         </div>
 
                                         <!-- Name -->
                                         <div
-                                            class="col-span-6 flex justify-left items-center truncate w-full"
+                                            class="flex justify-center items-center truncate w-full"
                                         >
                                             {{ file.name }}
                                         </div>
 
-                                        <!-- Last Modified Date -->
-                                        <div
-                                            class="col-span-2 flex justify-center items-center truncate"
-                                        >
-                                            {{
-                                                format(
-                                                    "date",
-                                                    file.lastModified
-                                                )
-                                            }}
-                                        </div>
-
-                                        <!-- File Size -->
-                                        <div
-                                            class="col-span-2 flex justify-center items-center truncate"
-                                        >
-                                            {{
-                                                format(
-                                                    "filesize",
-                                                    null,
-                                                    file.size
-                                                )
-                                            }}
-                                        </div>
-
+                                        <!-- Remove Button -->
                                         <button
                                             type="button"
                                             @click="
                                                 remove(filelist.indexOf(file))
                                             "
                                             title="Remove file"
-                                            class="hover:bg-darkred bg-red p-2 py-0.5 transition w-fit h-full ml-auto mr-1"
+                                            class="hover:bg-darkred bg-red p-2 py-1 transition w-fit h-full"
                                         >
                                             &#x0058;
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            <p
+                                class="italic text-[10px] w-full text-right text-red"
+                            >
+                                {{ $t("recommended_size_:_750px_X_790px") }}
+                            </p>
                         </div>
 
                         <!-- Address Emergency Contact no & name -->
@@ -201,7 +166,7 @@
                         <!-- Profile Picture and Name -->
                         <div class="relative">
                             <img
-                                src="../sample_assets/profilePic_tb.jpg"
+                                :src="profile_picture_url"
                                 class="w-[400px] h-[400px]"
                             />
                             <div
@@ -233,6 +198,12 @@
                                 >
                                     {{ formatDateTime(profile[displayKey]) }}
                                 </div>
+                                <div
+                                    v-else-if="displayKey === 'sex'"
+                                    class="text-gray/80"
+                                >
+                                    {{ $t(`${profile[displayKey]}`) }}
+                                </div>
                                 <div v-else class="text-gray/80">
                                     {{ profile[displayKey] }}
                                 </div>
@@ -247,7 +218,7 @@
 
 <script>
 export default {
-    emits: ["close"],
+    emits: ["close", "updated"],
     props: {
         profile: {
             type: Object,
@@ -263,6 +234,7 @@ export default {
                 this.edited.emergency_contact_name =
                     newProfile.emergency_contact_name;
                 this.original_edited = JSON.parse(JSON.stringify(this.edited));
+                this.profile_picture_url = `data:${newProfile.picture.mimetype};base64,${newProfile.picture.buffer}`;
             },
             deep: true, // Watch nested properties
         },
@@ -270,7 +242,7 @@ export default {
     computed: {
         filteredKeys() {
             return Object.keys(this.profile).filter(
-                (key) => !["language", "last"].includes(key)
+                (key) => !["language", "last", "picture"].includes(key)
             );
         },
         filteredEditKeys() {
@@ -287,6 +259,9 @@ export default {
                 emergency_contact_name: null,
             },
             original_edited: {},
+            image_url: null,
+            profile_picture_url: null,
+            api_url: "http://127.0.0.1:3000",
         };
     },
     async mounted() {
@@ -294,8 +269,11 @@ export default {
     },
     methods: {
         close() {
-            this.is_editing = false;
             this.$emit("close");
+            if (this.is_editing)
+                this.edited = JSON.parse(JSON.stringify(this.original_edited));
+
+            this.is_editing = false;
         },
         formatDateTime(isoString) {
             const date = new Date(isoString);
@@ -332,8 +310,8 @@ export default {
                 !malaysiaTelRegex.test(this.edited.emergency_contact_no)
             ) {
                 this.$swal({
-                    title: "Invalid Contact No.",
-                    text: "Incorrect Format.",
+                    title: "Update Profile",
+                    text: "Invalid Contact No. Format.",
                     icon: "error",
                     showConfirmButton: false,
                     timer: 2000,
@@ -354,7 +332,7 @@ export default {
                         this.edited.emergency_contact_name.trim() === ""))
             ) {
                 this.$swal({
-                    title: "Invalid Format",
+                    title: "Update Profile",
                     text: "Invalid value for address or emergency contactname. Please provide valid non-empty strings.",
                     icon: "error",
                     showConfirmButton: false,
@@ -372,9 +350,59 @@ export default {
                 this.filelist.length
             )
                 await this.performUpdate();
+            else {
+                // No update Noti
+                this.$swal({
+                    title: "Update Profile",
+                    text: "No modification and update.",
+                    icon: "info",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                this.is_editing = !this.is_editing;
+            }
+
+            this.reset();
         },
         async performUpdate() {
-            console.log("UPDATING");
+            const passcode = await sessionStorage.getItem("passcode");
+            const formData = new FormData();
+
+            // Append the file only if it exists
+            if (this.filelist.length > 0)
+                formData.append("file", this.filelist[0]);
+
+            // Append the edited data if not the same as fetched data
+            if (!this.areObjectsEqual(this.edited, this.original_edited))
+                formData.append("edited", JSON.stringify(this.edited));
+
+            try {
+                const response = await this.axios.put(
+                    this.api_url + "/profile/upload",
+                    formData,
+                    {
+                        headers: {
+                            Authorization: passcode,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+
+                if (response.data.message === "Profile Updated") {
+                    this.is_editing = false;
+                    this.$swal({
+                        title: "Update Profile",
+                        text: "Updated Succesfully",
+                        icon: "info",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+                this.$emit("updated");
+            } catch (error) {
+                // Handle error
+                console.error(error);
+            }
         },
         areObjectsEqual(obj1, obj2) {
             // Get the keys of each object
@@ -401,6 +429,116 @@ export default {
 
             // Objects are considered equal
             return true;
+        },
+        async onChange() {
+            this.filelist = await [...this.$refs.file.files];
+        },
+        async createObjectURL(file) {
+            return file ? URL.createObjectURL(file) : "";
+        },
+        remove(i) {
+            this.filelist.splice(i, 1);
+        },
+        dragover(event) {
+            event.preventDefault();
+            // Add some visual fluff to show the user can drop its files
+            if (!event.currentTarget.classList.contains("bg-green/30")) {
+                event.currentTarget.classList.remove("bg-gray/10");
+                event.currentTarget.classList.add("bg-green/30");
+            }
+        },
+        dragleave(event) {
+            // Clean up
+            event.currentTarget.classList.add("bg-gray/20");
+            event.currentTarget.classList.remove("bg-green/30");
+        },
+        async drop(event) {
+            event.preventDefault();
+
+            // Check if filelist is empty before adding a new file
+            if (this.filelist.length === 0) {
+                const droppedFiles = event.dataTransfer.files;
+
+                // Check if the dropped file is of the allowed types
+                const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+                const isFileTypeAllowed = Array.from(droppedFiles).every(
+                    (file) => allowedTypes.includes(file.type)
+                );
+
+                if (isFileTypeAllowed) {
+                    this.$refs.file.files = droppedFiles;
+                    this.onChange(); // Trigger the onChange event manually
+
+                    const file = droppedFiles[0];
+                    this.image_url = await this.createObjectURL(file);
+
+                    // Clean up
+                    event.currentTarget.classList.add("bg-gray/20");
+                    event.currentTarget.classList.remove("bg-green/30");
+                } else {
+                    // If file type is not allowed, show an error or give feedback to the user
+                    this.$swal({
+                        title: "File Upload",
+                        text: "Please upload only JPG, PNG, or JPEG files.",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            } else {
+                // If filelist is not empty, show an error or give feedback to the user
+                this.$swal({
+                    title: "File Upload",
+                    text: "You can upload only one file.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            }
+        },
+
+        isFileType(fileType, expectedType) {
+            const extension = fileType.split("/")[1];
+            if (expectedType) return extension === expectedType;
+            else {
+                if (!extension || !["png", "jpeg", "jpg"].includes(extension))
+                    return true;
+            }
+        },
+        format(type, timestamp = null, filesize = null) {
+            switch (type) {
+                case "date":
+                    const date = new Date(timestamp);
+
+                    // Format the date as yyyy/mm/dd hh:mm
+                    return `${date.getFullYear()}/${(date.getMonth() + 1)
+                        .toString()
+                        .padStart(2, "0")}/${date
+                        .getDate()
+                        .toString()
+                        .padStart(2, "0")} ${date
+                        .getHours()
+                        .toString()
+                        .padStart(2, "0")}:${date
+                        .getMinutes()
+                        .toString()
+                        .padStart(2, "0")}`;
+                case "filesize":
+                    const units = ["Bytes", "KB", "MB", "GB"];
+                    let size = Number(filesize);
+                    let unitIndex = 0;
+
+                    while (size >= 1024 && unitIndex < units.length - 1) {
+                        size /= 1024;
+                        unitIndex++;
+                    }
+
+                    return `${size.toFixed(2)} ${units[unitIndex]}`;
+            }
+        },
+        reset() {
+            this.filelist = [];
+            this.image_url = null;
         },
     },
 };

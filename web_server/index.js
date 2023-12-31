@@ -5,6 +5,7 @@ const mongodb = require("mongodb");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 const { Blockchain, Block } = require("./blockchain");
+const multer = require("multer");
 
 const Formatter = require("./formattedJsonData");
 const Authentication = require("./authentication");
@@ -19,6 +20,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger(MySQLPool);
 const blockchain = new Blockchain();
+const upload = multer();
+const profileController = new ProfileController();
 
 // =====================================================================
 // [APP INITIATION]
@@ -141,10 +144,14 @@ app.post("/otp", async (request, response) => {
 // [PROFILE INITIALISATION]
 app.get("/profile", Authentication.verify_token, async (request, response) => {
     try {
-        const result = await new ProfileController().get_all(
-            MySQLPool,
-            request.user
-        );
+        const result = await profileController.get_all(MySQLPool, request.user);
+        const resultGetProfilePic =
+            await profileController.read_profile_picture(client, request.user);
+
+        result.message.profile.picture = resultGetProfilePic;
+        response.send(result);
+
+        delete result.message.profile.picture.buffer;
         const logStr = Formatter.logJsonToString({
             type: RequestType.PROFILE_INIT,
             from: {
@@ -161,7 +168,6 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
             },
         });
         logger.log(logStr);
-        response.send(result);
     } catch (e) {
         response.send(
             Formatter.errorMsg("Get Info Error", "/profile", e.message)
@@ -174,7 +180,7 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
 app.put("/last-login", async (request, response) => {
     try {
         const requestData = request.body.data;
-        const result = await new ProfileController().update_last_login(
+        const result = await profileController.update_last_login(
             MySQLPool,
             requestData.user
         );
@@ -202,12 +208,13 @@ app.put("/last-login", async (request, response) => {
     }
 });
 
+// Not completed
 app.put(
     "/lang/:language",
     Authentication.verify_token,
     async (request, response) => {
         try {
-            const result = await new ProfileController().update_language(
+            const result = await profileController.update_language(
                 request.params.language,
                 MySQLPool,
                 request.user
@@ -236,6 +243,82 @@ app.put(
         }
     }
 );
+
+app.put(
+    "/profile/upload",
+    Authentication.verify_token,
+    upload.single("file"),
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const editedData = request.body.edited
+                ? JSON.parse(request.body.edited)
+                : null;
+            const file = request.file ? request.file : null;
+
+            // both results will be boolean
+            let resultFile = null,
+                resultProfile = null;
+
+            // if any profile picture
+            if (file) {
+                // Assuming ProfileController.update_profile_picture returns a promise
+                resultFile = await profileController.update_profile_picture(
+                    client,
+                    user,
+                    file
+                );
+            }
+
+            // if any edited data
+            if (editedData) {
+                resultProfile = await profileController.update_profile(
+                    MySQLPool,
+                    user,
+                    editedData
+                );
+            }
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.LLI,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: {
+                        ProfilePicture: resultFile,
+                        Profile: {
+                            IsUpdate: resultProfile,
+                            Data: editedData,
+                        },
+                    },
+                },
+            });
+            logger.log(logStr);
+
+            response.send(Formatter.successMsg("Profile Updated"));
+        } catch (e) {
+            response.send(
+                Formatter.errorMsg(
+                    "Update Info Error",
+                    "/profile/upload",
+                    e.message
+                )
+            );
+        }
+    }
+);
+
+// =====================================================================
+// [MEDICAL RECORD]
+// Upload
+app.post("/medical-record/upload", async (request, response) => {});
 
 // =====================================================================
 // [BLOCKCHAIN RECORD, INCOMPLETE]

@@ -1,5 +1,4 @@
-const { request } = require("express");
-const formattedResponse = require("./formattedJsonData");
+const formatter = require("./formattedJsonData");
 
 class ProfileController {
     async update_last_login(pool, requestUser) {
@@ -20,9 +19,9 @@ class ProfileController {
             const result = {
                 message: r,
             };
-            return formattedResponse.successMsg(result);
+            return formatter.successMsg(result);
         } catch (error) {
-            return formattedResponse.errorMsg(
+            return formatter.errorMsg(
                 "Profile Info Update Error",
                 "/profile",
                 error.message
@@ -87,9 +86,9 @@ class ProfileController {
                 result.profile.breath.push(row.breath);
             }
 
-            return formattedResponse.successMsg(result);
+            return formatter.successMsg(result);
         } catch (error) {
-            return formattedResponse.errorMsg(
+            return formatter.errorMsg(
                 "Profile Info Retrieval Error",
                 "/profile",
                 error.message
@@ -101,6 +100,72 @@ class ProfileController {
     }
 
     async update_language(pool, requestUser) {}
+
+    async update_profile_picture(client, requestUser, file) {
+        try {
+            const { id } = requestUser;
+            const database = client.db("IHIES");
+            const collection = database.collection("ProfilePicture");
+
+            const result = await collection.updateOne(
+                { id: id },
+                { $set: { file: file, id: id } },
+                { upsert: true }
+            );
+
+            if (result.modifiedCount === 0 && result.upsertedCount === 0) {
+                throw new Error("Failed to update or insert profile picture");
+            }
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async read_profile_picture(client, requestUser) {
+        await client.connect();
+        try {
+            const { id } = requestUser;
+            const database = client.db("IHIES");
+            const collection = database.collection("ProfilePicture");
+
+            // Find the document with the specified id
+            const result = await collection.findOne({ id: id });
+
+            if (!result) {
+                throw new Error("Profile picture not found");
+            }
+
+            // Retrieve the file field from the result
+            const profilePictureData = result.file;
+
+            return profilePictureData;
+        } catch (error) {
+            console.error(error);
+            return null; // or handle the error in a way that makes sense for your application
+        }
+    }
+
+    async update_profile(pool, requestUser, data) {
+        const { id } = requestUser;
+        const keys = Object.keys(data);
+        const table =
+            requestUser.role === "patient" ? "patient_profile" : "mp_profile";
+
+        if (keys.length === 0) {
+            return false;
+        }
+
+        const values = keys.map((key) => data[key]);
+        const updateClauses = keys.map((key) => `${key} = ?`).join(", ");
+
+        const result = await pool.query(
+            `UPDATE ${table} SET ${updateClauses} WHERE id = ?`,
+            [...values, id]
+        );
+
+        return result.affectedRows > 0;
+    }
 }
 
 module.exports = { ProfileController };

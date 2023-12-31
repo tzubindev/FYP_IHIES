@@ -20,6 +20,7 @@
             v-show="is_profile_opened"
             :profile="profile"
             @close="toggleProfile"
+            @updated="fetch"
         ></Profile>
 
         <!-- Medium screen and above size-->
@@ -75,7 +76,7 @@
                                     </div>
                                 </div>
                                 <img
-                                    src="../sample_assets/profilePic_tb.jpg"
+                                    :src="profile_picture_url"
                                     class="w-[120px] h-[120px] lg:w-[200px] lg:h-[200px] mx-auto rounded-full"
                                 />
 
@@ -100,11 +101,11 @@
 
                             <!-- Profile details -->
                             <div
-                                class="h-full w-full p-4 gap-2 grid grid-cols-2 text-[12px] bg-white/60 shadow shadow-gray/50"
+                                class="h-full w-full gap-2 grid grid-cols-2 text-[12px]"
                             >
                                 <!-- Sex -->
                                 <div
-                                    class="flex flex-wrap bg-gradient-to-br from-red/10 to-cool/30 shadow shadow-gray"
+                                    class="flex flex-wrap bg-gradient-to-br from-gray/10 to-cool/30 shadow shadow-gray"
                                 >
                                     <!-- label -->
                                     <div
@@ -123,7 +124,7 @@
                                 </div>
                                 <!-- Age -->
                                 <div
-                                    class="flex flex-wrap bg-gradient-to-br from-red/10 to-cool/30 shadow shadow-gray"
+                                    class="flex flex-wrap bg-gradient-to-br from-gray/10 to-cool/30 shadow shadow-gray"
                                 >
                                     <!-- label -->
                                     <div
@@ -143,7 +144,7 @@
                                 <div>
                                     <!-- blood -->
                                     <div
-                                        class="h-full flex flex-wrap bg-gradient-to-br from-red/10 to-cool/30 shadow shadow-gray"
+                                        class="h-full flex flex-wrap bg-gradient-to-br from-gray/10 to-cool/30 shadow shadow-gray"
                                     >
                                         <div
                                             class="font-light w-full flex items-center justify-center"
@@ -162,7 +163,7 @@
 
                                 <!-- height -->
                                 <div
-                                    class="flex flex-wrap bg-gradient-to-br from-red/10 to-cool/30 shadow shadow-gray"
+                                    class="flex flex-wrap bg-gradient-to-br from-gray/10 to-cool/30 shadow shadow-gray"
                                 >
                                     <div
                                         class="font-light w-full flex items-center justify-center"
@@ -180,7 +181,7 @@
 
                                 <!-- weight -->
                                 <div
-                                    class="flex flex-wrap bg-gradient-to-br from-red/10 to-cool/30 shadow shadow-gray"
+                                    class="flex flex-wrap bg-gradient-to-br from-gray/10 to-cool/30 shadow shadow-gray"
                                 >
                                     <div
                                         class="font-light w-full flex items-center justify-center"
@@ -226,7 +227,7 @@
                                 </div>
 
                                 <div
-                                    class="w-full h-5/6 grid grid-cols-1 gap-6 lg:gap-2"
+                                    class="w-full h-5/6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 lg:gap-2"
                                 >
                                     <!-- SYS -->
                                     <div
@@ -498,6 +499,7 @@ export default {
             is_access_denied: false,
             is_sidebar_expanding: false,
             is_profile_opened: false,
+            profile_picture_url: null,
             api_url: "http://127.0.0.1:3000",
 
             // Chart
@@ -610,49 +612,58 @@ export default {
     },
     async created() {
         console.log("CREATED");
-
-        this.user.passcode = await sessionStorage.getItem("passcode");
-        const obtainedUser = await JSON.parse(sessionStorage.getItem("user"));
-        this.user.id = obtainedUser.id;
-        this.user.role = obtainedUser.role;
-
-        if (!this.user.passcode) {
-            this.is_access_denied = true;
-        } else {
-            // LAST CHECK
-            if (!(this.user.passcode && this.user.id && this.user.role)) {
-                this.is_verified = true;
-                this.is_access_denied = true;
-                this.is_initiated = false;
-                return;
-            }
-
-            try {
-                const response = await this.axios.get(
-                    `${this.api_url}/profile`,
-                    {
-                        headers: {
-                            Authorization: this.user.passcode,
-                        },
-                        data: {
-                            user: this.user,
-                        },
-                    }
-                );
-
-                console.log("Start Initiation");
-                this.is_verified = true;
-                await this.initiateDashboard(response.data.message.profile);
-                this.is_initiated = true;
-            } catch (error) {
-                console.error("An error occurred:", error);
-                this.is_initiated = false;
-                this.is_access_denied = true;
-            }
-        }
+        await this.fetch();
     },
 
     methods: {
+        async fetch() {
+            console.log("FETCH");
+            this.is_verified = false;
+            this.is_access_denied = false;
+            this.is_initiated = false;
+
+            this.user.passcode = await sessionStorage.getItem("passcode");
+            const obtainedUser = await JSON.parse(
+                sessionStorage.getItem("user")
+            );
+            this.user.id = obtainedUser.id;
+            this.user.role = obtainedUser.role;
+
+            if (!this.user.passcode) {
+                this.is_access_denied = true;
+            } else {
+                // LAST CHECK
+                if (!(this.user.passcode && this.user.id && this.user.role)) {
+                    this.is_verified = true;
+                    this.is_access_denied = true;
+                    this.is_initiated = false;
+                    return;
+                }
+
+                try {
+                    const response = await this.axios.get(
+                        `${this.api_url}/profile`,
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                            data: {
+                                user: this.user,
+                            },
+                        }
+                    );
+
+                    console.log("Start Initiation");
+                    this.is_verified = true;
+                    await this.initiateDashboard(response.data.message.profile);
+                    this.is_initiated = true;
+                } catch (error) {
+                    console.error("An error occurred:", error);
+                    this.is_initiated = false;
+                    this.is_access_denied = true;
+                }
+            }
+        },
         async initiateDashboard(profile) {
             // Format
             //  name: null,
@@ -664,6 +675,7 @@ export default {
             //  last: null,
             // Initialise Language
             this.$i18n.locale = profile.language;
+            this.profile_picture_url = `data:${profile.picture.mimetype};base64,${profile.picture.buffer}`;
 
             // Initialise statistic data
             this.data_sys.datasets[0].data = profile.sys.map((e) =>

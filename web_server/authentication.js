@@ -299,7 +299,6 @@ const verify_token = (req, res, next) => {
         const decoded = jwt.verify(token, secretKey);
         req.user = decoded; // Attach user information to the request
         delete req.user.pw;
-        console.log(req.user);
         next();
     } catch (error) {
         return res.status(401).json({ message: "Invalid token" });

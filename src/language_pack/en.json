@@ -131,5 +131,10 @@
     "emergency_contact_name": "Emergency Contact Name",
     "update": "Update",
     "profile_picture": "Profile Picture",
-    "edit_profile": "Edit Profile"
+    "edit_profile": "Edit Profile",
+    "drop_your_profile_picture_in_here": "Drop Your Profile Picture In Here",
+    "recommended_size_:_750px_X_790px": "Recommended Size: 750px X 790px",
+    "record_type": "Record Type",
+    "close": "Close",
+    "record": "Record"
 }
