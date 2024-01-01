@@ -7,11 +7,11 @@
         <!-- Access denied -->
         <AccessDenied v-if="is_access_denied"></AccessDenied>
 
-        <Loader
+        <!-- <Loader
             :loading="is_loading"
             class="w-4/5 z-30 absolute"
             v-if="is_loading"
-        ></Loader>
+        ></Loader> -->
 
         <!-- Small screen size -->
         <div></div>
@@ -55,7 +55,7 @@
                     <div class="h-fit w-full p-2 flex justify-center flex-wrap">
                         <!-- Filter Feature -->
                         <div
-                            class="w-full max-w-[1140px] pb-4 border-b border-gray/20"
+                            class="w-full max-w-[95%] pb-4 border-b border-gray/20"
                         >
                             <!-- Filter area -->
                             <!-- mpid/mp name (medical personnel) |  | date -->
@@ -96,7 +96,7 @@
 
                         <!-- Record View Panel  -->
                         <div
-                            class="shadow shadow-gray font-sans w-full max-w-[1140px] mt-3 text-[12px] mb-3"
+                            class="shadow shadow-gray font-sans w-[95%] mt-3 text-[12px] mb-3"
                         >
                             <div
                                 class="w-full min-h-[600px] max-h-[1200px] grid grid-cols-5"
@@ -104,7 +104,7 @@
                                 <!-- Directory Tree -->
 
                                 <div
-                                    class="col-span-2 pb-3 overflow-y-auto bg-gray/90"
+                                    class="col-span-1 pb-3 overflow-y-auto bg-gray/90"
                                 >
                                     <!-- Tree title -->
                                     <div
@@ -116,7 +116,7 @@
                                     </div>
 
                                     <!-- Tree bar -->
-                                    <div class="">
+                                    <div class="pt-2">
                                         <details
                                             v-for="(
                                                 record, recordKey
@@ -149,7 +149,7 @@
                                 <!-- View panel -->
 
                                 <div
-                                    class="col-span-3 bg-gray/10 text-white overflow-y-auto"
+                                    class="col-span-4 h-full bg-gray/10 text-white overflow-y-auto"
                                 >
                                     <!-- View Panel Title -->
                                     <div
@@ -160,8 +160,94 @@
                                         </div>
                                     </div>
 
-                                    <!-- View panel data -->
-                                    <DocumentViewer></DocumentViewer>
+                                    <div class="p-0.5">
+                                        <!-- Loader -->
+                                        <div v-if="is_loading">
+                                            <div class="w-full h-full p-4">
+                                                <div
+                                                    class="animate-pulse flex flex-wrap"
+                                                >
+                                                    <div
+                                                        class="h-[300px] rounded w-full bg-gray mb-4"
+                                                    ></div>
+                                                    <div
+                                                        class="flex-1 space-y-6 py-1"
+                                                    >
+                                                        <div class="space-y-3">
+                                                            <div
+                                                                class="h-2 bg-gray rounded"
+                                                            ></div>
+                                                            <div
+                                                                class="grid grid-cols-3 gap-4"
+                                                            >
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-1"
+                                                                ></div>
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-2"
+                                                                ></div>
+                                                            </div>
+                                                            <div
+                                                                class="h-2 bg-gray rounded"
+                                                            ></div>
+                                                            <div
+                                                                class="grid grid-cols-3 gap-4"
+                                                            >
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-1"
+                                                                ></div>
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-2"
+                                                                ></div>
+                                                            </div>
+                                                            <div
+                                                                class="h-2 bg-gray rounded"
+                                                            ></div>
+                                                            <div
+                                                                class="grid grid-cols-3 gap-4"
+                                                            >
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-2"
+                                                                ></div>
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-1"
+                                                                ></div>
+                                                            </div>
+                                                            <div
+                                                                class="h-2 bg-gray rounded"
+                                                            ></div>
+                                                            <div
+                                                                class="grid grid-cols-3 gap-4"
+                                                            >
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-1"
+                                                                ></div>
+                                                                <div
+                                                                    class="h-2 bg-gray rounded col-span-2"
+                                                                ></div>
+                                                            </div>
+                                                            <div
+                                                                class="h-2 bg-gray rounded"
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- pdf viewer -->
+                                        <embed
+                                            v-if="is_pdf"
+                                            :src="showing_file"
+                                            width="100%"
+                                            class="min-h-[600px] h-full"
+                                        />
+
+                                        <!-- img viewer -->
+                                        <div v-if="is_img">
+                                            <img :src="showing_file" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -185,6 +271,9 @@ export default {
                 date: null,
                 mp_id_or_name: null,
             },
+            showing_file: null,
+            is_img: false,
+            is_pdf: false,
 
             // modalTitle: "Custom Modal",
             // show: false,
@@ -246,11 +335,12 @@ export default {
             this.selected_record_item = null;
         },
         async selectRecord(r) {
+            this.is_img = false;
+            this.is_pdf = false;
             this.selected_record_item = r;
-            console.log(r);
 
             // Download data if no buffer data
-            if (!r.buffer) {
+            if (!r.buffer || !r.mimetype) {
                 this.is_loading = true;
                 const result = await this.axios.get(
                     `${this.api_url}/medical-record/id/${r._id}`,
@@ -260,14 +350,24 @@ export default {
                         },
                     }
                 );
-                const newData = { buffer: result.data.message };
+                const resultData = result.data.message;
+                const newData = {
+                    buffer: resultData.buffer,
+                    mimetype: resultData.mimetype,
+                };
 
                 // Dynamically search and replace based on type and _id
-                await this.searchAndReplaceByObjectID(r._id, newData);
-                console.log(this.records);
+                r = await this.searchAndReplaceByObjectID(r._id, newData);
 
                 this.is_loading = false;
             }
+
+            this.is_img = r.mimetype.split("/")[0] === "image";
+            this.is_pdf = r.mimetype.split("/")[1] === "pdf";
+
+            this.showing_file = `data:${r.mimetype};base64,${r.buffer}`;
+
+            console.log(this.showing_file);
         },
         searchAndReplaceByObjectID(_id, newData) {
             // Iterate over the properties of this.records
@@ -284,8 +384,8 @@ export default {
                             ...this.records[type][index],
                             ...newData,
                         };
-                        // Break out of the loop once the update is done
-                        break;
+
+                        return this.records[type][index];
                     }
                 }
             }

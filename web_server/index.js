@@ -62,11 +62,11 @@ app.use(function (req, res, next) {
 const MongoClient = mongodb.MongoClient;
 const ServerApiVersion = mongodb.ServerApiVersion;
 const client = new MongoClient(process.env.MONGODB_URI, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    },
+    // serverApi: {
+    //     version: ServerApiVersion.v1,
+    //     strict: true,
+    //     deprecationErrors: true,
+    // },
 });
 
 // =====================================================================
@@ -147,11 +147,12 @@ app.post("/otp", async (request, response) => {
 app.get("/profile", Authentication.verify_token, async (request, response) => {
     try {
         const result = await profileController.get_all(MySQLPool, request.user);
+
         const resultGetProfilePic =
             await profileController.read_profile_picture(client, request.user);
 
         result.message.profile.picture = resultGetProfilePic;
-        console.log(result);
+
         response.send(result);
 
         delete result.message.profile.picture.buffer;
@@ -175,8 +176,6 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
         response.send(
             Formatter.errorMsg("Get Info Error", "/profile", e.message)
         );
-    } finally {
-        client.close();
     }
 });
 
@@ -316,6 +315,8 @@ app.put(
                     e.message
                 )
             );
+        } finally {
+            client.close();
         }
     }
 );

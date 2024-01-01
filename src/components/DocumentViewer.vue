@@ -19,7 +19,7 @@
 
         <VuePdfEmbed
             ref="pdfViewer"
-            :source="source"
+            :src="src"
             :height="current_height"
             :width="current_width"
             :annotation-layer="true"
@@ -37,7 +37,7 @@ export default {
         VuePdfEmbed,
     },
     props: {
-        source: {
+        src: {
             type: String,
             default: "",
         },
@@ -66,13 +66,6 @@ export default {
         changeSize() {
             this.current_height = this.ORIGINAL.HEIGHT * this.current_scale;
             this.current_width = this.ORIGINAL.WIDTH * this.current_scale;
-            console.log(
-                this.current_height +
-                    "_" +
-                    this.current_width +
-                    "_" +
-                    this.current_scale
-            );
         },
     },
 };

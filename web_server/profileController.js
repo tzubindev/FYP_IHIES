@@ -102,6 +102,7 @@ class ProfileController {
     async update_language(pool, requestUser) {}
 
     async update_profile_picture(client, requestUser, file) {
+        await client.connect();
         try {
             const { id } = requestUser;
             const database = client.db("IHIES");
@@ -143,6 +144,8 @@ class ProfileController {
         } catch (error) {
             console.error(error);
             return null; // or handle the error in a way that makes sense for your application
+        } finally {
+            client.close();
         }
     }
 

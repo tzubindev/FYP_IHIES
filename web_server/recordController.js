@@ -29,6 +29,7 @@ class RecordController {
     }
 
     async get_all_filename_by_id(client, id) {
+        await client.connect();
         try {
             const database = client.db("IHIES");
             const recordCollection = database.collection("Record");
@@ -60,14 +61,15 @@ class RecordController {
             // Retrieve the record with the given _id
             const record = await recordCollection.findOne(
                 { _id: new ObjectId(id) },
-                { projection: { "file.buffer": 1 } }
+                { projection: { "file.buffer": 1, "file.mimetype": 1 } }
             );
 
             if (record) {
-                // record.buffer = record.file.buffer;
-                // record.mimetype = record.file.mimetype;
+                record.buffer = record.file.buffer;
+                record.mimetype = record.file.mimetype;
 
-                // delete record.file;
+                delete record.file;
+                delete record._id;
                 return record;
             } else {
                 return null;

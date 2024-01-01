@@ -39,13 +39,13 @@
 
             <!-- Dashboard -->
             <div
-                class="w-full h-full"
+                class="w-full h-full flex justify-center"
                 :class="{
                     'pl-[180px]': is_sidebar_expanding,
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-4 px-10 w-full h-fit">
+                <div class="pt-6 pb-4 px-10 w-full h-fit max-w-[90%]">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"
@@ -77,7 +77,7 @@
                                 </div>
                                 <img
                                     :src="profile_picture_url"
-                                    class="w-[120px] h-[120px] lg:w-[200px] lg:h-[200px] mx-auto rounded-full"
+                                    class="w-[140px] h-[140px] lg:w-[200px] lg:h-[200px] mx-auto rounded-full"
                                 />
 
                                 <div
@@ -640,6 +640,7 @@ export default {
                     return;
                 }
 
+                console.log("LAST CHECK FINISHED");
                 try {
                     const response = await this.axios.get(
                         `${this.api_url}/profile`,
@@ -653,6 +654,7 @@ export default {
                         }
                     );
 
+                    console.log(response);
                     console.log("Start Initiation");
                     this.is_verified = true;
                     await this.initiateDashboard(response.data.message.profile);
