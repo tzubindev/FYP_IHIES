@@ -75,17 +75,7 @@
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
                                         >
-                                            {{
-                                                chartData.datasets[0].data.reduce(
-                                                    (
-                                                        accumulator,
-                                                        currentValue
-                                                    ) =>
-                                                        accumulator +
-                                                        currentValue,
-                                                    0
-                                                )
-                                            }}
+                                            {{ event.total }}
                                         </p>
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
@@ -108,7 +98,7 @@
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
                                         >
-                                            {{ chartData.datasets[0].data[0] }}
+                                            {{ event.today }}
                                         </p>
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
@@ -131,7 +121,7 @@
                                         <p
                                             class="w-full flex items-center justify-center text-[64px]"
                                         >
-                                            {{ chartData.datasets[0].data[0] }}
+                                            {{ event.infuture }}
                                         </p>
                                         <p
                                             class="w-full flex justify-end items-end text-xs italic"
@@ -147,16 +137,10 @@
                                 <Calendar
                                     class="w-full"
                                     @selectedEvents="updateSelectedEvents"
+                                    @updateEventCalculation="
+                                        updateEventCalculation
+                                    "
                                 ></Calendar>
-                                <div
-                                    class="gap-1 flex justify-center items-center w-full py-1.5 bg-red text-sm text-center mt-2 shadow-xl text-white cursor-pointer hover:bg-gray transition"
-                                >
-                                    <img
-                                        src="../assets/add.svg"
-                                        class="w-5 h-5"
-                                    />
-                                    {{ $t("add_new_schedule") }}
-                                </div>
                             </div>
 
                             <!-- Event Listing -->
@@ -187,20 +171,20 @@
                                                         0.1 + index * 0.2
                                                     }s`,
                                                 }"
+                                                @click="openEventModal(ev)"
                                             >
                                                 <div
-                                                    class="w-fit h-fit text-[12px] shadow bg-blue/80 p-2 py-0.5"
+                                                    class="w-fit h-fit text-[12px] bg-red/50 p-2 py-0.5 shadow shadow-gray"
                                                 >
-                                                    {{ ev.date }}
+                                                    {{
+                                                        formatData(ev.timestamp)
+                                                    }}
                                                 </div>
-                                                <div class="grow"></div>
+
                                                 <div
-                                                    class="flex justify-center items-center"
+                                                    class="w-full text-[16px] text-right pt-2 font-bold"
                                                 >
-                                                    {{ ev.time }}
-                                                </div>
-                                                <div class="w-full text-[16px]">
-                                                    {{ ev.title }}
+                                                    {{ ev.institution_id }}
                                                 </div>
                                             </Card>
                                         </div>
@@ -234,82 +218,27 @@ export default {
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
             records: [],
-            chartData: {
-                labels: ["Scheduled", "Completed"],
-                datasets: [
-                    {
-                        backgroundColor: ["#ee674a", "#474540"],
-                        data: [2, 12],
-                    },
-                ],
-            },
-            chartOptions: {
-                responsive: true,
-                maintainAspectRatio: false,
+            event: {
+                total: null,
+                today: null,
+                infuture: null,
             },
         };
     },
     async created() {
         console.log("CREATED");
     },
-    async mounted() {
-        console.log("MOUNTED");
-
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
-    },
 
     methods: {
+        updateEventCalculation(e) {
+            this.event = e;
+        },
+        formatData(timestamp) {
+            return this.$dayjs(timestamp).format(
+                `[DATE] YYYY-MM-DD | [TIME] HH:00`
+            );
+        },
+
         async initiateDashboard(id) {
             this.$axios();
         },
@@ -317,7 +246,6 @@ export default {
             this.is_sidebar_expanding = e;
         },
         updateSelectedEvents(e) {
-            console.log(e);
             this.selected_events = e;
         },
     },

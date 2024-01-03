@@ -60,11 +60,13 @@
                                 day && day.date !== selectedDate?.date,
                             'bg-blue/80 ':
                                 selectedDate && selectedDate.date === day.date,
-                            'bg-darkgreen ': isToday(day.date),
+
                             'bg-darkyellow ':
-                                hasEvents(day) && !isTodayOrPast(day.date),
-                            'bg-darkred':
-                                hasEvents(day) && isTodayOrPast(day.date),
+                                hasEvents(day) &&
+                                !isPast(day.date) &&
+                                !isToday(day.date),
+                            'bg-darkgreen': isToday(day.date),
+                            'bg-darkred': hasEvents(day) && isPast(day.date),
                         }"
                     >
                         {{ day.day }}
@@ -77,41 +79,16 @@
 
 <script>
 export default {
-    emits: ["selectedEvents"],
+    emits: ["selectedEvents", "updateEventCalculation"],
     data() {
         return {
+            user: {},
             currentMonth: this.$dayjs(),
             selectedDate: null,
             weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-            events: [
-                { title: "Event 1", date: "2023-11-01", time: "10:00 AM" },
-                {
-                    title: "Event 2 asdnbjoqnwnaso dasnkd oas nkdqwodqnko",
-                    date: "2023-11-30",
-                    time: "02:00 PM",
-                },
-                {
-                    title: "Event 2 asdnbjoqnwnaso dasnkd oas nkdqwodqnko",
-                    date: "2023-11-30",
-                    time: "02:00 PM",
-                },
-                {
-                    title: "Event 2 asdnbjoqnwnaso dasnkd oas nkdqwodqnko",
-                    date: "2023-11-30",
-                    time: "02:00 PM",
-                },
-                {
-                    title: "Event 2 asdnbjoqnwnaso dasnkd oas nkdqwodqnko",
-                    date: "2023-11-30",
-                    time: "02:00 PM",
-                },
-                {
-                    title: "Event 2 asdnbjoqnwnaso dasnkd oas nkdqwodqnko",
-                    date: "2023-11-30",
-                    time: "02:00 PM",
-                },
-                // Add more events as needed
-            ],
+            events: [],
+            api_url: "http://127.0.0.1:3000",
+            institutions: null,
         };
     },
     computed: {
@@ -172,10 +149,15 @@ export default {
     methods: {
         getEventsForDate(date) {
             // Format the date as "YYYY-MM-DD"
-            const formattedDate = this.$dayjs(date).format("YYYY-MM-DD");
+            const date_format = "YYYY-MM-DD";
+            const formattedDate = this.$dayjs(date).format(date_format);
 
             // Return events for the formatted date
-            return this.events.filter((event) => event.date === formattedDate);
+            return this.events.filter(
+                (event) =>
+                    this.$dayjs(event.timestamp).format(date_format) ===
+                    formattedDate
+            );
         },
         prevMonth() {
             this.currentMonth = this.currentMonth.subtract(1, "month");
@@ -188,9 +170,8 @@ export default {
             this.$emit("selectedEvents", this.getEventsForDate(day.date));
         },
         getFirstDayOfMonth(year, month) {
-            // Month parameter is 0-based in JavaScript (0 = January, 11 = December)
             const firstDay = new Date(year, month, 1);
-            return firstDay.getDay(); // Returns a number (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+            return firstDay.getDay();
         },
         isToday(date) {
             // Helper function to check if the date is today
@@ -200,10 +181,73 @@ export default {
         hasEvents(day) {
             return day.events && day.events.length > 0;
         },
-        isTodayOrPast(date) {
+        isPast(date) {
             const today = new Date().toISOString().split("T")[0];
-            return date <= today;
+            return date < today;
         },
+        async fetch() {
+            try {
+                const response = await this.axios.get(
+                    this.api_url + "/schedule",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                this.events = response.data.message;
+
+                if (!this.institutions) {
+                    const response = await this.axios.get(
+                        this.api_url + "/institutions",
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                        }
+                    );
+
+                    this.institutions = response.data.message;
+                }
+
+                this.events.forEach(
+                    (e) =>
+                        (e.institution_id =
+                            this.institutions[e.institution_id - 1].name)
+                );
+
+                // Get the current date
+                const currentDate = this.$dayjs();
+
+                // Calculate total events
+                const totalEvents = this.events.length;
+
+                // Calculate today's events
+                const todayEvents = this.events.filter((event) =>
+                    this.$dayjs(event.timestamp).isSame(currentDate, "day")
+                ).length;
+
+                // Calculate future events
+                const futureEvents = this.events.filter((event) =>
+                    this.$dayjs(event.timestamp).isAfter(currentDate, "day")
+                ).length;
+
+                this.$emit("updateEventCalculation", {
+                    total: totalEvents,
+                    today: todayEvents,
+                    infuture: futureEvents,
+                });
+            } catch (e) {
+                console.log(e.message);
+            }
+        },
+    },
+    async created() {
+        console.log("CALANDER CREATED");
+        this.user.passcode = await sessionStorage.getItem("passcode");
+
+        this.fetch();
     },
 };
 </script>

@@ -26,13 +26,13 @@
                 v-if="!noCancelButton"
                 @click="cancel"
             >
-                Cancel
+                {{ $t("cancel") }}
             </button>
             <button
                 class="px-3 py-1 bg-white text-cool font-bold hover:bg-cool hover:text-white transition"
                 @click="confirm"
             >
-                Confirm
+                {{ $t("confirm") }}
             </button>
         </div>
     </div>

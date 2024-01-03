@@ -14,6 +14,8 @@ const MySQLPool = require("./database");
 const RequestType = require("./requestType");
 const { ProfileController } = require("./profileController");
 const { RecordController } = require("./recordController");
+const { ScheduleController } = require("./scheduleController");
+const AI = require("./AI");
 
 require("dotenv").config();
 
@@ -24,6 +26,7 @@ const blockchain = new Blockchain();
 const upload = multer({});
 const profileController = new ProfileController();
 const recordController = new RecordController();
+const scheduleController = new ScheduleController();
 
 // =====================================================================
 // [APP INITIATION]
@@ -284,7 +287,7 @@ app.put(
             }
 
             const logStr = Formatter.logJsonToString({
-                type: RequestType.LLI,
+                type: RequestType.PU,
                 from: {
                     ID: request.user.id,
                     IP: request.ip,
@@ -418,7 +421,7 @@ app.get(
 
             response.send(await Formatter.successMsg(result));
             const logStr = Formatter.logJsonToString({
-                type: RequestType.MRR,
+                type: RequestType.RDR,
                 from: {
                     ID: request.user.id,
                     IP: request.ip,
@@ -439,6 +442,161 @@ app.get(
         }
     }
 );
+
+// =====================================================================
+// [AI RECO]
+app.get("/ai-reco", Authentication.verify_token, async (request, response) => {
+    try {
+        const result = await AI.recommend(Object.values(request.query));
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.AR,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: "Hospitalisation:" + result,
+            },
+        });
+        logger.log(logStr);
+        response.send(await Formatter.successMsg(result));
+    } catch (error) {
+        console.error("Error AI RECO:", error);
+        response.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get("/symptoms", Authentication.verify_token, async (request, response) => {
+    try {
+        const result = await AI.getAllSymptoms(MySQLPool);
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.SYM,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(await Formatter.successMsg(result));
+    } catch (error) {
+        console.error("Error AI RECO:", error);
+        response.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get(
+    "/institutions/:postal",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const result = await AI.getAllInstitutions(
+                MySQLPool,
+                request.params.postal
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.IR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.get(
+    "/institutions",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const result = await AI.getAllInstitutions(MySQLPool);
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.IR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+// =====================================================================
+// [SCHEDULE]
+app.get("/schedule", Authentication.verify_token, async (request, response) => {
+    try {
+        const user = request.user;
+
+        const result = await scheduleController.getScheduleByUserId(
+            MySQLPool,
+            user
+        );
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.SCHID,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(await Formatter.successMsg(result));
+    } catch (error) {
+        console.error("Error Schedule Retrieval:", error);
+        response.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 // =====================================================================
 // [BLOCKCHAIN RECORD, INCOMPLETE]

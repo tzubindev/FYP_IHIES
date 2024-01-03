@@ -83,59 +83,6 @@ export default {
     },
     async mounted() {
         console.log("MOUNTED");
-
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
     },
 
     methods: {
