@@ -612,6 +612,10 @@ export default {
     },
     async created() {
         console.log("CREATED");
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        const obtainedUser = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = obtainedUser.id;
+        this.user.role = obtainedUser.role;
         await this.fetch();
     },
 
@@ -621,13 +625,6 @@ export default {
             this.is_verified = false;
             this.is_access_denied = false;
             this.is_initiated = false;
-
-            this.user.passcode = await sessionStorage.getItem("passcode");
-            const obtainedUser = await JSON.parse(
-                sessionStorage.getItem("user")
-            );
-            this.user.id = obtainedUser.id;
-            this.user.role = obtainedUser.role;
 
             if (!this.user.passcode) {
                 this.is_access_denied = true;
@@ -675,8 +672,10 @@ export default {
             //  height: null,
             //  weight: null,
             //  last: null,
+
             // Initialise Language
             this.$i18n.locale = profile.language;
+            // Initial Profile Picture
             this.profile_picture_url = `data:${profile.picture.mimetype};base64,${profile.picture.buffer}`;
 
             // Initialise statistic data

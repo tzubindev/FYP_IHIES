@@ -10,10 +10,6 @@
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
-        <!-- Small screen size -->
-        <div></div>
-
-        <!-- Medium screen and above size-->
         <div
             v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
@@ -52,16 +48,16 @@
                         </div>
                     </div>
 
-                    <!-- Profile card & MR quick access -->
+                    <!-- Profile card & Quick Access button -->
                     <div
                         class="w-full h-fit justify-center grid grid-cols-2 gap-2"
                     >
                         <div
-                            class="text-[12px] py-8 bg-gray text-white w-full flex text-center flex-wrap justify-center items-center"
+                            class="h-full text-[12px] py-8 bg-gray text-white w-full flex text-center flex-wrap justify-center items-center"
                         >
                             <img
-                                src="../sample_assets/profilePic_tb.jpg"
-                                class="w-[150px] h-[150px] rounded-full"
+                                :src="profile_picture_url"
+                                class="w-[250px] h-[250px] rounded-full"
                             />
                             <div class="w-full mt-3 text-[18px]">
                                 {{ this.user.name }}
@@ -76,23 +72,46 @@
                             </div>
                         </div>
 
-                        <!-- Check Patient MR Button -->
-                        <div
-                            class="h-full cursor-pointer transition hover:shadow w-full max-w-[1140px] shadow-gray/40 shadow-md overflow-hidden relative"
-                            @click="this.leadTo('patient-medical-record')"
-                        >
-                            <img
-                                src="../assets/medical_record.jpg"
-                                class="h-full w-full object-cover"
-                                alt="Medical Record"
-                            />
+                        <!-- View PMR & Create Vital Sign  -->
+                        <div class="grid grid-cols-1 gap-2">
+                            <!-- View PMR -->
                             <div
-                                class="absolute inset-0 bg-gray opacity-60"
-                            ></div>
-                            <div
-                                class="hover:bg-gray/40 text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[30px]"
+                                class="cursor-pointer transition hover:shadow w-full shadow-gray/40 shadow-md overflow-hidden relative"
+                                @click="this.leadTo('patient-medical-record')"
                             >
-                                {{ $t("view_patient_medical_record") }}
+                                <img
+                                    src="../assets/medical_record.jpg"
+                                    class="h-full w-full object-cover"
+                                    alt="Medical Record"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-gray opacity-60"
+                                ></div>
+                                <div
+                                    class="hover:bg-gray/40 transition text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[20px]"
+                                >
+                                    {{ $t("view_patient_medical_record") }}
+                                </div>
+                            </div>
+
+                            <!-- Vital Sign -->
+                            <div
+                                class="h-[145px] cursor-pointer transition hover:shadow w-full shadow-gray/40 shadow-md overflow-hidden relative"
+                                @click="openVitalSignModal"
+                            >
+                                <img
+                                    src="../assets/vital_sign_bg.jpg"
+                                    class="h-full w-full object-cover"
+                                    alt="Medical Record"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-gray opacity-80"
+                                ></div>
+                                <div
+                                    class="hover:bg-gray/60 transition text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[20px]"
+                                >
+                                    {{ $t("create_vital_sign") }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,21 +144,97 @@
                             <!-- label -->
                             <div class="text-[14px]">{{ $t("schedule") }}</div>
                         </div>
-
-                        <!-- Vital Sign -->
-                        <div
-                            class="hover:bg-gray cursor-pointer transition p-2 bg-cool text-white shadow shadow-gray flex flex-wrap justify-center text-center"
-                        >
-                            <div class="text-[28px] w-full">
-                                {{ $t("create_vital_sign") }}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Right Sidebar -->
-                <!-- Transferring -->
-                <div class="hidden lg:block bg-black"></div>
+                <!-- Vital Sign Modal -->
+                <Transition>
+                    <div v-if="is_vitalsign_modal_shown" class="">
+                        <div
+                            class="absolute top-0 left-0 z-40 w-full h-full bg-gray/90"
+                        ></div>
+                        <div
+                            class="text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/90 w-full min-w-[50%] max-w-[400px]"
+                        >
+                            <div class="relative">
+                                <img
+                                    src="../assets/vital_sign_bg.jpg"
+                                    class="w-full h-[220px]"
+                                />
+                                <div
+                                    class="w-full h-[220px] bg-gray/60 absolute top-0 backdrop-filter backdrop-blur-sm"
+                                ></div>
+                                <div
+                                    class="absolute top-1/2 left-1/2 font-bold text-white -translate-x-1/2 -translate-y-1/2 text-[30px]"
+                                >
+                                    {{ $t("vital_sign") }}
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div
+                                    class="flex my-2 gap-2 items-center flex-wrap"
+                                >
+                                    <div class="w-full">
+                                        <p>{{ $t("patient_id") }}</p>
+                                        <input
+                                            type="text"
+                                            v-model="vital_sign.patient_id"
+                                            class="text-[18px] py-1.5 text-center focus:outline-none bg-gray/10 shadow shadow-gray w-full"
+                                        />
+                                    </div>
+                                    <div class="w-full">
+                                        <p>{{ $t("sys") }}</p>
+                                        <input
+                                            type="text"
+                                            v-model="vital_sign.sys"
+                                            class="text-[18px] py-1.5 text-center focus:outline-none bg-gray/10 shadow shadow-gray w-full"
+                                        />
+                                    </div>
+                                    <div class="w-full">
+                                        <p>{{ $t("dia") }}</p>
+                                        <input
+                                            type="text"
+                                            v-model="vital_sign.dia"
+                                            class="text-[18px] py-1.5 text-center focus:outline-none bg-gray/10 shadow shadow-gray w-full"
+                                        />
+                                    </div>
+                                    <div class="w-full">
+                                        <p>{{ $t("pulse") }}</p>
+                                        <input
+                                            type="text"
+                                            v-model="vital_sign.pulse"
+                                            class="text-[18px] py-1.5 text-center focus:outline-none bg-gray/10 shadow shadow-gray w-full"
+                                        />
+                                    </div>
+                                    <div class="w-full">
+                                        <p>{{ $t("breath") }}</p>
+                                        <input
+                                            type="text"
+                                            v-model="vital_sign.breath"
+                                            class="text-[18px] py-1.5 text-center focus:outline-none bg-gray/10 shadow shadow-gray w-full"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="p-2 flex justify-end items-center gap-4"
+                            >
+                                <div
+                                    class="cursor-pointer transition hover:text-red hover:underline text-center"
+                                    @click="cancelSubmitVitalSign"
+                                >
+                                    {{ $t("cancel") }}
+                                </div>
+                                <div
+                                    class="cursor-pointer transition hover:bg-blue bg-darkgreen text-white shadow shadow-gray w-1/2 text-center py-1"
+                                    @click="submitVitalSign"
+                                >
+                                    {{ $t("confirm") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
             </div>
         </div>
     </div>
@@ -152,8 +247,15 @@ export default {
         return {
             user: {
                 id: null,
-                name: null,
+                name: "",
                 passcode: null,
+            },
+            vital_sign: {
+                patient_id: null,
+                sys: null,
+                dia: null,
+                pulse: null,
+                breath: null,
             },
             current_time: this.getCurrentTime(),
             schedule_number: "N/A",
@@ -161,60 +263,162 @@ export default {
             is_initiated: false,
             is_access_denied: false,
             is_sidebar_expanding: false,
+            is_vitalsign_modal_shown: false,
             api_url: "http://127.0.0.1:3000",
         };
     },
     async created() {
-        console.log("CREATED");
-    },
-    async mounted() {
-        console.log("MOUNTED");
-
         this.user.passcode = await sessionStorage.getItem("passcode");
         const obtainedUser = await JSON.parse(sessionStorage.getItem("user"));
         this.user.id = obtainedUser.id;
         this.user.role = obtainedUser.role;
 
-        if (!this.user.passcode) {
-            this.is_access_denied = true;
-        } else {
-            // LAST CHECK
-            if (!(this.user.passcode && this.user.id && this.user.role)) {
-                this.is_verified = true;
-                this.is_access_denied = true;
-                this.is_initiated = false;
-                return;
-            }
-
-            try {
-                const response = await this.axios.get(
-                    `${this.api_url}/profile`,
-                    {
-                        headers: {
-                            Authorization: this.user.passcode,
-                        },
-                        data: {
-                            user: this.user,
-                        },
-                    }
-                );
-
-                console.log("Start Initiation");
-                this.is_verified = true;
-                await this.initiateDashboard(response.data.message.profile);
-                this.is_initiated = true;
-            } catch (error) {
-                console.error("An error occurred:", error);
-                this.is_initiated = false;
-                this.is_access_denied = true;
-            }
-        }
+        await this.fetch();
 
         this.updateTime();
         setInterval(this.updateTime, 1000);
     },
 
     methods: {
+        validateVitalSigns() {
+            const errors = [];
+
+            // Check if sys is present and is a positive number
+
+            if (!this.vital_sign.patient_id) {
+                errors.push("No patient id.");
+            }
+
+            if (
+                this.vital_sign.sys === null ||
+                isNaN(this.vital_sign.sys) ||
+                this.vital_sign.sys <= 0
+            ) {
+                errors.push("Sys must be a positive number.");
+            }
+
+            // Check if dia is present and is a positive number
+            if (
+                this.vital_sign.dia === null ||
+                isNaN(this.vital_sign.dia) ||
+                this.vital_sign.dia <= 0
+            ) {
+                errors.push("Dia must be a positive number.");
+            }
+
+            // Check if pulse is present and is a positive number
+            if (
+                this.vital_sign.pulse === null ||
+                isNaN(this.vital_sign.pulse) ||
+                this.vital_sign.pulse <= 0
+            ) {
+                errors.push("Pulse must be a positive number.");
+            }
+
+            // Check if breath is present and is a positive number
+            if (
+                this.vital_sign.breath === null ||
+                isNaN(this.vital_sign.breath) ||
+                this.vital_sign.breath <= 0
+            ) {
+                errors.push("Breath must be a positive number.");
+            }
+
+            return errors;
+        },
+        async submitVitalSign() {
+            // Validation
+            const errors = this.validateVitalSigns();
+
+            if (errors.length) {
+                const msg = errors.join("<br>");
+                this.$swal({
+                    title: "Submission Failed",
+                    html: msg,
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            } else {
+                const response = await this.axios.post(
+                    this.api_url + "/vital-sign/add",
+                    this.vital_sign, // Sending data directly in the request body
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                if (response.data.message > 0) {
+                    this.$swal({
+                        title: "Success",
+                        text: "Vital signs are sucessfully added.",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                }
+
+                console.log(response);
+            }
+
+            this.resetVSModal();
+        },
+        cancelSubmitVitalSign() {
+            this.is_vitalsign_modal_shown = false;
+            this.resetVSModal();
+        },
+        resetVSModal() {
+            Object.keys(this.vital_sign).forEach(
+                (k) => (this.vital_sign[k] = null)
+            );
+        },
+        openVitalSignModal() {
+            this.is_vitalsign_modal_shown = true;
+        },
+        async fetch() {
+            console.log("FETCH");
+            this.is_verified = false;
+            this.is_access_denied = false;
+            this.is_initiated = false;
+
+            if (!this.user.passcode) {
+                this.is_access_denied = true;
+            } else {
+                // LAST CHECK
+                if (!(this.user.passcode && this.user.id && this.user.role)) {
+                    this.is_verified = true;
+                    this.is_access_denied = true;
+                    this.is_initiated = false;
+                    return;
+                }
+
+                console.log("LAST CHECK FINISHED");
+                try {
+                    const response = await this.axios.get(
+                        `${this.api_url}/profile`,
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                            data: {
+                                user: this.user,
+                            },
+                        }
+                    );
+
+                    console.log("Start Initiation");
+                    this.is_verified = true;
+                    await this.initiateDashboard(response.data.message.profile);
+                    this.is_initiated = true;
+                } catch (error) {
+                    console.error("An error occurred:", error);
+                    this.is_initiated = false;
+                    this.is_access_denied = true;
+                }
+            }
+        },
         async initiateDashboard(profile) {
             // Format
             //  name: null,
@@ -227,6 +431,8 @@ export default {
 
             // Initialise Language
             this.$i18n.locale = profile.language;
+            // Initial Profile Picture
+            this.profile_picture_url = `data:${profile.picture.mimetype};base64,${profile.picture.buffer}`;
 
             // Standardise
             profile.age = this.calculateAge(profile.born_date);
@@ -236,6 +442,7 @@ export default {
 
             // Initiation
             this.profile = profile;
+            console.log(this.profile);
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;

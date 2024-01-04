@@ -15,6 +15,7 @@ const RequestType = require("./requestType");
 const { ProfileController } = require("./profileController");
 const { RecordController } = require("./recordController");
 const { ScheduleController } = require("./scheduleController");
+const generalController = require("./generalController");
 const AI = require("./AI");
 
 require("dotenv").config();
@@ -36,25 +37,25 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // =====================================================================
 // [MIDDLEWARE] allow access from a specific address and port *** for dev
-app.use(function (req, res, next) {
+app.use(function (request, response, next) {
     // Website wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
 
     // Request methods wish to allow
-    res.setHeader(
+    response.setHeader(
         "Access-Control-Allow-Methods",
         "GET, POST, OPTIONS, PUT, PATCH, DELETE"
     );
 
     // Request headers wish to allow, including Authorization
-    res.setHeader(
+    response.setHeader(
         "Access-Control-Allow-Headers",
         "X-Requested-With,content-type,Authorization"
     );
 
     // Set to true if need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
-    res.setHeader("Access-Control-Allow-Credentials", true);
+    response.setHeader("Access-Control-Allow-Credentials", true);
 
     // Pass to next layer of middleware
     next();
@@ -472,33 +473,6 @@ app.get("/ai-reco", Authentication.verify_token, async (request, response) => {
     }
 });
 
-app.get("/symptoms", Authentication.verify_token, async (request, response) => {
-    try {
-        const result = await AI.getAllSymptoms(MySQLPool);
-
-        const logStr = Formatter.logJsonToString({
-            type: RequestType.SYM,
-            from: {
-                ID: request.user.id,
-                IP: request.ip,
-                Method: request.method,
-                "Query Params": JSON.stringify(request.query),
-                Cookies: JSON.stringify(request.cookies),
-                URL: request.url,
-                Path: request.path,
-                "Host Name": request.hostname,
-                Protocol: request.protocol,
-                Result: result,
-            },
-        });
-        logger.log(logStr);
-        response.send(await Formatter.successMsg(result));
-    } catch (error) {
-        console.error("Error AI RECO:", error);
-        response.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
 app.get(
     "/institutions/:postal",
     Authentication.verify_token,
@@ -570,7 +544,7 @@ app.get("/schedule", Authentication.verify_token, async (request, response) => {
     try {
         const user = request.user;
 
-        const result = await scheduleController.getScheduleByUserId(
+        const result = await scheduleController.get_schedule_by_user_id(
             MySQLPool,
             user
         );
@@ -598,56 +572,204 @@ app.get("/schedule", Authentication.verify_token, async (request, response) => {
     }
 });
 
+app.get(
+    "/schedule-management/:type",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const type = request.params.type;
+            let result;
+
+            if (type === "incoming")
+                result =
+                    await scheduleController.get_schedule_management_by_user_id(
+                        MySQLPool,
+                        user
+                    );
+            else if (type === "pending")
+                result = await scheduleController.get_pending_schedule(
+                    MySQLPool,
+                    user
+                );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.SCHMNGR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error Schedule Retrieval:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/updateschedule/:action/:schedule_id",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const { action, schedule_id } = request.params;
+            const result = await scheduleController.change_status(
+                MySQLPool,
+                schedule_id,
+                action
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.SCHU,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error Schedule Action:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
 // =====================================================================
 // [BLOCKCHAIN RECORD, INCOMPLETE]
-app.get("/blocks", (req, res) => {
-    res.json(blockchain.chain);
+app.get("/blocks", (request, response) => {
+    response.json(blockchain.chain);
 });
 
 // Add a new block
-app.post("/addBlock", (req, res) => {
+app.post("/addBlock", (request, response) => {
     const newBlock = new Block(
         blockchain.chain.length,
         Date.now(),
-        req.body.data
+        request.body.data
     );
 
     blockchain.addBlock(newBlock);
-    res.json(newBlock);
+    response.json(newBlock);
 });
 
 // =====================================================================
-// [INCOMPLETED]
-app.post("/vital-sign/add", async (req, res) => {
-    const sampleData = [
-        { patientid: "123", sys: 120.5, dia: 80.2, pulse: 70, breath: 16 },
-        { patientid: "456", sys: 130.8, dia: 85.0, pulse: 65, breath: 18 },
-        // Add more sample data as needed
-    ];
-
-    // Insert sample data into the vital_sign table
-    for (const data of sampleData) {
+// [VITAL SIGN]
+app.post(
+    "/vital-sign/add",
+    Authentication.verify_token,
+    async (request, response) => {
         try {
-            // Log the data before inserting
-            logger.log(JSON.stringify(data));
+            console.log(request.body);
+            const data = request.body;
+            const result = await generalController.addVitalSign(
+                MySQLPool,
+                data
+            );
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.VSA,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
 
-            // Insert data into the database
-            const query =
-                "INSERT INTO vital_sign (patientid, timestamp, sys, dia, pulse, breath) VALUES (?, NOW(), ?, ?, ?, ?)";
-            const values = [
-                data.patientid,
-                data.sys,
-                data.dia,
-                data.pulse,
-                data.breath,
-            ];
-
-            await logger.query(query, values);
+            response.send(await Formatter.successMsg(result.affectedRows));
         } catch (error) {
             logger.error(`Error inserting data: ${error.message}`);
         }
     }
+);
+
+// =====================================================================
+// [SYMPTOMS]
+app.get("/symptoms", Authentication.verify_token, async (request, response) => {
+    try {
+        const result = await AI.getAllSymptoms(MySQLPool);
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.SYM,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(await Formatter.successMsg(result));
+    } catch (error) {
+        console.error("Error AI RECO:", error);
+        response.status(500).json({ error: "Internal Server Error" });
+    }
 });
+
+// =====================================================================
+// [DEPARTMENTS]
+app.get(
+    "/departments",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            if (request.user.role === "patient") return;
+            const result = await generalController.getAllDepartments(MySQLPool);
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.DEPR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
 
 // =====================================================================
 // LISTENER

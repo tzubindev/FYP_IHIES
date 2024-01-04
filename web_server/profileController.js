@@ -52,7 +52,7 @@ class ProfileController {
             const [rows_vs] = await connection.execute(
                 `SELECT sys, dia, pulse, breath
                 FROM vital_sign
-                WHERE patientid = ?
+                WHERE patient_id = ?
                 ORDER BY timestamp DESC
                 LIMIT 3;`,
                 [requestUser.id]
@@ -86,7 +86,41 @@ class ProfileController {
                 result.profile.breath.push(row.breath);
             }
 
+            if (requestUser.role !== "patient") {
+                delete result.profile.sys;
+                delete result.profile.dia;
+                delete result.profile.pulse;
+                delete result.profile.breath;
+            }
+
             return formatter.successMsg(result);
+        } catch (error) {
+            return formatter.errorMsg(
+                "Profile Info Retrieval Error",
+                "/profile",
+                error.message
+            );
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
+    async get_name_by_id(pool, targetId, targetRole) {
+        let connection;
+        try {
+            // Get a MySQL connection from the pool
+            connection = await pool.getConnection();
+            const table =
+                targetRole === "patient" ? "patient_profile" : "mp_profile";
+
+            // Profile data
+            const [row] = await connection.execute(
+                `SELECT name FROM ${table} WHERE id = ?`,
+                [targetId]
+            );
+
+            return row;
         } catch (error) {
             return formatter.errorMsg(
                 "Profile Info Retrieval Error",

@@ -11,6 +11,185 @@
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
+        <!-- Schedule Info Modal -->
+        <div v-if="is_schedule_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                @click="closeScheduleInfo"
+            ></div>
+            <div
+                class="text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/90 w-full max-w-[400px]"
+            >
+                <div
+                    class="grid grid-cols-2 gap-4 w-full bg-white/90 p-8 max-h-[400px] overflow-y-auto"
+                >
+                    <div
+                        v-for="displayKey in Object.keys(selected_schedule)"
+                        :key="displayKey"
+                        class="text-[12px] flex flex-wrap"
+                    >
+                        <div class="w-full font-bold">
+                            {{ $t(displayKey) }}
+                        </div>
+                        <div
+                            v-if="displayKey === 'timestamp'"
+                            class="text-gray/80"
+                        >
+                            {{
+                                formatDateTime(
+                                    selected_schedule[displayKey],
+                                    true
+                                )
+                            }}
+                        </div>
+
+                        <div v-else class="text-gray/80">
+                            {{
+                                selected_schedule[displayKey] === 1 ||
+                                selected_schedule[displayKey] === 0
+                                    ? Boolean(selected_schedule[displayKey])
+                                    : selected_schedule[displayKey]
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Info Modal -->
+        <div v-if="is_pending_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                @click="closePendingModal"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("pending_info") }}
+                </div>
+
+                <div
+                    class="grid grid-cols-2 gap-4 w-full p-8 max-h-[400px] overflow-y-auto"
+                >
+                    <div
+                        v-for="displayKey in Object.keys(selected_schedule)"
+                        :key="displayKey"
+                        class="text-[12px] flex flex-wrap"
+                        :class="{
+                            'col-span-2 row-span-2': displayKey === 'symptoms',
+                        }"
+                    >
+                        <div class="w-full font-bold">
+                            {{ $t(displayKey) }}
+                        </div>
+                        <div
+                            v-if="displayKey === 'timestamp'"
+                            class="text-gray/80"
+                        >
+                            {{
+                                formatDateTime(
+                                    selected_schedule[displayKey],
+                                    true
+                                )
+                            }}
+                        </div>
+                        <div
+                            v-else-if="displayKey === 'symptoms'"
+                            class="text-gray/80"
+                        >
+                            {{ getSymptoms(selected_schedule[displayKey]) }}
+                        </div>
+
+                        <div v-else class="text-gray/80">
+                            {{
+                                selected_schedule[displayKey] === 1 ||
+                                selected_schedule[displayKey] === 0
+                                    ? Boolean(selected_schedule[displayKey])
+                                    : selected_schedule[displayKey]
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Denied Reason Modal -->
+        <div v-if="is_denied_schedule_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("schedule_denied") }}
+                </div>
+
+                <div class="mt-4 text-left w-full">{{ $t("reason") }}:</div>
+                <input
+                    class="focus:outline-none p-2 text-center w-full bg-transparent border-b border-gray/50"
+                    type="text"
+                    v-model="denied_reason"
+                    required
+                />
+
+                <div class="w-full flex justify-end mt-2">
+                    <div
+                        class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                        @click="notifyUser('SCHEDULE DENIED', denied_reason)"
+                    >
+                        {{ $t("confirm") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approved SCH Modal -->
+        <div v-if="is_approved_schedule_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("schedule_approved") }}
+                </div>
+
+                <div class="mt-4 text-left w-full">
+                    {{ $t("assigned_to(department)") }}:
+                </div>
+
+                <!-- Department Dropdown box -->
+                <select
+                    name="departments"
+                    id="departments"
+                    v-model="assigned_department"
+                    class="w-full bg-transparent text-center border-b border-gray/50 p-2 cursor-pointer focus:outline-none"
+                >
+                    <option
+                        v-for="d in predefined_deparments"
+                        :key="d.id"
+                        value="d.name"
+                    >
+                        {{ $t(d.name) }}
+                    </option>
+                </select>
+
+                <div class="w-full flex justify-end mt-2">
+                    <div
+                        class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                        @click="
+                            notifyUser('SCHEDULE APPROVED', assigned_department)
+                        "
+                    >
+                        {{ $t("confirm") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div
             v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
@@ -120,7 +299,7 @@
                                 >
                                     <!-- Table Headers -->
                                     <div
-                                        class="w-full grid grid-cols-4 text-[14px] my-2 bg-gray text-white"
+                                        class="w-full grid grid-cols-5 text-[14px] my-2 bg-gray text-white"
                                     >
                                         <div
                                             v-for="(
@@ -149,13 +328,21 @@
 
                                     <!-- Table Body -->
                                     <div
-                                        class="border-gray/70 hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-4 text-[14px] py-1 text-center"
+                                        class="border-gray/70 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-5 text-[14px] py-1 text-center"
                                         v-for="(h, index) in incoming_schedules"
                                         :key="index"
                                         :class="{
                                             'border-b-0':
                                                 index !==
                                                 incoming_schedules.length - 1,
+                                            'bg-yellow hover:bg-yellow/80 ':
+                                                h.is_cancelled,
+                                            'bg-blue/70 hover:bg-blue/60':
+                                                h.is_processing,
+                                            'bg-green hover:bg-green/80':
+                                                h.is_completed,
+                                            'bg-red hover:bg-red/80':
+                                                h.is_rescheduled,
                                         }"
                                         :style="{
                                             'animation-delay': `${
@@ -164,15 +351,22 @@
                                         }"
                                     >
                                         <div
+                                            class="flex justify-center items-center hover:underline transition"
+                                            @click="showScheduleInfo(h)"
+                                        >
+                                            {{ h.schedule_id }}
+                                        </div>
+                                        <div
                                             class="flex justify-center items-center"
                                         >
-                                            {{ h.id }}
+                                            {{ h.patient_id }}
                                         </div>
                                         <div
                                             class="flex justify-center items-center"
                                         >
                                             {{ h.name }}
                                         </div>
+                                        <!-- Actions button -->
                                         <div
                                             class="col-span-2 w-full flex justify-center"
                                         >
@@ -181,16 +375,54 @@
                                             >
                                                 <div
                                                     class="border-r pr-2 border-gray/70 hover:text-darkyellow transition hover:underline"
+                                                    @click="cancelSchedule(h)"
+                                                    v-if="
+                                                        !(
+                                                            h.is_cancelled ||
+                                                            h.is_processing ||
+                                                            h.is_completed ||
+                                                            h.is_rescheduled
+                                                        )
+                                                    "
                                                 >
                                                     {{ $t("cancel") }}
                                                 </div>
                                                 <div
+                                                    class="border-r pr-2 border-gray/70 hover:text-blue transition hover:underline"
+                                                    @click="processSchedule(h)"
+                                                    v-if="
+                                                        !(
+                                                            h.is_cancelled ||
+                                                            h.is_processing ||
+                                                            h.is_completed ||
+                                                            h.is_rescheduled
+                                                        )
+                                                    "
+                                                >
+                                                    {{ $t("processing") }}
+                                                </div>
+                                                <div
                                                     class="border-r pr-2 border-gray/70 hover:text-darkgreen transition hover:underline"
+                                                    @click="completeSchedule(h)"
+                                                    :class="{
+                                                        'border-none':
+                                                            h.is_processing,
+                                                    }"
+                                                    v-if="h.is_processing"
                                                 >
                                                     {{ $t("complete") }}
                                                 </div>
                                                 <div
                                                     class="hover:text-red transition hover:underline"
+                                                    @click="reschedule(h)"
+                                                    v-if="
+                                                        !(
+                                                            h.is_cancelled ||
+                                                            h.is_processing ||
+                                                            h.is_completed ||
+                                                            h.is_rescheduled
+                                                        )
+                                                    "
                                                 >
                                                     {{ $t("reschedule") }}
                                                 </div>
@@ -208,7 +440,7 @@
                                 >
                                     <!-- Table Headers -->
                                     <div
-                                        class="w-full grid grid-cols-6 text-[14px] my-2 bg-gray text-white"
+                                        class="w-full grid grid-cols-5 text-[14px] my-2 bg-gray text-white"
                                     >
                                         <div
                                             v-for="(
@@ -237,13 +469,13 @@
 
                                     <!-- Table Body -->
                                     <div
-                                        class="border-gray/70 hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-6 text-[14px] py-1 text-center"
+                                        class="border-gray/70 hover:bg-gray/10 transition cursor-pointer slide-in-left-to-right border w-full grid grid-cols-5 text-[14px] py-1 text-center"
                                         v-for="(h, index) in pending_schedules"
                                         :key="index"
                                         :class="{
                                             'border-b-0':
                                                 index !==
-                                                incoming_schedules.length - 1,
+                                                pending_schedules.length - 1,
                                         }"
                                         :style="{
                                             'animation-delay': `${
@@ -252,28 +484,27 @@
                                         }"
                                     >
                                         <div
-                                            class="flex justify-center items-center"
+                                            class="flex justify-center items-center truncate"
                                         >
-                                            {{ h.id }}
+                                            {{ h.patient_id }}
+                                        </div>
+
+                                        <div
+                                            class="flex justify-center items-center truncate"
+                                        >
+                                            {{
+                                                formatDateTime(
+                                                    h.timestamp,
+                                                    true
+                                                )
+                                            }}
                                         </div>
                                         <div
-                                            class="flex justify-center items-center"
+                                            class="w-full flex justify-center items-center"
                                         >
-                                            {{ h.department }}
-                                        </div>
-                                        <div
-                                            class="flex justify-center items-center"
-                                        >
-                                            {{ h.date }}
-                                        </div>
-                                        <div class="w-full flex justify-center">
                                             <div
-                                                class="w-fit h-full bg-gray text-white px-3 p-1 transition hover:bg-black"
-                                                @click="
-                                                    openSymptomsModal(
-                                                        h.symptoms
-                                                    )
-                                                "
+                                                class="flex justify-center items-center w-fit h-full bg-gray text-white px-3 p-1 transition hover:bg-black"
+                                                @click="openPendingModal(h)"
                                             >
                                                 {{ $t("view") }}
                                             </div>
@@ -286,13 +517,15 @@
                                             >
                                                 <div
                                                     class="border-r border-gray/70 pr-2 hover:text-red transition hover:underline"
+                                                    @click="denySchedule(h)"
                                                 >
                                                     {{ $t("deny") }}
                                                 </div>
                                                 <div
                                                     class="hover:text-darkgreen transition hover:underline"
+                                                    @click="approveSchedule(h)"
                                                 >
-                                                    {{ $t("confirm") }}
+                                                    {{ $t("approve") }}
                                                 </div>
                                             </div>
                                         </div>
@@ -303,25 +536,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Symptoms Modal -->
-            <Modal
-                v-if="is_symptoms_shown"
-                title="symptoms"
-                modalType="info"
-                noCancelButton
-                @confirm="closeSymptomsModal"
-            >
-                <div class="w-full flex flex-wrap gap-1 mb-10">
-                    <div
-                        class="w-full bg-white/20 text-center"
-                        v-for="s in selected_symptoms"
-                        :key="s.id"
-                    >
-                        {{ $t(s) }}
-                    </div>
-                </div>
-            </Modal>
         </div>
     </div>
 </template>
@@ -335,39 +549,41 @@ export default {
                 name: null,
                 passcode: null,
             },
+            selected_schedule: null,
+            denied_reason: null,
             is_verified: true, // false in default
             is_initiated: true, // false in default
+            is_schedule_shown: false,
             is_access_denied: false,
             is_sidebar_expanding: false,
-            is_symptoms_shown: false,
+            is_pending_modal_shown: false,
+            is_denied_schedule_modal_shown: false,
+            is_approved_schedule_modal_shown: false,
             selected_events: [],
             selected_tab: "incoming",
-            view_symptoms: null,
+            predefined_symptoms: null,
+            predefined_deparments: null,
+            assigned_department: null,
             api_url: "http://127.0.0.1:3000",
             records: [],
+            schedules: null,
             tabs: ["incoming", "pending"],
-            incoming_headers: ["patient_id", "patient_name", "action"],
-            pending_headers: [
+            incoming_headers: [
+                "schedule_id",
                 "patient_id",
-                "department",
-                "date",
-                "symptoms",
+                "patient_name",
                 "action",
             ],
-            incoming_schedules: [
-                { id: "01234553", name: "sample" },
-                { id: "01234553", name: "sample2" },
-            ],
+            pending_headers: ["patient_id", "date", "info", "action"],
+            incoming_schedules: [],
             pending_schedules: [
                 {
                     id: "01234553",
-                    department: "dep1",
                     date: "sample",
                     symptoms: ["s1", "s2"],
                 },
                 {
                     id: "01234553",
-                    department: "dep2",
                     date: "sample2",
                     symptoms: ["s3", "s4"],
                 },
@@ -376,78 +592,193 @@ export default {
     },
     async created() {
         console.log("CREATED");
-    },
-    async mounted() {
-        console.log("MOUNTED");
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        const user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = user.id;
+        this.user.role = user.role;
 
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
+        await this.fetch();
     },
 
     methods: {
-        async initiateDashboard(id) {
-            this.$axios();
+        // Notification connection here
+        async notifyUser(eType, msg) {
+            if (eType === "SCHEDULE DENIED")
+                this.is_denied_schedule_modal_shown = false;
+            if (eType === "SCHEDULE APPROVED") {
+                this.is_approved_schedule_modal_shown = false;
+            }
+            console.log(eType, msg);
+        },
+        getSymptoms(ss) {
+            return ss
+                .split(";")
+                .map((num) => this.predefined_symptoms[parseInt(num)].name);
+        },
+        formatDateTime(isoString, needTime = false) {
+            const date = new Date(isoString);
+
+            // Get individual date and time components
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            // Create the formatted date string
+            let formattedDateTime = `${year}/${month}/${day}`;
+
+            // Include time component if needTime is true
+            if (needTime) {
+                const hours = String(date.getHours()).padStart(2, "0");
+                formattedDateTime += ` [${hours}:00]`;
+            }
+
+            return formattedDateTime;
+        },
+        closeScheduleInfo() {
+            this.is_schedule_shown = false;
+            this.selected_schedule = null;
+        },
+        showScheduleInfo(e) {
+            this.is_schedule_shown = true;
+            this.selected_schedule = e;
+        },
+        async denySchedule(e) {
+            this.is_denied_schedule_modal_shown = true;
+            this.schedule("deny", e);
+        },
+        async approveSchedule(e) {
+            this.is_approved_schedule_modal_shown = true;
+            this.schedule("approve", e);
+        },
+        async cancelSchedule(e) {
+            this.schedule("cancel", e);
+        },
+        async processSchedule(e) {
+            this.schedule("process", e);
+        },
+        async completeSchedule(e) {
+            this.schedule("complete", e);
+        },
+        async reschedule(e) {
+            this.schedule("reschedule", e);
+        },
+        async schedule(type, e) {
+            let refresh = false;
+
+            const response = await this.axios.post(
+                `${this.api_url}/updateschedule/${type}/${e.schedule_id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            refresh = response.data.message;
+
+            if (refresh) await this.fetch();
+        },
+        async fetch() {
+            try {
+                // If the mp has access right on handling incoming
+                const response = await this.axios.get(
+                    this.api_url + "/schedule-management/incoming",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                this.incoming_schedules = response.data.message.filter((s) =>
+                    this.$dayjs(s.timestamp).isSame(new Date(), "day")
+                );
+
+                // If the mp has access right on handling pending
+                const response_pending = await this.axios.get(
+                    this.api_url + "/schedule-management/pending",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                this.pending_schedules = response_pending.data.message;
+                const desiredKeyOrder = [
+                    "is_approved",
+                    "is_assigned",
+                    "is_cancelled",
+                    "is_completed",
+                    "is_processing",
+                    "is_rescheduled",
+                    "name",
+                    "patient_id",
+                    "schedule_id",
+                    "timestamp",
+                    "symptoms",
+                ];
+                this.pending_schedules = this.pending_schedules.map((s) =>
+                    this.reorderKeys(s, desiredKeyOrder)
+                );
+
+                if (!this.predefined_symptoms) {
+                    const response_sym = await this.axios.get(
+                        this.api_url + "/symptoms",
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                        }
+                    );
+                    this.predefined_symptoms = response_sym.data.message;
+                }
+
+                if (!this.predefined_deparments) {
+                    const response_dep = await this.axios.get(
+                        this.api_url + "/departments",
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                        }
+                    );
+                    this.predefined_deparments = response_dep.data.message;
+                    console.log(this.predefined_deparments);
+                }
+            } catch (e) {
+                console.error(e.message);
+            }
+        },
+        reorderKeys(obj, keyOrder) {
+            const orderedObject = {};
+
+            // Add all keys except the one specified in keyOrder
+            for (const key in obj) {
+                if (!keyOrder.includes(key)) {
+                    orderedObject[key] = obj[key];
+                }
+            }
+
+            // Add the specified key at the end
+            keyOrder.forEach((key) => {
+                if (obj.hasOwnProperty(key)) {
+                    orderedObject[key] = obj[key];
+                }
+            });
+
+            return orderedObject;
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
         },
-        closeSymptomsModal() {
-            this.is_symptoms_shown = false;
-            this.selected_symptoms = null;
+        closePendingModal() {
+            this.is_pending_modal_shown = false;
+            this.selected_schedule = null;
         },
-        openSymptomsModal(s) {
-            this.is_symptoms_shown = true;
-            this.selected_symptoms = s;
+        openPendingModal(s) {
+            this.is_pending_modal_shown = true;
+            this.selected_schedule = s;
         },
     },
 };

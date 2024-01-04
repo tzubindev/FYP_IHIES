@@ -393,7 +393,7 @@ export default {
                     this.$swal({
                         title: "Update Profile",
                         text: "Updated Succesfully",
-                        icon: "info",
+                        icon: "success",
                         showConfirmButton: false,
                         timer: 2000,
                     });
