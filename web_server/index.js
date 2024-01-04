@@ -618,7 +618,7 @@ app.get(
 );
 
 app.post(
-    "/updateschedule/:action/:schedule_id",
+    "/update-schedule/:action/:schedule_id",
     Authentication.verify_token,
     async (request, response) => {
         try {
@@ -648,6 +648,80 @@ app.post(
             response.send(await Formatter.successMsg(result));
         } catch (error) {
             console.error("Error Schedule Action:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/assign-schedule",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const { department_id, schedule_id } = request.body;
+            if (request.user.role === "patient") return;
+            const result = await scheduleController.assign(
+                MySQLPool,
+                department_id,
+                schedule_id
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.ASSS,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/add-schedule",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const schedule_data = request.body.data;
+
+            if (request.user.role === "patient") return;
+            const result = await scheduleController.add(
+                MySQLPool,
+                schedule_data
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.ASSS,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
             response.status(500).json({ error: "Internal Server Error" });
         }
     }
@@ -745,7 +819,11 @@ app.get(
     async (request, response) => {
         try {
             if (request.user.role === "patient") return;
-            const result = await generalController.getAllDepartments(MySQLPool);
+            const userId = request.user.id;
+            const result = await generalController.getAllDepartments(
+                MySQLPool,
+                userId
+            );
 
             const logStr = Formatter.logJsonToString({
                 type: RequestType.DEPR,

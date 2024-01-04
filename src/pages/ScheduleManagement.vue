@@ -163,6 +163,7 @@
 
                 <!-- Department Dropdown box -->
                 <select
+                    required
                     name="departments"
                     id="departments"
                     v-model="assigned_department"
@@ -171,7 +172,7 @@
                     <option
                         v-for="d in predefined_deparments"
                         :key="d.id"
-                        value="d.name"
+                        :value="d.name"
                     >
                         {{ $t(d.name) }}
                     </option>
@@ -180,13 +181,145 @@
                 <div class="w-full flex justify-end mt-2">
                     <div
                         class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
-                        @click="
-                            notifyUser('SCHEDULE APPROVED', assigned_department)
-                        "
+                        @click="handleApproval"
                     >
                         {{ $t("confirm") }}
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Add Schedule Modal -->
+        <div v-if="is_add_schedule_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <form>
+                    <div class="font-bold w-full text-center">
+                        {{ $t("added_schedule") }}
+                    </div>
+                    <div class="my-4 w-full">
+                        <!-- 1. timestamp date (after tomorrow) -->
+                        <div class="w-full font-bold">
+                            {{ $t("date") }}
+                        </div>
+                        <input
+                            type="date"
+                            id="timestamp"
+                            name="timestamp"
+                            v-model="added_schedule.timestamp"
+                            class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                            :min="minDate"
+                            required
+                        />
+
+                        <!-- 1.1 time -->
+                        <div class="w-full font-bold mt-3">
+                            {{ $t("time") }}
+                        </div>
+                        <select
+                            id="time"
+                            name="time"
+                            v-model="added_schedule.time"
+                            class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                        >
+                            <option
+                                v-for="timeSlot in timeSlots"
+                                :key="timeSlot"
+                                :value="timeSlot"
+                            >
+                                {{ timeSlot }}
+                            </option>
+                        </select>
+
+                        <!-- 2. mp_id (NO DISPLAY) -->
+
+                        <!-- 3. department -->
+                        <div class="w-full font-bold mt-3">
+                            {{ $t("department") }}
+                        </div>
+                        <select
+                            required
+                            name="departments"
+                            id="departments"
+                            v-model="added_schedule.department"
+                            class="w-full bg-transparent text-center border-b border-gray/50 p-2 cursor-pointer focus:outline-none"
+                        >
+                            <option
+                                v-for="d in predefined_deparments"
+                                :key="d.id"
+                                :value="d.id"
+                            >
+                                {{ $t(d.name) }}
+                            </option>
+                        </select>
+
+                        <!-- 4. patient_id (NEED VERIFICATION IN BACK)-->
+                        <div class="w-full font-bold mt-3">
+                            {{ $t("patient_id") }}
+                        </div>
+                        <input
+                            class="focus:outline-none p-2 text-center w-full bg-transparent border-b border-gray/50"
+                            type="text"
+                            v-model="added_schedule.patient_id"
+                            required
+                        />
+
+                        <!-- 5. symptoms  -->
+                        <div class="w-full font-bold mt-3">
+                            {{ $t("symptoms") }}
+                        </div>
+                        <select
+                            multiple
+                            required
+                            name="departments"
+                            id="departments"
+                            v-model="added_schedule.symptoms"
+                            class="w-full bg-transparent text-center border-b border-gray/50 p-2 cursor-pointer focus:outline-none"
+                        >
+                            <option
+                                v-for="(d, index) in predefined_symptoms"
+                                :key="index"
+                                :value="d.id"
+                                class="py-2"
+                                :class="{
+                                    'border-b border-gray/20':
+                                        index !==
+                                        predefined_symptoms.length - 1,
+                                }"
+                            >
+                                {{ $t(d.name) }}
+                            </option>
+                        </select>
+                        <div class="w-full italic text-red text-[12px]">
+                            {{
+                                $t(
+                                    "*Hold down the Ctrl (windows) or Command (Mac) button to select multiple options."
+                                )
+                            }}
+                        </div>
+                    </div>
+                    <div
+                        class="w-full flex justify-end mt-2 items-center gap-2"
+                    >
+                        <div
+                            class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                            @click="closeAddScheduleModal"
+                        >
+                            {{ $t("cancel") }}
+                        </div>
+                        <button
+                            class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                            @click="handleAddSchedule"
+                            type="submit"
+                        >
+                            {{ $t("confirm") }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -234,7 +367,7 @@
                                 <div
                                     class="w-full flex justify-center items-center flex-wrap bg-darkred p-2 text-white"
                                 >
-                                    <p>{{ "0" }}</p>
+                                    <p>{{ incoming_schedules.length }}</p>
                                     <p class="w-full text-center">
                                         {{ $t("incoming") }}
                                     </p>
@@ -242,11 +375,17 @@
 
                                 <!-- Completed -->
                                 <div
-                                    class="w-full flex justify-center items-center flex-wrap bg-darkgreen p-2 text-white"
+                                    class="w-full flex justify-center items-center flex-wrap bg-blue p-2 text-white"
                                 >
-                                    <p>{{ "0" }}</p>
+                                    <p>
+                                        {{
+                                            incoming_schedules.filter(
+                                                (s) => s.is_processing
+                                            ).length
+                                        }}
+                                    </p>
                                     <p class="w-full text-center">
-                                        {{ $t("completed") }}
+                                        {{ $t("processing") }}
                                     </p>
                                 </div>
 
@@ -254,7 +393,13 @@
                                 <div
                                     class="w-full flex justify-center items-center flex-wrap bg-darkyellow p-2 text-white"
                                 >
-                                    <p>{{ "0" }}</p>
+                                    <p>
+                                        {{
+                                            incoming_schedules.filter(
+                                                (s) => s.is_cancelled
+                                            ).length
+                                        }}
+                                    </p>
                                     <p class="w-full text-center">
                                         {{ $t("cancelled") }}
                                     </p>
@@ -264,6 +409,7 @@
                             <div class="w-full flex justify-end mt-2">
                                 <div
                                     class="hover:bg-darkred transition cursor-pointer flex gap-2 items-center text-[16px] bg-red p-1 px-2 text-white shadow shadow-gray"
+                                    @click="openAddScheduleModal"
                                 >
                                     <img
                                         src="../assets/schedule.svg"
@@ -559,6 +705,14 @@ export default {
             is_pending_modal_shown: false,
             is_denied_schedule_modal_shown: false,
             is_approved_schedule_modal_shown: false,
+            is_add_schedule_modal_shown: false,
+            added_schedule: {
+                timestamp: null,
+                time: null,
+                mp_id: null,
+                patient_id: null,
+                symptoms: null,
+            },
             selected_events: [],
             selected_tab: "incoming",
             predefined_symptoms: null,
@@ -576,18 +730,7 @@ export default {
             ],
             pending_headers: ["patient_id", "date", "info", "action"],
             incoming_schedules: [],
-            pending_schedules: [
-                {
-                    id: "01234553",
-                    date: "sample",
-                    symptoms: ["s1", "s2"],
-                },
-                {
-                    id: "01234553",
-                    date: "sample2",
-                    symptoms: ["s3", "s4"],
-                },
-            ],
+            pending_schedules: [],
         };
     },
     async created() {
@@ -599,8 +742,104 @@ export default {
 
         await this.fetch();
     },
+    computed: {
+        // Calculate the date after the day after tomorrow
+        minDate() {
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() + 2); // Add two days
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1)
+                .toString()
+                .padStart(2, "0");
+            const day = currentDate.getDate().toString().padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        },
+        timeSlots() {
+            const startTime = 9 * 60; // 09:00 in minutes
+            const endTime = 17 * 60; // 18:00 in minutes
+            const interval = 30; // 30 minutes interval
+
+            const timeSlots = [];
+
+            for (let time = startTime; time <= endTime; time += interval) {
+                const hours = Math.floor(time / 60);
+                const minutes = time % 60;
+                const formattedTime = `${hours
+                    .toString()
+                    .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+                timeSlots.push(formattedTime);
+            }
+
+            return timeSlots;
+        },
+    },
 
     methods: {
+        openAddScheduleModal() {
+            this.added_schedule.timestamp = null;
+            this.added_schedule.mp_id = this.user.id;
+            this.added_schedule.patient_id = null;
+            this.added_schedule.symptoms = null;
+            this.is_add_schedule_modal_shown = true;
+        },
+        closeAddScheduleModal() {
+            this.is_add_schedule_modal_shown = false;
+        },
+        async handleAddSchedule() {
+            this.added_schedule.symptoms =
+                this.added_schedule.symptoms.join(";");
+
+            this.added_schedule.timestamp =
+                this.added_schedule.timestamp +
+                " " +
+                this.added_schedule.time +
+                ":00";
+
+            console.log(this.added_schedule);
+
+            const response = await this.axios.post(
+                `${this.api_url}/add-schedule`,
+                {
+                    data: this.added_schedule,
+                },
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            if (response.data.message)
+                this.$swal({
+                    title: "Schedule",
+                    text: "New schedule added successfully.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+
+            this.closeAddScheduleModal();
+        },
+        async handleApproval() {
+            const dep_id = this.predefined_deparments.filter(
+                (d) => d.name === this.assigned_department
+            )[0].id;
+            const response = await this.axios.post(
+                `${this.api_url}/assign-schedule`,
+                {
+                    department_id: dep_id,
+                    schedule_id: this.selected_schedule.schedule_id,
+                },
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data.message) await this.fetch();
+
+            this.notifyUser("SCHEDULE APPROVED", this.assigned_department);
+        },
         // Notification connection here
         async notifyUser(eType, msg) {
             if (eType === "SCHEDULE DENIED")
@@ -647,6 +886,7 @@ export default {
             this.schedule("deny", e);
         },
         async approveSchedule(e) {
+            this.selected_schedule = e;
             this.is_approved_schedule_modal_shown = true;
             this.schedule("approve", e);
         },
@@ -666,7 +906,7 @@ export default {
             let refresh = false;
 
             const response = await this.axios.post(
-                `${this.api_url}/updateschedule/${type}/${e.schedule_id}`,
+                `${this.api_url}/update-schedule/${type}/${e.schedule_id}`,
                 {},
                 {
                     headers: {
@@ -718,6 +958,7 @@ export default {
                     "timestamp",
                     "symptoms",
                 ];
+
                 this.pending_schedules = this.pending_schedules.map((s) =>
                     this.reorderKeys(s, desiredKeyOrder)
                 );
@@ -744,7 +985,6 @@ export default {
                         }
                     );
                     this.predefined_deparments = response_dep.data.message;
-                    console.log(this.predefined_deparments);
                 }
             } catch (e) {
                 console.error(e.message);

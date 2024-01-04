@@ -16,6 +16,7 @@ const RequestType = {
     SCHMNGR: "SCHEDULE MANAGEMENT INFO RETRIEVAL",
     SCHU: "SCHEDULE UPDATE",
     DEPR: "DEPARTMENTS INFO RETRIEVAL",
+    ASSS: "SCHEDULE ASSIGNMENT",
 };
 
 module.exports = RequestType;
