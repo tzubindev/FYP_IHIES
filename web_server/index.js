@@ -18,6 +18,7 @@ const { ScheduleController } = require("./scheduleController");
 const generalController = require("./generalController");
 const AI = require("./AI");
 const { PatientTransferController } = require("./patientTransferController");
+const { IncidentReportController } = require("./incidentReportController");
 
 require("dotenv").config();
 
@@ -30,6 +31,7 @@ const profileController = new ProfileController();
 const recordController = new RecordController();
 const scheduleController = new ScheduleController();
 const patientTransferController = new PatientTransferController();
+const incidentReportController = new IncidentReportController();
 
 // =====================================================================
 // [APP INITIATION]
@@ -1047,10 +1049,177 @@ app.get(
                     MySQLPool,
                     user
                 );
+            } else if (type === "request") {
+                result = await patientTransferController.getRequests(
+                    MySQLPool,
+                    user
+                );
             }
 
             const logStr = Formatter.logJsonToString({
                 type: RequestType.PTB,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/patient-transfer/add",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            if (user.role == "patient") return;
+            const data = request.body;
+
+            const result = await patientTransferController.add(
+                MySQLPool,
+                user,
+                data
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.APT,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.delete(
+    "/patient-transfer/:id",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            if (user.role == "patient") return;
+            const { id } = request.params;
+
+            const result = await patientTransferController.delete(
+                MySQLPool,
+                id
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.DLTPTR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+// =====================================================================
+// [INCIDENT REPORT]
+app.get(
+    "/incident/:type",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const { type } = request.params;
+            let result;
+
+            if (type === "type") {
+                result = await incidentReportController.getIncidentType(
+                    MySQLPool,
+                    user
+                );
+            } else if (type === "data") {
+                result = await incidentReportController.getIncidents(
+                    MySQLPool,
+                    user
+                );
+            }
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.IRR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/incident/update/:id/:status",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const { id, status } = request.params;
+            const result = await incidentReportController.update(
+                MySQLPool,
+                user,
+                id,
+                status
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.UIS,
                 from: {
                     ID: request.user.id,
                     IP: request.ip,

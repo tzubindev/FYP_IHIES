@@ -3,6 +3,78 @@ const { request } = require("express");
 class PatientTransferController {
     constructor() {}
 
+    async add(pool, requestUser, data) {
+        let connection;
+        try {
+            connection = await pool.getConnection();
+            const patientId = data.patient_id;
+            const reason = data.reason;
+            const currentCondition = data.current_condition;
+            const note = data.note;
+
+            // [1] get institution id
+            const query = `SELECT institution_id FROM mp_profile WHERE id = ?`;
+            const [r] = await connection.query(query, [requestUser.id]);
+            const institutionId = r[0].institution_id;
+
+            // check if current existing patient transfer request
+            const query_ck = `
+            SELECT * from patient_transfer_request 
+            WHERE to_institution_id IS NULL AND transferred = FALSE AND patient_id = ? `;
+            const [r_ck] = await connection.query(query_ck, [patientId]);
+
+            if (r_ck.length) return false;
+
+            // [2] add data to patient_transfer_request
+            const query_pt = `
+            INSERT INTO patient_transfer_request (
+                from_institution_id, 
+                to_institution_id,
+                transferred, 
+                transferred_timestamp, 
+                patient_id, 
+                reason, 
+                note, 
+                current_condition,
+                created_timestamp,
+                updated_timestamp
+            ) VALUES (?,NULL, FALSE, NULL, ?, ?, ?, ?, now(), now())`;
+            const [r_pt] = await connection.query(query_pt, [
+                institutionId,
+                patientId,
+                reason,
+                note,
+                currentCondition,
+            ]);
+
+            return r_pt.affectedRows > 0;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
+    async delete(pool, id) {
+        let connection;
+        try {
+            connection = await pool.getConnection();
+
+            const query = "DELETE FROM patient_transfer_request WHERE id = ?";
+            const [r] = await connection.query(query, [id]);
+
+            return r.affectedRows > 0;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
     async resolveBed(pool, requestUser, bedId) {
         let connection;
         try {
@@ -142,6 +214,7 @@ class PatientTransferController {
             if (connection) connection.release();
         }
     }
+
     async getRequested(pool, requestUser) {
         let connection;
         try {
@@ -155,6 +228,31 @@ class PatientTransferController {
 
             // [2]
             const query_b = `SELECT * FROM patient_transfer_request WHERE from_institution_id = ? AND to_institution_id IS NULL AND transferred = FALSE`;
+            const [r_b] = await connection.query(query_b, [institution_id]);
+
+            return r_b;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
+    async getRequests(pool, requestUser) {
+        let connection;
+        try {
+            if (requestUser.role === "patient") return false;
+            connection = await pool.getConnection();
+
+            // [1] get institution id
+            const query = `SELECT institution_id FROM mp_profile WHERE id = ?`;
+            const [r] = await connection.query(query, [requestUser.id]);
+            const institution_id = r[0].institution_id;
+
+            // [2]
+            const query_b = `SELECT * FROM patient_transfer_request WHERE from_institution_id != ? AND to_institution_id IS NULL AND transferred = FALSE`;
             const [r_b] = await connection.query(query_b, [institution_id]);
 
             return r_b;

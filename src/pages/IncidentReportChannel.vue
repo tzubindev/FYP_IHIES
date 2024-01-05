@@ -11,6 +11,63 @@
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
 
+        <div v-if="is_view_incident_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                @click="closeViewIncidentModal"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("incident_info") }}
+                </div>
+
+                <div
+                    class="grid grid-cols-2 gap-4 w-full p-8 max-h-[400px] overflow-y-auto"
+                >
+                    <div
+                        v-for="displayKey in Object.keys(selected_incident)"
+                        :key="displayKey"
+                        class="text-[12px] flex flex-wrap"
+                        :class="{
+                            'col-span-2 row-span-2':
+                                displayKey === 'description',
+                        }"
+                    >
+                        <div class="w-full font-bold">
+                            {{ $t(displayKey) }}
+                        </div>
+                        <div
+                            v-if="displayKey.split('_')[1] === 'timestamp'"
+                            class="text-gray/80"
+                        >
+                            {{
+                                formatDateTime(
+                                    selected_incident[displayKey],
+                                    true
+                                )
+                            }}
+                        </div>
+
+                        <div
+                            v-else-if="displayKey === 'type_id'"
+                            class="text-gray/80"
+                        >
+                            {{
+                                incident_type[selected_incident[displayKey] - 1]
+                                    .name
+                            }}
+                        </div>
+
+                        <div v-else class="text-gray/80">
+                            {{ selected_incident[displayKey] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div
             v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
@@ -47,16 +104,25 @@
                         </div>
                     </div>
 
-                    <!-- Calendar and events -->
                     <div class="flex justify-center w-full">
                         <div class="w-full lg:max-w-[950px]">
                             <!-- Title + Add incident Button -->
-                            <div
-                                class="w-full flex justify-between items-center"
-                            >
-                                <div>{{ $t("my_incident") }}</div>
+                            <div class="w-full flex gap-2 items-center">
+                                <div class="grow"></div>
+
+                                <div
+                                    class="cursor-pointer bg-darkgreen hover:bg-cool transition text-white p-2 py-1 text-[14px] flex items-center"
+                                    @click="exportFile"
+                                >
+                                    <img
+                                        src="../assets/export.svg"
+                                        class="w-4 h-4 mr-1"
+                                    />
+                                    {{ $t("export") }}
+                                </div>
                                 <div
                                     class="cursor-pointer bg-red hover:bg-darkred transition text-white p-2 py-1 text-[14px] flex items-center"
+                                    v-if="selected_tab === 0"
                                 >
                                     <img
                                         src="../assets/add.svg"
@@ -67,7 +133,10 @@
                             </div>
 
                             <!-- Search bar -->
-                            <div class="mt-1 flex items-center p-1 px-0">
+                            <div
+                                class="mt-1 flex items-center p-1 px-0"
+                                v-if="selected_tab === 0"
+                            >
                                 <input
                                     type="text"
                                     class="w-full focus:outline-none p-1 px-2 text-xs bg-gray text-white"
@@ -78,28 +147,59 @@
                                 />
                             </div>
 
-                            <!-- Incidents -->
+                            <!-- Tabs -->
                             <div
-                                class="border-t border-gray/30 mt-2 pt-2 text-[14px]"
+                                class="w-full text-[14px] flex gap-1 mt-3 border-b border-gray/30"
                             >
-                                <!-- Inc Title -->
+                                <div
+                                    @click="selectTab(0)"
+                                    :class="{
+                                        'border-b-4 border-red':
+                                            selected_tab === 0,
+                                    }"
+                                    class="transition cursor-pointer hover:bg-gray/10 px-2 p-1 w-fit h-full"
+                                >
+                                    {{ $t("my_incident") }}
+                                </div>
+                                <div
+                                    @click="selectTab(1)"
+                                    :class="{
+                                        'border-b-4 border-red':
+                                            selected_tab === 1,
+                                    }"
+                                    class="transition cursor-pointer hover:bg-gray/10 px-2 p-1 w-fit h-full"
+                                >
+                                    {{ $t("incident_management") }}
+                                </div>
+                            </div>
+
+                            <!-- TAB 0: Incidents -->
+                            <div
+                                class="mt-4 text-[14px]"
+                                v-if="selected_tab === 0"
+                            >
+                                <!-- Headers -->
                                 <div class="grid grid-cols-5">
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
+                                    <div class="col-span-2 grid grid-cols-3">
+                                        <!-- id -->
                                         <div
-                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                            class="bg-gray py-1 text-white text-center"
                                         >
-                                            {{ $t("id") }}
+                                            <div
+                                                class="border-r border-white/30 h-full flex justify-center items-center"
+                                            >
+                                                {{ $t("id") }}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div
-                                        class="bg-gray py-1 text-white text-center"
-                                    >
+                                        <!-- type -->
                                         <div
-                                            class="border-r border-white/30 h-full flex justify-center items-center"
+                                            class="bg-gray py-1 text-white text-center col-span-2"
                                         >
-                                            {{ $t("type") }}
+                                            <div
+                                                class="border-r border-white/30 h-full flex justify-center items-center"
+                                            >
+                                                {{ $t("type") }}
+                                            </div>
                                         </div>
                                     </div>
                                     <div
@@ -117,7 +217,7 @@
                                         <div
                                             class="border-r border-white/30 h-full flex justify-center items-center"
                                         >
-                                            {{ $t("created_dateTime") }}
+                                            {{ $t("timestamp") }}
                                         </div>
                                     </div>
                                     <div
@@ -131,7 +231,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Inc content blocks -->
+                                <!--  Body -->
                                 <div
                                     class="hover:bg-gray/10 cursor-pointer transition grid grid-cols-5 slide-in-left-to-right py-2 border-b border-x border-gray/30"
                                     v-for="(i, index) in incident"
@@ -141,17 +241,137 @@
                                             0.1 + index * 0.2
                                         }s`,
                                     }"
+                                    @click="openViewIncidentModal(i)"
                                 >
-                                    <div class="text-center">{{ i.id }}</div>
-                                    <div class="text-center">{{ i.type }}</div>
-                                    <div class="text-center">
+                                    <div class="col-span-2 grid grid-cols-3">
+                                        <div
+                                            class="flex items-center justify-center"
+                                        >
+                                            {{ i.id }}
+                                        </div>
+                                        <div
+                                            class="text-left my-auto px-1 truncate col-span-2"
+                                        >
+                                            {{
+                                                incident_type[i.type_id - 1]
+                                                    .name
+                                            }}
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="text-left my-auto px-1 truncate"
+                                    >
                                         {{ i.description }}
                                     </div>
-                                    <div class="text-center">
-                                        {{ i.created_datetime }}
+                                    <div
+                                        class="flex items-center justify-center"
+                                    >
+                                        {{
+                                            formatDateTime(
+                                                i.created_timestamp,
+                                                true
+                                            )
+                                        }}
                                     </div>
-                                    <div class="text-center">
+                                    <div
+                                        class="flex items-center justify-center"
+                                    >
                                         {{ i.status }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 1: management -->
+                            <div
+                                class="mt-4 text-[14px]"
+                                v-if="selected_tab === 1"
+                            >
+                                <!-- Headers -->
+                                <div class="grid grid-cols-3">
+                                    <div class="col-span-2 grid grid-cols-3">
+                                        <!-- id -->
+                                        <div
+                                            class="bg-gray py-1 text-white text-center"
+                                        >
+                                            <div
+                                                class="border-r border-white/30 h-full flex justify-center items-center"
+                                            >
+                                                {{ $t("id") }}
+                                            </div>
+                                        </div>
+                                        <!-- type -->
+                                        <div
+                                            class="bg-gray py-1 text-white text-center col-span-2"
+                                        >
+                                            <div
+                                                class="border-r border-white/30 h-full flex justify-center items-center"
+                                            >
+                                                {{ $t("type") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="bg-gray py-1 text-white text-center"
+                                    >
+                                        <div
+                                            class="h-full flex justify-center items-center"
+                                        >
+                                            {{ $t("action") }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--  Body -->
+                                <div
+                                    class="hover:bg-gray/10 cursor-pointer transition grid grid-cols-3 slide-in-left-to-right py-2 border-b border-x border-gray/30"
+                                    v-for="(i, index) in incident"
+                                    :key="index"
+                                    :style="{
+                                        'animation-delay': `${
+                                            0.1 + index * 0.2
+                                        }s`,
+                                    }"
+                                >
+                                    <div class="col-span-2 grid grid-cols-3">
+                                        <div
+                                            class="flex items-center justify-center"
+                                        >
+                                            {{ i.id }}
+                                        </div>
+                                        <div
+                                            class="text-left my-auto px-1 truncate col-span-2"
+                                        >
+                                            {{
+                                                incident_type[i.type_id - 1]
+                                                    .name
+                                            }}
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-center gap-2"
+                                    >
+                                        <div
+                                            class="p-1 px-2 bg-gray/80 text-white transition cursor-pointer hover:bg-gray"
+                                            @click="openViewIncidentModal(i)"
+                                        >
+                                            {{ $t("view") }}
+                                        </div>
+                                        <div
+                                            v-if="i.status === 'pending'"
+                                            class="p-1 px-2 bg-red text-white transition cursor-pointer hover:bg-darkred"
+                                            @click="process(i)"
+                                        >
+                                            {{ $t("process") }}
+                                        </div>
+
+                                        <div
+                                            v-if="i.status === 'processing'"
+                                            class="p-1 px-2 bg-darkgreen text-white transition cursor-pointer hover:bg-cool"
+                                            @click="solve(i)"
+                                        >
+                                            {{ $t("solve") }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -164,6 +384,9 @@
 </template>
 
 <script>
+import { utils as XLSXUtils, write as XLSXWrite } from "xlsx";
+import { saveAs } from "file-saver";
+
 export default {
     data() {
         return {
@@ -172,104 +395,151 @@ export default {
                 name: null,
                 passcode: null,
             },
+
             is_verified: true, // false in default
             is_initiated: true, // false in default
             is_access_denied: false,
             is_sidebar_expanding: false,
+            is_view_incident_modal_shown: false,
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
             records: [],
-            incident: [
-                {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "Test Date",
-                    status: "accepted",
-                },
-                {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "",
-                    status: "accepted",
-                },
-                {
-                    id: "1",
-                    type: "workplace",
-                    description: "asndkjosadnksaod",
-                    created_datetime: "",
-                    status: "accepted",
-                },
-            ],
+            incident_type: [],
+            incident: [],
+            selected_tab: 0,
+            selected_incident: null,
         };
     },
     async created() {
         console.log("CREATED");
-    },
-    async mounted() {
-        console.log("MOUNTED");
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        const user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = user.id;
+        this.user.role = user.role;
 
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
+        await this.fetch();
     },
 
     methods: {
-        async initiateDashboard(id) {
-            this.$axios();
+        async process(incident) {
+            const response = await this.axios.post(
+                this.api_url + `/incident/update/${incident.id}/processing`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            if (response.data.message) {
+                this.$swal({
+                    title: "Update Incident",
+                    text: "Successfully change incident status to processing.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                await this.fetch();
+            }
+        },
+        async solve(incident) {
+            const response = await this.axios.post(
+                this.api_url + `/incident/update/${incident.id}/solved`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            if (response.data.message) {
+                this.$swal({
+                    title: "Update Incident",
+                    text: "Successfully change incident status to solved.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                await this.fetch();
+            }
+        },
+
+        openViewIncidentModal(incident) {
+            this.selected_incident = incident;
+            this.is_view_incident_modal_shown = true;
+        },
+        closeViewIncidentModal() {
+            this.is_view_incident_modal_shown = false;
+            this.selected_incident = null;
+        },
+
+        async fetch() {
+            try {
+                // incident type
+                const response_type = await this.axios.get(
+                    this.api_url + `/incident/type`,
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                this.incident_type = response_type.data.message;
+                // incident
+                const response = await this.axios.get(
+                    this.api_url + `/incident/data`,
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                this.incident = response.data.message;
+            } catch (e) {
+                console.error(e.message);
+            }
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
+        },
+        formatDateTime(isoString, needTime = false) {
+            const date = new Date(isoString);
+
+            // Get individual date and time components
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            // Create the formatted date string
+            let formattedDateTime = `${year}/${month}/${day}`;
+
+            // Include time component if needTime is true
+            if (needTime) {
+                const hours = String(date.getHours()).padStart(2, "0");
+                formattedDateTime += ` [${hours}:00]`;
+            }
+
+            return formattedDateTime;
+        },
+        selectTab(index) {
+            this.selected_tab = index;
+        },
+        exportFile() {
+            // Create a worksheet
+            const ws = XLSXUtils.json_to_sheet(this.incident);
+
+            // Create a workbook
+            const wb = XLSXUtils.book_new();
+            XLSXUtils.book_append_sheet(wb, ws, "Sheet1");
+
+            // Convert the workbook to a blob
+            const blob = XLSXWrite(wb, { bookType: "xlsx", type: "array" }); // Use "array" type
+            saveAs(
+                new Blob([blob], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                }),
+                "incidents.xlsx"
+            );
         },
     },
 };

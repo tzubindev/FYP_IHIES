@@ -137,7 +137,7 @@
             </div>
         </div>
 
-        <!-- Place Patient MOdal -->
+        <!-- Place Patient Modal -->
         <div v-if="is_place_patient_modal_shown" class="">
             <div
                 class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
@@ -218,6 +218,117 @@
             </div>
         </div>
 
+        <!-- Request Trasnfer Modal -->
+        <div v-if="is_request_transfer_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <form class="w-full">
+                    <!-- Title -->
+                    <div class="font-bold w-full text-center">
+                        {{ $t("new_transfer_request") }}
+                    </div>
+
+                    <!-- Form body -->
+                    <div class="my-4 w-full">
+                        <!-- Patient selection -->
+                        <div class="w-full font-bold text-left">
+                            {{ $t("patient") }}
+                        </div>
+                        <div
+                            v-if="profile_picture_url"
+                            class="p-4 flex justify-center items-center flex-wrap"
+                        >
+                            <img
+                                src="../assets/img_loading.gif"
+                                class="w-[64px] h-[64px]"
+                                v-if="profile_picture_url == 'loading'"
+                            />
+                            <div
+                                class="w-full text-center text-gray/80 animate-pulse"
+                                v-if="profile_picture_url == 'loading'"
+                            >
+                                {{ $t("loading_profile_picture") }}
+                            </div>
+                            <img
+                                :src="profile_picture_url"
+                                v-if="profile_picture_url != 'loading'"
+                            />
+                        </div>
+                        <input
+                            list="patient_id"
+                            v-model="placed_patient"
+                            class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                        />
+                        <datalist id="patient_id" name="patient_id">
+                            <option
+                                v-for="p in patients"
+                                :key="p"
+                                :value="'[' + p.id + '] ' + p.name"
+                            ></option>
+                        </datalist>
+                        <!-- Reason -->
+                        <div class="w-full font-bold text-left mt-3">
+                            {{ $t("reason") }}
+                        </div>
+                        <input
+                            class="focus:outline-none p-2 text-center w-full bg-transparent border-b border-gray/50"
+                            type="text"
+                            v-model="new_request.reason"
+                            maxlength="255"
+                        />
+
+                        <!-- Current condition -->
+                        <div class="w-full font-bold text-left mt-3">
+                            {{ $t("current_condition") }}
+                        </div>
+                        <input
+                            class="focus:outline-none p-2 text-center w-full bg-transparent border-b border-gray/50"
+                            type="text"
+                            v-model="new_request.current_condition"
+                            maxlength="255"
+                        />
+
+                        <!-- Note -->
+                        <div class="w-full font-bold text-left mt-3">
+                            {{ $t("note") }}
+                        </div>
+                        <textarea
+                            class="focus:outline-none p-2 w-full bg-transparent border-b border-gray/50"
+                            v-model="new_request.note"
+                        ></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div
+                        class="w-full flex justify-end mt-2 items-center gap-2"
+                        v-if="
+                            profile_picture_url &&
+                            profile_picture_url != 'loading'
+                        "
+                    >
+                        <div
+                            class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                            @click="closeRequestTrasferModal"
+                        >
+                            {{ $t("cancel") }}
+                        </div>
+                        <button
+                            class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                            @click.prevent="handleRequestTransfer"
+                            type="button"
+                        >
+                            {{ $t("confirm") }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Panel -->
         <div
             v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
@@ -376,20 +487,9 @@
                                             </div>
                                         </div>
 
-                                        <!-- Department-bed title -->
-                                        <div
-                                            class="border-b-2 px-2 border-gray/30 w-fit mb-2"
-                                        >
-                                            {{
-                                                $t(
-                                                    "accident_and_emergency_(A&E)"
-                                                )
-                                            }}
-                                        </div>
-
                                         <!-- Info blocks -->
                                         <div
-                                            class="overflow-y-auto max-h-[500px] p-0.5"
+                                            class="overflow-y-auto max-h-[500px] p-0.5 mt-3"
                                         >
                                             <div
                                                 class="mb-2 shadow shadow-gray p-2 py-2 grid grid-cols-4"
@@ -579,7 +679,7 @@
                                             v-for="(t, index) in requested"
                                             :key="index"
                                             class="p-2 cursor-pointer hover:bg-gray/20 transition w-full bg-gray/5 border-x border-b border-gray/50 grid grid-cols-5"
-                                            @click="openTransferringInfo(t)"
+                                            @click="cancelRequest(t)"
                                         >
                                             <div
                                                 class="p-1 flex justify-center items-center"
@@ -618,6 +718,7 @@
                                 <!-- Request Button -->
                                 <div
                                     class="cursor-pointer hover:bg-red transition text-[16px] bg-darkred text-white flex p-2 justify-center items-center"
+                                    @click="openRequestTransferModal"
                                 >
                                     {{ $t("request_transfer") }}
                                     <img
@@ -676,7 +777,7 @@
                                                     $t("request_id")
                                                 }}</strong>
                                                 <div class="text-yellow ml-2">
-                                                    {{ r.request_id }}
+                                                    {{ r.id }}
                                                 </div>
                                             </div>
 
@@ -687,7 +788,17 @@
                                                     $t("from")
                                                 }}</strong>
                                                 <div class="text-yellow ml-2">
-                                                    {{ r.from }}
+                                                    {{
+                                                        institutions &&
+                                                        institutions.length >
+                                                            r.from_institution_id -
+                                                                1
+                                                            ? institutions[
+                                                                  r.from_institution_id -
+                                                                      1
+                                                              ].name
+                                                            : "Unknown Institution"
+                                                    }}
                                                 </div>
                                             </div>
 
@@ -726,10 +837,7 @@
                                                 <div
                                                     class="text-yellow text-right"
                                                 >
-                                                    {{
-                                                        r.additional_info
-                                                            .reason_for_transfer
-                                                    }}
+                                                    {{ r.reason }}
                                                 </div>
 
                                                 <strong class="italic">
@@ -738,7 +846,7 @@
                                                 <div
                                                     class="italic text-yellow text-right"
                                                 >
-                                                    {{ r.additional_info.note }}
+                                                    {{ r.note }}
                                                 </div>
                                             </div>
                                         </div>
@@ -796,6 +904,7 @@ export default {
             is_manage_bed_modal_shown: false,
             is_transferring_info_shown: false,
             is_place_patient_modal_shown: false,
+            is_request_transfer_modal_shown: false,
             placed_patient: null,
             selected_request: null,
             profile_picture_url: null,
@@ -867,43 +976,13 @@ export default {
                 "reason_for_transfer",
                 "note",
             ],
-            request: [
-                {
-                    request_id: 1,
-                    from: "Hospital A",
-                    patient_id: "2465798462",
-                    current_condition: "Stable",
-                    additional_info: {
-                        reason_for_transfer: "Specialized Treatment Required",
-                        note: "Patient has a history of heart disease. Currently taking Aspirin and Beta-blockers.",
-                    },
-                },
-                {
-                    request_id: 2,
-                    from: "Hospital B",
-                    patient_id: "9876543210",
-                    current_condition: "Critical",
-                    additional_info: {
-                        reason_for_transfer: "Emergency Surgery Required",
-                        note: "Severe abdominal pain reported. Urgent surgery needed.",
-                    },
-                },
-                {
-                    request_id: 3,
-                    from: "Hospital C",
-                    patient_id: "123456789",
-                    current_condition: "Serious",
-                    additional_info: {
-                        reason_for_transfer: "Oncology Consultation",
-                        note: "Suspected cancer diagnosis. Requires further evaluation by oncology specialist.",
-                    },
-                },
-            ],
+            request: [],
             ane_beds: [],
-            institution: null,
+            institutions: null,
             requested: [],
             patients: [],
             placing_bed_id: null,
+            new_request: { note: null, reason: null, current_condition: null },
         };
     },
     async created() {
@@ -916,6 +995,117 @@ export default {
         await this.fetch();
     },
     methods: {
+        async cancelRequest(request) {
+            const isConfirmed = await this.$swal({
+                title: "Are you sure?",
+                text: "You are about to cancel the request.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, cancel it!",
+                cancelButtonText: "No, keep it",
+            });
+
+            if (isConfirmed.value) {
+                const response = await this.axios.delete(
+                    this.api_url + "/patient-transfer/" + request.id,
+
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                if (response.data.message) {
+                    this.$swal({
+                        title: "Cancel Transfer Request",
+                        text: "Succeess.",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    await this.fetch();
+                } else {
+                    this.$swal({
+                        title: "New Transfer Request",
+                        text: "Failed.",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            }
+        },
+        async openRequestTransferModal() {
+            await this.fetchPatients();
+            this.is_request_transfer_modal_shown = true;
+        },
+        async closeRequestTrasferModal() {
+            this.is_request_transfer_modal_shown = false;
+            await this.resetRequestTransfer();
+        },
+        async handleRequestTransfer() {
+            if (
+                !(
+                    this.new_request.note &&
+                    this.new_request.reason &&
+                    this.placed_patient &&
+                    this.new_request.current_condition
+                )
+            ) {
+                this.$swal({
+                    title: "New Transfer Request",
+                    text: "Please fill in all the field",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                return;
+            } else {
+                // Submit
+                const [, id, name] =
+                    this.placed_patient.match(/\[(\d*)\]\s*(.*)/);
+
+                const response = await this.axios.post(
+                    this.api_url + "/patient-transfer/add",
+                    {
+                        patient_id: id,
+                        note: this.new_request.note,
+                        reason: this.new_request.reason,
+                        current_condition: this.new_request.current_condition,
+                    },
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                if (response.data.message) {
+                    this.$swal({
+                        title: "New Transfer Request",
+                        text: "New request added successfully",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    await this.fetch();
+                } else {
+                    this.$swal({
+                        title: "New Transfer Request",
+                        text: "New request added failed.",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+                await this.closeRequestTrasferModal();
+            }
+        },
         async handlePlacePatient() {
             const [, id, name] = this.placed_patient.match(/\[(\d*)\]\s*(.*)/);
 
@@ -985,6 +1175,13 @@ export default {
             this.profile_picture_url = null;
             this.placing_bed_id = null;
         },
+        resetRequestTransfer() {
+            this.placed_patient = null;
+            this.profile_picture_url = null;
+            this.new_request.reason = null;
+            this.new_request.current_condition = null;
+            this.new_request.note = null;
+        },
         openTransferringInfo(e) {
             this.selected_request = e;
             this.is_transferring_info_shown = true;
@@ -1043,7 +1240,6 @@ export default {
                         },
                     }
                 );
-
                 this.transferring = response_transferring.data.message;
 
                 // Requested Info
@@ -1057,17 +1253,28 @@ export default {
                 );
                 this.requested = response_requested.data.message;
 
-                if (!this.institutions) {
-                    const response_ins = await this.axios.get(
-                        this.api_url + "/institutions",
-                        {
-                            headers: {
-                                Authorization: this.user.passcode,
-                            },
-                        }
-                    );
-                    this.institutions = response_ins.data.message;
-                }
+                // Request
+                const response_transfer_request = await this.axios.get(
+                    this.api_url + "/patient-transfer/request",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                console.log(response_transfer_request);
+                this.request = response_transfer_request.data.message;
+
+                // Institutions
+                const response_ins = await this.axios.get(
+                    this.api_url + "/institutions",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                this.institutions = response_ins.data.message;
             } catch (e) {
                 console.error(e.message);
             }
