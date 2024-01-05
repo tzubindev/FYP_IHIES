@@ -17,6 +17,7 @@ const { RecordController } = require("./recordController");
 const { ScheduleController } = require("./scheduleController");
 const generalController = require("./generalController");
 const AI = require("./AI");
+const { PatientTransferController } = require("./patientTransferController");
 
 require("dotenv").config();
 
@@ -28,6 +29,7 @@ const upload = multer({});
 const profileController = new ProfileController();
 const recordController = new RecordController();
 const scheduleController = new ScheduleController();
+const patientTransferController = new PatientTransferController();
 
 // =====================================================================
 // [APP INITIATION]
@@ -176,6 +178,76 @@ app.get("/profile", Authentication.verify_token, async (request, response) => {
             },
         });
         logger.log(logStr);
+    } catch (e) {
+        response.send(
+            Formatter.errorMsg("Get Info Error", "/profile", e.message)
+        );
+    }
+});
+
+app.get(
+    "/profile-picture/:id",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const { id } = request.params;
+            const requestUser = {
+                id: id,
+            };
+
+            const resultGetProfilePic =
+                await profileController.read_profile_picture(
+                    client,
+                    requestUser
+                );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.PROFILE_INIT,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: resultGetProfilePic ? true : false,
+                },
+            });
+            logger.log(logStr);
+            response.send(resultGetProfilePic);
+        } catch (e) {
+            response.send(
+                Formatter.errorMsg("Get Info Error", "/profile", e.message)
+            );
+        }
+    }
+);
+
+app.get("/patients", Authentication.verify_token, async (request, response) => {
+    try {
+        const result = await profileController.get_all_patients(MySQLPool);
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.PATR,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+
+        response.send(result);
     } catch (e) {
         response.send(
             Formatter.errorMsg("Get Info Error", "/profile", e.message)
@@ -827,6 +899,81 @@ app.get(
 
             const logStr = Formatter.logJsonToString({
                 type: RequestType.DEPR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+// =====================================================================
+// [PATIENT TRANSFER]
+app.get("/beds", Authentication.verify_token, async (request, response) => {
+    try {
+        const user = request.user;
+        const result = await patientTransferController.getBeds(MySQLPool, user);
+
+        const logStr = Formatter.logJsonToString({
+            type: RequestType.PTB,
+            from: {
+                ID: request.user.id,
+                IP: request.ip,
+                Method: request.method,
+                "Query Params": JSON.stringify(request.query),
+                Cookies: JSON.stringify(request.cookies),
+                URL: request.url,
+                Path: request.path,
+                "Host Name": request.hostname,
+                Protocol: request.protocol,
+                Result: result,
+            },
+        });
+        logger.log(logStr);
+        response.send(await Formatter.successMsg(result));
+    } catch (error) {
+        console.error("Error AI RECO:", error);
+        response.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get(
+    "/patient-transfer/:type",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const { type } = request.params;
+            let result;
+
+            if (type === "transferring") {
+                result = await patientTransferController.getTransferring(
+                    MySQLPool,
+                    user
+                );
+            } else if (type === "requested") {
+                result = await patientTransferController.getRequested(
+                    MySQLPool,
+                    user
+                );
+            }
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.PTB,
                 from: {
                     ID: request.user.id,
                     IP: request.ip,

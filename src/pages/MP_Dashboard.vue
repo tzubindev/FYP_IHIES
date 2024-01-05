@@ -26,15 +26,13 @@
 
             <!-- Dashboard -->
             <div
-                class="w-full h-full grid-cols-3 grid"
+                class="w-full h-full flex justify-center"
                 :class="{
                     'pl-[180px]': is_sidebar_expanding,
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div
-                    class="pt-6 pb-4 px-10 w-full h-fit col-span-3 lg:col-span-2"
-                >
+                <div class="pt-6 pb-4 px-10 w-full h-fit max-w-[1050px]">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"

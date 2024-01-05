@@ -56,7 +56,7 @@
                 ref="searchInput"
                 v-if="is_expanding"
             >
-                <img src="../assets/search.svg" class="w-6 h-6" />
+                <img src="../assets/search.svg" class="w-4 h-4" />
                 <transition name="slide-fade">
                     <input
                         type="text"
@@ -76,7 +76,7 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
+                        'p-2': is_expanding,
                         'p-2 justify-center ': !is_expanding,
                     }"
                     @click="this.leadTo('dashboard/patient')"
@@ -93,8 +93,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                     @click="this.leadTo('medical-record')"
                 >
@@ -110,8 +110,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                     @click="this.leadTo('inquiry')"
                 >
@@ -127,8 +127,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                     @click="this.leadTo('schedule')"
                 >
@@ -144,8 +144,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                 >
                     <img src="../assets/setting.svg" class="w-4 h-4" />
@@ -166,8 +166,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center ': !is_expanding,
                     }"
                     @click="this.leadTo('dashboard/medical-personnel')"
                 >
@@ -183,8 +183,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                     @click="this.leadTo('schedule-management')"
                 >
@@ -200,8 +200,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center  my-1': !is_expanding,
                     }"
                     @click="this.leadTo('patient-transfer')"
                 >
@@ -217,8 +217,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center my-1': !is_expanding,
                     }"
                     @click="this.leadTo('incident-report-channel')"
                 >
@@ -234,8 +234,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center my-1': !is_expanding,
                     }"
                     @click="this.leadTo('patient-medical-record')"
                 >
@@ -251,8 +251,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center my-1': !is_expanding,
                     }"
                     @click="this.leadTo('access-management')"
                 >
@@ -268,8 +268,8 @@
                 <div
                     class="hover:bg-black transition flex items-center cursor-pointer"
                     :class="{
-                        'p-2 px-3': is_expanding,
-                        'p-2 justify-center  my-1 ': !is_expanding,
+                        'p-2': is_expanding,
+                        'p-1.5 justify-center my-1': !is_expanding,
                     }"
                 >
                     <img src="../assets/setting.svg" class="w-4 h-4" />
@@ -285,7 +285,7 @@
             <div
                 class="mt-3 bg-red hover:bg-red/40 transition flex items-center cursor-pointer"
                 :class="{
-                    'p-2 px-3 justify-start': is_expanding,
+                    'p-2  justify-start': is_expanding,
                     'p-2 justify-center  ': !is_expanding,
                 }"
                 @click="logout"

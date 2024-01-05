@@ -106,6 +106,30 @@ class ProfileController {
         }
     }
 
+    async get_all_patients(pool) {
+        let connection;
+        try {
+            // Get a MySQL connection from the pool
+            connection = await pool.getConnection();
+
+            // Profile data
+            const [rows] = await connection.execute(
+                `SELECT id,name FROM patient_profile`
+            );
+
+            return formatter.successMsg(rows);
+        } catch (error) {
+            return formatter.errorMsg(
+                "Patients Retrieval Error",
+                "/patients",
+                error.message
+            );
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
     async get_name_by_id(pool, targetId, targetRole) {
         let connection;
         try {

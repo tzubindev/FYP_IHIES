@@ -3,18 +3,220 @@
     <div
         class="font-serif bg-red/5 min-h-screen relative flex justify-center items-center"
     >
-        <div
-            v-if="is_access_denied"
-            class="flex-wrap access-denied-overlay z-100 absolute w-full h-screen bg-black text-yellow flex justify-center items-center"
-        >
-            <p class="access-denied-text font-extrabold">ACCESS DENIED</p>
-        </div>
+        <AccessDenied v-if="is_access_denied"></AccessDenied>
 
         <Loader
             :loading="!(is_verified && is_initiated) && !is_access_denied"
             class="w-4/5 z-30 absolute"
             v-if="!(is_verified && is_initiated) && !is_access_denied"
         ></Loader>
+
+        <!-- Manage bed modal -->
+        <div v-if="is_manage_bed_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("manage_bed") }}
+                </div>
+
+                <div class="my-2 grid grid-cols-2 gap-2 w-full px-8">
+                    <div
+                        class="cursor-pointer hover:bg-cool transition bg-blue w-full h-full flex justify-center items-center p-8 text-white"
+                        v-if="!manage_bed"
+                        @click="manage_bed = 'add'"
+                    >
+                        {{ $t("add_bed") }}
+                    </div>
+                    <div
+                        class="cursor-pointer hover:bg-darkred transition bg-red w-full h-full flex justify-center items-center p-8 text-white"
+                        v-if="!manage_bed"
+                        @click="manage_bed = 'remove'"
+                    >
+                        {{ $t("remove_bed") }}
+                    </div>
+                </div>
+                <div v-if="manage_bed === 'add'" class="w-full my-2">
+                    <div>{{ $t("number_of_beds") }}</div>
+                    <input
+                        type="number"
+                        v-model="added_bed_no"
+                        class="w-full bg-transparent border-b border-gray/50 focus:outline-none p-2 text-center"
+                    />
+                </div>
+
+                <div v-if="manage_bed === 'remove'" class="w-full my-2">
+                    <div>{{ $t("remove_beds") }}</div>
+                    <select
+                        multiple
+                        name="removed_beds"
+                        id="removed_beds"
+                        v-model="removed_beds"
+                        class="w-full bg-transparent text-center border p-2 max-h-[200px] overflow-y-auto border-gray/50 cursor-pointer focus:outline-none"
+                    >
+                        <option
+                            v-for="d in ane_beds"
+                            :key="d.id"
+                            :value="d.id"
+                            class="p-2 flex border-b border-gray/30"
+                        >
+                            {{ $t("bed_no") }} :
+                            {{ d.id }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="w-full flex justify-end mt-2">
+                    <div
+                        class="bg-green p-2 py-1 text-gray shadow shadow-gray cursor-pointer transition hover:bg-darkgreen"
+                        @click="closeManageBedModal"
+                    >
+                        {{ $t("confirm") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transferring Info Modal -->
+        <div v-if="is_transferring_info_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                @click="closeTransferringInfo"
+            ></div>
+            <div
+                class="text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/90 w-full max-w-[400px]"
+            >
+                <div
+                    class="grid grid-cols-2 gap-4 w-full bg-white/90 p-8 max-h-[400px] overflow-y-auto"
+                >
+                    <div
+                        v-for="displayKey in Object.keys(selected_request)"
+                        :key="displayKey"
+                        class="text-[12px] flex flex-wrap"
+                    >
+                        <div class="w-full font-bold">
+                            {{ $t(displayKey) }}
+                        </div>
+                        <div
+                            v-if="displayKey.split('_')[1] === 'timestamp'"
+                            class="text-gray/80"
+                        >
+                            {{
+                                formatDateTime(
+                                    selected_request[displayKey],
+                                    true
+                                )
+                            }}
+                        </div>
+                        <div
+                            v-else-if="
+                                displayKey === 'from_institution_id' ||
+                                displayKey === 'to_institution_id'
+                            "
+                            class="text-gray/80"
+                        >
+                            {{
+                                institutions[selected_request[displayKey] - 1]
+                                    .name
+                            }}
+                        </div>
+
+                        <div v-else class="text-gray/80">
+                            {{
+                                selected_request[displayKey] === 1 ||
+                                selected_request[displayKey] === 0
+                                    ? Boolean(selected_request[displayKey])
+                                    : selected_request[displayKey]
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Place Patient MOdal -->
+        <div v-if="is_place_patient_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <form class="w-full">
+                    <!-- Title -->
+                    <div class="font-bold w-full text-center">
+                        {{ $t("place_patient") }}
+                    </div>
+
+                    <!-- Form body -->
+                    <div class="my-4 w-full">
+                        <div class="w-full font-bold text-left">
+                            {{ $t("patient") }}
+                        </div>
+
+                        <div
+                            v-if="profile_picture_url"
+                            class="p-4 flex justify-center items-center flex-wrap"
+                        >
+                            <img
+                                src="../assets/img_loading.gif"
+                                class="w-[64px] h-[64px]"
+                                v-if="profile_picture_url == 'loading'"
+                            />
+                            <div
+                                class="w-full text-center text-gray/80 animate-pulse"
+                                v-if="profile_picture_url == 'loading'"
+                            >
+                                {{ $t("loading_profile_picture") }}
+                            </div>
+                            <img
+                                :src="profile_picture_url"
+                                v-if="profile_picture_url != 'loading'"
+                            />
+                        </div>
+
+                        <input
+                            list="patient_id"
+                            v-model="placed_patient"
+                            class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                        />
+                        <datalist id="patient_id" name="patient_id">
+                            <option
+                                v-for="p in patients"
+                                :key="p"
+                                :value="'[' + p.id + '] ' + p.name"
+                            ></option>
+                        </datalist>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div
+                        class="w-full flex justify-end mt-2 items-center gap-2"
+                        v-if="
+                            profile_picture_url &&
+                            profile_picture_url != 'loading'
+                        "
+                    >
+                        <div
+                            class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                            @click="closePlacePatientModal"
+                        >
+                            {{ $t("cancel") }}
+                        </div>
+                        <button
+                            class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                            @click.prevent="handlePlacePatient"
+                            type="button"
+                        >
+                            {{ $t("confirm") }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <div
             v-if="is_verified && is_initiated"
@@ -64,7 +266,7 @@
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-mintage to-darkgreen text-white"
                                     >
                                         <div
-                                            class="bg-white/40 w-fit p-1 backdrop-blur-xl"
+                                            class="bg-white/40 w-fit p-1backdrop-blur-xl"
                                         >
                                             <img
                                                 src="../assets/bed.svg"
@@ -73,7 +275,13 @@
                                         </div>
                                         <p>{{ $t("available_beds") }}</p>
 
-                                        <div class="text-[26px]">{{ 17 }}</div>
+                                        <div class="text-[26px] pr-2">
+                                            {{
+                                                ane_beds.filter(
+                                                    (b) => b.is_resolved == true
+                                                ).length
+                                            }}
+                                        </div>
                                     </div>
                                     <div
                                         class="flex items-center justify-between p-2 bg-gradient-to-br from-red to-darkred text-white"
@@ -88,7 +296,7 @@
                                         </div>
                                         <p>{{ $t("transferring") }}</p>
 
-                                        <div class="text-[26px]">
+                                        <div class="text-[26px] pr-2">
                                             {{ this.transferring.length }}
                                         </div>
                                     </div>
@@ -103,9 +311,11 @@
                                                 class="w-5 h-5"
                                             />
                                         </div>
-                                        <p>{{ $t("transferred") }}</p>
+                                        <p>{{ $t("requested") }}</p>
 
-                                        <div class="text-[26px]">{{ 6 }}</div>
+                                        <div class="text-[26px] pr-2">
+                                            {{ requested.length }}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -134,16 +344,27 @@
                                     >
                                         {{ $t("transferring") }}
                                     </div>
+                                    <div
+                                        class="w-fit transition cursor-pointer hover:bg-gray/10 p-2"
+                                        :class="{
+                                            'border-b-4 border-red':
+                                                selected_tab === 2,
+                                        }"
+                                        @click="selected_tab = 2"
+                                    >
+                                        {{ $t("requested") }}
+                                    </div>
                                 </div>
 
                                 <!--Viewer Body-->
-                                <!-- Available beds -->
+                                <!-- is_resolved beds -->
                                 <Transition>
                                     <div v-if="selected_tab === 0" class="p-3">
                                         <!-- Manage bed button -->
                                         <div class="w-full flex justify-end">
                                             <div
                                                 class="shadow shadow-gray cursor-pointer hover:bg-gray transition p-1 pl-1 pr-2 bg-cool text-white flex items-center gap-1"
+                                                @click="openManageBedModal"
                                             >
                                                 <img
                                                     src="../assets/add.svg"
@@ -176,8 +397,9 @@
                                                 :key="index"
                                                 :class="{
                                                     'bg-red text-white':
-                                                        !bed.available,
-                                                    'bg-green ': bed.available,
+                                                        !bed.is_resolved,
+                                                    'bg-green ':
+                                                        bed.is_resolved,
                                                 }"
                                             >
                                                 <!-- Bed info -->
@@ -190,7 +412,7 @@
                                                     >
                                                         {{ $t("bed_no") }}
                                                     </div>
-                                                    {{ bed.no }}
+                                                    {{ bed.id }}
                                                 </div>
 
                                                 <div
@@ -198,7 +420,7 @@
                                                 >
                                                     <div
                                                         class="bg-gray text-white p-1 px-2"
-                                                        v-if="!bed.available"
+                                                        v-if="!bed.is_resolved"
                                                     >
                                                         {{ $t("patient_id") }}
                                                     </div>
@@ -207,9 +429,12 @@
 
                                                 <!-- Update bed info buttons -->
                                                 <div class="text-center">
-                                                    <div v-if="bed.available">
+                                                    <div v-if="bed.is_resolved">
                                                         <div
                                                             class="bg-darkgreen p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-mintage/80 transition"
+                                                            @click="
+                                                                placePatient
+                                                            "
                                                         >
                                                             {{
                                                                 $t(
@@ -235,10 +460,11 @@
                                 <Transition>
                                     <div
                                         v-if="selected_tab === 1"
-                                        class="p-3 flex gap-0.5 flex-wrap"
+                                        class="p-3 flex flex-wrap max-h-[500px] overflow-y-auto"
                                     >
+                                        <!-- Headers -->
                                         <div
-                                            class="grid grid-cols-4 w-full text-white text-center"
+                                            class="grid grid-cols-5 w-full text-white text-center"
                                         >
                                             <div
                                                 v-for="(
@@ -259,19 +485,119 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- Body -->
                                         <div
                                             v-for="(t, index) in transferring"
                                             :key="index"
-                                            class="w-full bg-gray/30 grid grid-cols-4 p-1"
+                                            class="p-2 cursor-pointer hover:bg-gray/20 transition w-full bg-gray/5 border-x border-b border-gray/50 grid grid-cols-5"
+                                            @click="openTransferringInfo(t)"
                                         >
                                             <div
-                                                class="flex justify-center items-center p-1"
-                                                v-for="(
-                                                    v, index
-                                                ) in Object.values(t)"
-                                                :key="index"
+                                                class="p-1 flex justify-center items-center"
                                             >
-                                                {{ v }}
+                                                {{ t.id }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.patient_id }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{
+                                                    institutions[
+                                                        t.from_institution_id -
+                                                            1
+                                                    ].name
+                                                }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{
+                                                    t.to_institution_id
+                                                        ? institutions[
+                                                              t.to_institution_id -
+                                                                  1
+                                                          ].name
+                                                        : "N/A"
+                                                }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{
+                                                    formatDateTime(
+                                                        t.updated_timestamp,
+                                                        true
+                                                    )
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Transition>
+
+                                <!-- Request -->
+                                <Transition>
+                                    <div
+                                        v-if="selected_tab === 2"
+                                        class="p-3 flex flex-wrap max-h-[500px] overflow-y-auto"
+                                    >
+                                        <!-- Headers -->
+                                        <div
+                                            class="grid grid-cols-5 w-full text-white text-center"
+                                        >
+                                            <div
+                                                v-for="(
+                                                    h, index
+                                                ) in requested_headers"
+                                                :key="index"
+                                                class="w-full bg-gray py-1"
+                                            >
+                                                <div
+                                                    :class="{
+                                                        'border-r border-white/50':
+                                                            index !==
+                                                            transferring_headers.length -
+                                                                1,
+                                                    }"
+                                                >
+                                                    {{ $t(h) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Body -->
+                                        <div
+                                            v-for="(t, index) in requested"
+                                            :key="index"
+                                            class="p-2 cursor-pointer hover:bg-gray/20 transition w-full bg-gray/5 border-x border-b border-gray/50 grid grid-cols-5"
+                                            @click="openTransferringInfo(t)"
+                                        >
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.id }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.patient_id }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.current_condition }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.reason }}
+                                            </div>
+                                            <div
+                                                class="p-1 flex justify-center items-center"
+                                            >
+                                                {{ t.note }}
                                             </div>
                                         </div>
                                     </div>
@@ -422,6 +748,34 @@
 
 <script>
 export default {
+    watch: {
+        async placed_patient(newValue) {
+            if (newValue !== null) {
+                const regex = /\[\d+\]\s(?:[a-zA-Z]+\s?)+/;
+                const isMatch = regex.test(newValue);
+
+                if (isMatch) {
+                    // retrieve profile image here
+                    const [, id, name] = newValue.match(/\[(\d*)\]\s*(.*)/);
+
+                    console.log(id);
+                    this.profile_picture_url = "loading";
+                    const response = await this.axios.get(
+                        this.api_url + "/profile-picture/" + id,
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                        }
+                    );
+
+                    const profilePicture = response.data;
+
+                    this.profile_picture_url = `data:${profilePicture.mimetype};base64,${profilePicture.buffer}`;
+                }
+            }
+        },
+    },
     data() {
         return {
             user: {
@@ -433,8 +787,17 @@ export default {
             is_initiated: true, // false in default
             is_access_denied: false,
             is_sidebar_expanding: false,
+            is_manage_bed_modal_shown: false,
+            is_transferring_info_shown: false,
+            is_place_patient_modal_shown: false,
+            placed_patient: null,
+            selected_request: null,
+            profile_picture_url: null,
             selected_events: [],
             selected_tab: 0,
+            added_bed_no: null,
+            removed_beds: null,
+            manage_bed: null,
             api_url: "http://127.0.0.1:3000",
             records: [],
             transferring: [
@@ -484,7 +847,20 @@ export default {
                     since: new Date().toISOString(),
                 },
             ],
-            transferring_headers: ["name", "id", "from", "since"],
+            transferring_headers: [
+                "id",
+                "patient_id",
+                "from",
+                "to",
+                "transferring_since",
+            ],
+            requested_headers: [
+                "id",
+                "patient_id",
+                "current_condition",
+                "reason_for_transfer",
+                "note",
+            ],
             request: [
                 {
                     request_id: 1,
@@ -517,78 +893,135 @@ export default {
                     },
                 },
             ],
-            ane_beds: [
-                { no: 1, available: false, patient_id: "123456789" },
-                { no: 2, available: true, patient_id: null },
-                { no: 3, available: true, patient_id: null },
-                { no: 4, available: false, patient_id: "1357968842" },
-                { no: 5, available: true, patient_id: null },
-            ],
+            ane_beds: [],
+            institution: null,
+            requested: [],
+            patients: [],
         };
     },
     async created() {
         console.log("CREATED");
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        const user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = user.id;
+        this.user.role = user.role;
+
+        await this.fetch();
     },
-    async mounted() {
-        console.log("MOUNTED");
-
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
-    },
-
     methods: {
-        async initiateDashboard(id) {
-            this.$axios();
+        async handlePlacePatient() {
+            const [, id, name] = this.placed_patient.match(/\[(\d*)\]\s*(.*)/);
+
+            console.log(id);
+        },
+        async closePlacePatientModal() {
+            this.is_place_patient_modal_shown = false;
+            await this.resetPlacePatient();
+        },
+        async placePatient() {
+            await this.fetchPatients();
+            this.is_place_patient_modal_shown = true;
+            await this.resetPlacePatient();
+        },
+        async fetchPatients() {
+            const response = await this.axios.get(this.api_url + "/patients", {
+                headers: {
+                    Authorization: this.user.passcode,
+                },
+            });
+
+            this.patients = response.data.message;
+        },
+        resetPlacePatient() {
+            this.placed_patient = null;
+            this.profile_picture_url = null;
+        },
+        openTransferringInfo(e) {
+            this.selected_request = e;
+            this.is_transferring_info_shown = true;
+        },
+        closeTransferringInfo() {
+            this.is_transferring_info_shown = false;
+        },
+        formatDateTime(isoString, needTime = false) {
+            const date = new Date(isoString);
+
+            // Get individual date and time components
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            // Create the formatted date string
+            let formattedDateTime = `${year}/${month}/${day}`;
+
+            // Include time component if needTime is true
+            if (needTime) {
+                const hours = String(date.getHours()).padStart(2, "0");
+                formattedDateTime += ` [${hours}:00]`;
+            }
+
+            return formattedDateTime;
+        },
+        closeManageBedModal() {
+            if (this.manage_bed === "add") {
+            } else if (this.manage_bed === "remove") {
+            }
+
+            this.is_manage_bed_modal_shown = false;
+            this.manage_bed = null;
+            this.added_bed_no = null;
+            this.removed_beds = null;
+        },
+        openManageBedModal() {
+            this.is_manage_bed_modal_shown = true;
+        },
+        async fetch() {
+            try {
+                // Beds Info
+                const response = await this.axios.get(this.api_url + "/beds", {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                });
+                this.ane_beds = response.data.message;
+
+                // Transferring Info
+                const response_transferring = await this.axios.get(
+                    this.api_url + "/patient-transfer/transferring",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                this.transferring = response_transferring.data.message;
+
+                // Requested Info
+                const response_requested = await this.axios.get(
+                    this.api_url + "/patient-transfer/requested",
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+                this.requested = response_requested.data.message;
+
+                if (!this.institutions) {
+                    const response_ins = await this.axios.get(
+                        this.api_url + "/institutions",
+                        {
+                            headers: {
+                                Authorization: this.user.passcode,
+                            },
+                        }
+                    );
+                    this.institutions = response_ins.data.message;
+                }
+            } catch (e) {
+                console.error(e.message);
+            }
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;

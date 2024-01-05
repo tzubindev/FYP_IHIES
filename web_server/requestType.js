@@ -17,6 +17,8 @@ const RequestType = {
     SCHU: "SCHEDULE UPDATE",
     DEPR: "DEPARTMENTS INFO RETRIEVAL",
     ASSS: "SCHEDULE ASSIGNMENT",
+    PTB: "PATIENT TRANSFER BEDS INFO",
+    PATR: "ALL PATIENTS INFO RETRIEVAL",
 };
 
 module.exports = RequestType;
