@@ -433,7 +433,9 @@
                                                         <div
                                                             class="bg-darkgreen p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-mintage/80 transition"
                                                             @click="
-                                                                placePatient
+                                                                placePatient(
+                                                                    bed.id
+                                                                )
                                                             "
                                                         >
                                                             {{
@@ -446,6 +448,11 @@
                                                     <div v-else>
                                                         <div
                                                             class="bg-gray p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-gray/80 transition"
+                                                            @click="
+                                                                resolveBed(
+                                                                    bed.id
+                                                                )
+                                                            "
                                                         >
                                                             {{ $t("resolved") }}
                                                         </div>
@@ -758,7 +765,6 @@ export default {
                     // retrieve profile image here
                     const [, id, name] = newValue.match(/\[(\d*)\]\s*(.*)/);
 
-                    console.log(id);
                     this.profile_picture_url = "loading";
                     const response = await this.axios.get(
                         this.api_url + "/profile-picture/" + id,
@@ -897,6 +903,7 @@ export default {
             institution: null,
             requested: [],
             patients: [],
+            placing_bed_id: null,
         };
     },
     async created() {
@@ -912,16 +919,57 @@ export default {
         async handlePlacePatient() {
             const [, id, name] = this.placed_patient.match(/\[(\d*)\]\s*(.*)/);
 
-            console.log(id);
+            const response = await this.axios.post(
+                this.api_url + `/bed/place/${this.placing_bed_id}/${id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data.message)
+                this.$swal({
+                    title: "Bed",
+                    text: "The patient is placed successfully",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            await this.closePlacePatientModal();
+            await this.fetch();
+        },
+        async resolveBed(bed_id) {
+            const response = await this.axios.post(
+                this.api_url + `/bed/resolve/${bed_id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data.message)
+                this.$swal({
+                    title: "Bed",
+                    text: "Resolved Successfully",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            this.fetch();
         },
         async closePlacePatientModal() {
             this.is_place_patient_modal_shown = false;
             await this.resetPlacePatient();
         },
-        async placePatient() {
+        async placePatient(bed_id) {
             await this.fetchPatients();
             this.is_place_patient_modal_shown = true;
             await this.resetPlacePatient();
+            this.placing_bed_id = bed_id;
         },
         async fetchPatients() {
             const response = await this.axios.get(this.api_url + "/patients", {
@@ -935,6 +983,7 @@ export default {
         resetPlacePatient() {
             this.placed_patient = null;
             this.profile_picture_url = null;
+            this.placing_bed_id = null;
         },
         openTransferringInfo(e) {
             this.selected_request = e;

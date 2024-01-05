@@ -19,6 +19,8 @@ const RequestType = {
     ASSS: "SCHEDULE ASSIGNMENT",
     PTB: "PATIENT TRANSFER BEDS INFO",
     PATR: "ALL PATIENTS INFO RETRIEVAL",
+    PP: "PLACE PATIENT REQUEST",
+    RB: "RESOLVE BED REQUEST",
 };
 
 module.exports = RequestType;
