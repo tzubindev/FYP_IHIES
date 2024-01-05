@@ -250,31 +250,43 @@
                                 >
                                     <input
                                         type="text"
-                                        class="h-full items-center flex px-3 p-0.5 text-[16px] focus:outline-none text-gray/70 shadow shadow-gray/50"
+                                        class="placeholder:text-gray/80 bg-white/80 h-full items-center flex px-3 p-0.5 text-[16px] focus:outline-none text-gray shadow shadow-gray/50"
                                         placeholder="Patient ID"
                                     />
-
-                                    <div
-                                        class="cursor-pointer hover:bg-gray/60 transition h-full items-center flex px-3 p-0.5 text-white text-[16px] bg-gray shadow shadow-gray/50"
-                                    >
-                                        {{ $t("search") }}
-                                    </div>
                                 </div>
 
                                 <!-- patient row -->
-                                <div class="w-full"></div>
+                                <div class="w-full grid grid-cols-2 gap-2 p-2">
+                                    <div
+                                        class="hover:bg-cool transition cursor-pointer bg-gray text-white w-full h-full p-1 text-[16px] text-center"
+                                        v-for="p in patients"
+                                        :key="p.id"
+                                        @click="selectPatient(p.id)"
+                                        :class="{
+                                            'bg-red hover:bg-darkred':
+                                                selected_patient_id === p.id,
+                                        }"
+                                    >
+                                        {{ p.id }} || {{ p.name }}
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Choose Document Type and Exact Document  -->
                             <div class="mt-4 grid grid-cols-2 gap-2 w-full">
-                                <div class="flex flex-wrap gap-1">
+                                <div
+                                    class="flex flex-wrap gap-1 bg-gray/10 p-2 shadow shadow-gray"
+                                >
                                     <!-- Title -->
                                     <div class="text-[16px]">
                                         {{ $t("document_type") }}
                                     </div>
 
                                     <!-- Nr * 2c -->
-                                    <div class="grid grid-cols-2 gap-2 w-full">
+                                    <div
+                                        class="grid grid-cols-2 gap-2 w-full"
+                                        v-if="record_type.length"
+                                    >
                                         <div
                                             class="w-full flex justify-between items-center hover:bg-gray/30 cursor-pointer transition bg-gray/10 shadow shadow-gray/50 pl-1.5 pr-2 p-1 text-[12px]"
                                             v-for="(t, index) in record_type"
@@ -358,77 +370,42 @@ export default {
                     ],
                 },
             ],
+            selected_patient_id: null,
             filelist: [],
+            patients: null,
         };
     },
     async created() {
         console.log("CREATED");
-    },
-    async mounted() {
-        console.log("MOUNTED");
-
-        // this.user.passcode = await sessionStorage.getItem("passcode");
-        // Remove the item from sessionStorage
-        // UNCOMMENT
-        // sessionStorage.removeItem("passcode");
-
-        // Verify access
-        // if (!this.user.passcode) {
-        //     this.is_access_denied = true;
-        // } else {
-        //     this.user.id = this.$route.params.id;
-        //     console.log(this.user.id);
-        //     console.log(this.user.passcode);
-
-        //     if (!(this.user.passcode && this.user.id)) {
-        //         this.is_verified = true;
-        //         this.is_access_denied = true;
-        //         this.is_initiated = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const response = await this.axios.post(
-        //             `${this.api_url}/username`,
-        //             this.user
-        //         );
-        //         console.log("Start verification");
-
-        //         this.is_verified = true;
-
-        //         if (response.data.message.passcode_verification) {
-        //             this.user.name = response.data.message.name;
-        //             this.is_access_denied = false;
-        //         } else {
-        //             this.is_initiated = false;
-        //             this.is_access_denied = true;
-        //         }
-
-        //         if (!this.is_access_denied) {
-        //             // Get user preference language
-        //             const localeResponse = await this.axios.get(
-        //                 `${this.api_url}/locale/${this.user.id}`
-        //             );
-        //             console.log(localeResponse);
-
-        //             this.$i18n.locale = localeResponse.data.message.locale;
-        //             this.is_initiated = true;
-        //         }
-        //     } catch (error) {
-        //         console.error("An error occurred:", error);
-        //         // Handle error as needed
-        //     }
-        // }
+        this.user.passcode = await sessionStorage.getItem("passcode");
+        const user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = user.id;
+        this.user.role = user.role;
+        await this.fetch();
     },
 
     methods: {
+        selectPatient(id) {
+            this.selected_patient_id =
+                this.selected_patient_id === id ? null : id;
+        },
+        async fetch() {
+            const response = await this.axios.get(this.api_url + "/patients", {
+                headers: {
+                    Authorization: this.user.passcode,
+                },
+            });
+
+            this.patients = response.data.message;
+            console.log(this.patients);
+        },
         isFileType(fileType, expectedType) {
             const extension = fileType.split("/")[1];
             if (expectedType) return extension === expectedType;
             else {
                 if (
                     !extension ||
-                    !["png", "jpeg", "jpg", "pdf", "docx"].includes(extension)
+                    !["png", "jpeg", "jpg", "pdf"].includes(extension)
                 )
                     return true;
             }
@@ -465,9 +442,6 @@ export default {
             }
         },
 
-        async initiateDashboard(id) {
-            this.$axios();
-        },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
         },

@@ -915,53 +915,7 @@ export default {
             manage_bed: null,
             api_url: "http://127.0.0.1:3000",
             records: [],
-            transferring: [
-                {
-                    name: "Name 1",
-                    id: "Name 1 ID",
-                    from: "Sample hospital 1",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 2",
-                    id: "Name 2 ID",
-                    from: "Sample hospital 2",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 3",
-                    id: "Name 3 ID",
-                    from: "Sample hospital 3",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 4",
-                    id: "Name 4 ID",
-                    from: "Sample hospital 4",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 5",
-                    id: "Name 5 ID",
-
-                    from: "Sample hospital 5",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 6",
-                    id: "Name 6 ID",
-
-                    from: "Sample hospital 6",
-                    since: new Date().toISOString(),
-                },
-                {
-                    name: "Name 7",
-                    id: "Name 7 ID",
-
-                    from: "Sample hospital 7",
-                    since: new Date().toISOString(),
-                },
-            ],
+            transferring: [],
             transferring_headers: [
                 "id",
                 "patient_id",
@@ -993,7 +947,7 @@ export default {
         this.user.role = user.role;
 
         await this.fetch();
-        // Set up periodic fetching every 15 seconds
+
         this.fetchInterval = setInterval(async () => {
             await this.fetch();
         }, 15000);

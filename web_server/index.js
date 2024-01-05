@@ -4,7 +4,7 @@ const express = require("express");
 const mongodb = require("mongodb");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
-const { Blockchain, Block } = require("./blockchain");
+const { Blockchain, Block, Key } = require("./blockchain");
 const multer = require("multer");
 
 const Formatter = require("./formattedJsonData");
@@ -26,6 +26,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger(MySQLPool);
 const blockchain = new Blockchain();
+const keyGenerator = new Key();
 const upload = multer({});
 const profileController = new ProfileController();
 const recordController = new RecordController();
@@ -808,15 +809,22 @@ app.get("/blocks", (request, response) => {
 });
 
 // Add a new block
-app.post("/addBlock", (request, response) => {
-    const newBlock = new Block(
-        blockchain.chain.length,
-        Date.now(),
-        request.body.data
-    );
+app.post("/addBlock", async (request, response) => {
+    const latestChain = await blockchain.getChain();
+    const length = latestChain.length;
+    console.log(latestChain[latestChain.length - 1]);
+    const previousHash = latestChain[latestChain.length - 1].hash;
+    const newBlock = new Block(length, Date.now(), request.body, previousHash);
 
-    blockchain.addBlock(newBlock);
+    blockchain.addBlock(
+        newBlock,
+        "963ab10ba16c40661cbb612a7fdd4da5d9dc3f4f3af0c947d462eaf832a3b51b"
+    );
     response.json(newBlock);
+});
+
+app.get("/key", (request, response) => {
+    response.json(keyGenerator.generateKeyPair());
 });
 
 // =====================================================================
