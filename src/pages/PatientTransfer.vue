@@ -224,7 +224,7 @@
                 class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
             ></div>
             <div
-                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+                class="max-h-[600px] overflow-y-auto bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
             >
                 <form class="w-full">
                     <!-- Title -->
@@ -993,6 +993,10 @@ export default {
         this.user.role = user.role;
 
         await this.fetch();
+        // Set up periodic fetching every 15 seconds
+        this.fetchInterval = setInterval(async () => {
+            await this.fetch();
+        }, 15000);
     },
     methods: {
         async cancelRequest(request) {

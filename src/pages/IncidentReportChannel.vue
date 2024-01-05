@@ -68,6 +68,68 @@
             </div>
         </div>
 
+        <div v-if="is_add_incident_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <div class="font-bold w-full text-center">
+                    {{ $t("add_incident") }}
+                </div>
+
+                <!-- Title -->
+
+                <!-- Form body -->
+                <div class="my-4 w-full">
+                    <!-- Patient selection -->
+                    <div class="w-full font-bold text-left">
+                        {{ $t("incident_type") }}
+                    </div>
+
+                    <input
+                        list="incident_type"
+                        v-model="new_incident.type"
+                        class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                    />
+                    <datalist id="incident_type" name="incident_type">
+                        <option
+                            v-for="p in incident_type"
+                            :key="p"
+                            :value="'[' + p.id + '] ' + p.name"
+                        ></option>
+                    </datalist>
+
+                    <!-- Note -->
+                    <div class="w-full font-bold text-left mt-3">
+                        {{ $t("description") }}
+                    </div>
+                    <textarea
+                        class="focus:outline-none p-2 w-full bg-transparent border-b border-gray/50"
+                        v-model="new_incident.description"
+                    ></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div class="w-full flex justify-end mt-2 items-center gap-2">
+                    <div
+                        class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                        click="closeAddIncidentModal"
+                    >
+                        {{ $t("cancel") }}
+                    </div>
+                    <button
+                        class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                        @click.prevent="handleAddIncident"
+                        type="button"
+                    >
+                        {{ $t("confirm") }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div
             v-if="is_verified && is_initiated"
             class="h-screen w-full flex flex-wrap overflow-y-auto"
@@ -123,6 +185,7 @@
                                 <div
                                     class="cursor-pointer bg-red hover:bg-darkred transition text-white p-2 py-1 text-[14px] flex items-center"
                                     v-if="selected_tab === 0"
+                                    @click="openAddIncidentModal"
                                 >
                                     <img
                                         src="../assets/add.svg"
@@ -154,10 +217,11 @@
                                 <div
                                     @click="selectTab(0)"
                                     :class="{
-                                        'border-b-4 border-red':
+                                        'border-b-4 border-red ':
                                             selected_tab === 0,
+                                        'border-none': selected_tab !== 0,
                                     }"
-                                    class="transition cursor-pointer hover:bg-gray/10 px-2 p-1 w-fit h-full"
+                                    class="h-full transition cursor-pointer hover:bg-gray/10 p-2 w-fit"
                                 >
                                     {{ $t("my_incident") }}
                                 </div>
@@ -166,8 +230,9 @@
                                     :class="{
                                         'border-b-4 border-red':
                                             selected_tab === 1,
+                                        'border-none': selected_tab !== 1,
                                     }"
-                                    class="transition cursor-pointer hover:bg-gray/10 px-2 p-1 w-fit h-full"
+                                    class="transition cursor-pointer hover:bg-gray/10 p-2 w-fit h-full"
                                 >
                                     {{ $t("incident_management") }}
                                 </div>
@@ -275,6 +340,13 @@
                                     </div>
                                     <div
                                         class="flex items-center justify-center"
+                                        :class="{
+                                            'text-red': i.status === 'pending',
+                                            'text-blue':
+                                                i.status === 'processing',
+                                            'text-darkgreen':
+                                                i.status === 'solved',
+                                        }"
                                     >
                                         {{ i.status }}
                                     </div>
@@ -401,6 +473,7 @@ export default {
             is_access_denied: false,
             is_sidebar_expanding: false,
             is_view_incident_modal_shown: false,
+            is_add_incident_modal_shown: false,
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
             records: [],
@@ -408,6 +481,10 @@ export default {
             incident: [],
             selected_tab: 0,
             selected_incident: null,
+            new_incident: {
+                type: null,
+                description: null,
+            },
         };
     },
     async created() {
@@ -421,6 +498,66 @@ export default {
     },
 
     methods: {
+        async closeAddIncidentModal() {
+            this.is_add_incident_modal_shown = false;
+            await this.resetAddIncident();
+        },
+        openAddIncidentModal() {
+            this.is_add_incident_modal_shown = true;
+        },
+        async handleAddIncident() {
+            if (!(this.new_incident.type && this.new_incident.description)) {
+                this.$swal({
+                    title: "New Incident Report",
+                    text: "Please fill in all the field",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                return;
+            } else {
+                // Submit
+                const [, id, name] =
+                    this.new_incident.type.match(/\[(\d*)\]\s*(.*)/);
+
+                const response = await this.axios.post(
+                    this.api_url + "/incident/add",
+                    {
+                        type_id: id,
+                        description: this.new_incident.description,
+                    },
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                if (response.data.message) {
+                    this.$swal({
+                        title: "New Incident Report",
+                        text: "Added Successfully.",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                    await this.fetch();
+                } else {
+                    this.$swal({
+                        title: "New Incident Report",
+                        text: "Added Failed",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+                await this.closeAddIncidentModal();
+            }
+        },
+        resetAddIncident() {
+            this.new_incident.type = null;
+            this.new_incident.description = null;
+        },
         async process(incident) {
             const response = await this.axios.post(
                 this.api_url + `/incident/update/${incident.id}/processing`,

@@ -1242,6 +1242,43 @@ app.post(
     }
 );
 
+app.post(
+    "/incident/add",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            const data = request.body;
+            const result = await incidentReportController.add(
+                MySQLPool,
+                user,
+                data
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.AIR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
 // =====================================================================
 // LISTENER
 app.listen(PORT, () => {

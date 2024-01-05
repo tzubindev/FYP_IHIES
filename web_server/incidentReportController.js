@@ -53,6 +53,26 @@ class IncidentReportController {
             if (connection) connection.release();
         }
     }
+
+    async add(pool, requestUser, data) {
+        let connection;
+        try {
+            if (requestUser.role === "patient") return false;
+            connection = await pool.getConnection();
+            const query = `INSERT INTO incident (type_id, description, created_timestamp) VALUES (?,?,now())`;
+            const [r] = await connection.query(query, [
+                data.type_id,
+                data.description,
+            ]);
+            return r.affectedRows > 0;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
 }
 
 module.exports = { IncidentReportController };
