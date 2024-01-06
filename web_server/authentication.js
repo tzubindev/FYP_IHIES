@@ -305,9 +305,69 @@ const verify_token = (req, res, next) => {
     }
 };
 
+const getPrivateKey = async (pool, targetId) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        const query = `
+            SELECT key_pair.private_key
+            FROM auth
+            INNER JOIN key_pair ON auth.key_id = key_pair.id
+            WHERE auth.id = ?;
+        `;
+
+        const [rows] = await connection.query(query, [targetId]);
+
+        if (rows.length > 0) {
+            return rows[0].private_key;
+        } else {
+            throw new Error("Private key not found for the user.");
+        }
+    } catch (error) {
+        console.error("Error retrieving private key:", error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+};
+
+const getPublicKey = async (pool, targetId) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        const query = `
+            SELECT key_pair.public_key
+            FROM auth
+            INNER JOIN key_pair ON auth.key_id = key_pair.id
+            WHERE auth.id = ?;
+        `;
+
+        const [rows] = await connection.query(query, [targetId]);
+
+        if (rows.length > 0) {
+            return rows[0].public_key;
+        } else {
+            throw new Error("Public key not found for the user.");
+        }
+    } catch (error) {
+        console.error("Error retrieving public key:", error);
+        throw error;
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+};
+
 module.exports = {
     authenticate,
     two_factor_authenticate,
     generate_token,
     verify_token,
+    getPrivateKey,
+    getPublicKey,
 };

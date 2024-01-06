@@ -218,7 +218,7 @@
             </div>
         </div>
 
-        <!-- Request Trasnfer Modal -->
+        <!-- Request Transfer Modal -->
         <div v-if="is_request_transfer_modal_shown" class="">
             <div
                 class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"

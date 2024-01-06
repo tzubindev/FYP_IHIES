@@ -19,13 +19,14 @@ const generalController = require("./generalController");
 const AI = require("./AI");
 const { PatientTransferController } = require("./patientTransferController");
 const { IncidentReportController } = require("./incidentReportController");
+const { registerRuntimeCompiler } = require("vue");
 
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = new Logger(MySQLPool);
-const blockchain = new Blockchain();
+const recordBlockchain = new Blockchain();
 const keyGenerator = new Key();
 const upload = multer({});
 const profileController = new ProfileController();
@@ -406,23 +407,42 @@ app.put(
 app.post(
     "/medical-record/upload",
     Authentication.verify_token,
-    upload.array("records"),
+    upload.array("files"),
     async (request, response) => {
         try {
             // Assuming the records are sent as an array in the request body
             const records = request.files;
-
-            // Get the user information from the authenticated token
+            const { id, type } = request.body;
             const requestUser = request.user;
-
-            // Call the RecordController to handle the upload
-            const result = await recordController.upload(
-                client,
-                requestUser,
-                records
+            const privateKey = await Authentication.getPrivateKey(
+                MySQLPool,
+                requestUser.id
             );
 
-            response.send(await Formatter.successMsg(result));
+            console.log(privateKey);
+
+            let latestChain;
+            for (const record of records) {
+                latestChain = await recordBlockchain.getChain();
+                const formatedRecord = {
+                    created_mp_id: requestUser.id,
+                    id: id,
+                    type: type,
+                    file: record,
+                };
+                const length = latestChain.length;
+                const previousHash = latestChain[latestChain.length - 1].hash;
+                const newBlock = new Block(
+                    length,
+                    Date.now(),
+                    formatedRecord,
+                    previousHash
+                );
+
+                recordBlockchain.addBlock(newBlock, privateKey);
+            }
+
+            response.send(await Formatter.successMsg(true));
             const logStr = Formatter.logJsonToString({
                 type: RequestType.MRU,
                 from: {
@@ -435,7 +455,7 @@ app.post(
                     Path: request.path,
                     "Host Name": request.hostname,
                     Protocol: request.protocol,
-                    Result: result,
+                    Result: true,
                 },
             });
             logger.log(logStr);
@@ -451,12 +471,10 @@ app.get(
     Authentication.verify_token,
     async (request, response) => {
         try {
-            // Assuming the records are sent as an array in the request body
             const { id } = request.params;
 
-            // Call the RecordController to handle the upload
             const result = await recordController.get_all_filename_by_id(
-                client,
+                recordBlockchain,
                 id
             );
 
@@ -485,19 +503,20 @@ app.get(
 );
 
 app.get(
-    "/medical-record/id/:recordobjid",
+    "/record/retrieve/:index",
     Authentication.verify_token,
     async (request, response) => {
         try {
-            // Assuming the records are sent as an array in the request body
-            const id = request.params.recordobjid;
+            const { index } = request.params;
 
-            // Call the RecordController to handle the upload
-            const result = await recordController.get_record_by_id(client, id);
+            const result = await recordController.get_record_by_index(
+                recordBlockchain,
+                index
+            );
 
             response.send(await Formatter.successMsg(result));
             const logStr = Formatter.logJsonToString({
-                type: RequestType.RDR,
+                type: RequestType.MRR,
                 from: {
                     ID: request.user.id,
                     IP: request.ip,
@@ -508,10 +527,78 @@ app.get(
                     Path: request.path,
                     "Host Name": request.hostname,
                     Protocol: request.protocol,
-                    Result: result ? "Retrieve Successfully" : "Failed",
+                    Result: true,
                 },
             });
             logger.log(logStr);
+        } catch (error) {
+            console.error("Error retrieving medical records:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.get(
+    "/medical-record-type",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            // Call the RecordController to handle the upload
+            const result = await recordController.get_all_type(MySQLPool);
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.MRR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error retrieving medical records:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
+app.post(
+    "/medical-record-type/add",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const { record_type } = request.body;
+            // Call the RecordController to handle the upload
+            const result = await recordController.add_type(
+                MySQLPool,
+                record_type
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.MRR,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
         } catch (error) {
             console.error("Error retrieving medical records:", error);
             response.status(500).json({ error: "Internal Server Error" });
@@ -803,29 +890,29 @@ app.post(
 );
 
 // =====================================================================
-// [BLOCKCHAIN RECORD, INCOMPLETE]
-app.get("/blocks", (request, response) => {
-    response.json(blockchain.chain);
-});
+// [BLOCKCHAIN RECORD TEST]
+// app.get("/blocks", (request, response) => {
+//     response.json(recordBlockchain.chain);
+// });
 
-// Add a new block
-app.post("/addBlock", async (request, response) => {
-    const latestChain = await blockchain.getChain();
-    const length = latestChain.length;
-    console.log(latestChain[latestChain.length - 1]);
-    const previousHash = latestChain[latestChain.length - 1].hash;
-    const newBlock = new Block(length, Date.now(), request.body, previousHash);
+// // Add a new block
+// app.post("/addBlock", async (request, response) => {
+//     const latestChain = await recordBlockchain.getChain();
+//     const length = latestChain.length;
+//     console.log(latestChain[latestChain.length - 1]);
+//     const previousHash = latestChain[latestChain.length - 1].hash;
+//     const newBlock = new Block(length, Date.now(), request.body, previousHash);
 
-    blockchain.addBlock(
-        newBlock,
-        "963ab10ba16c40661cbb612a7fdd4da5d9dc3f4f3af0c947d462eaf832a3b51b"
-    );
-    response.json(newBlock);
-});
+//     recordBlockchain.addBlock(
+//         newBlock,
+//         "963ab10ba16c40661cbb612a7fdd4da5d9dc3f4f3af0c947d462eaf832a3b51b"
+//     );
+//     response.json(newBlock);
+// });
 
-app.get("/key", (request, response) => {
-    response.json(keyGenerator.generateKeyPair());
-});
+// app.get("/key", (request, response) => {
+//     response.json(keyGenerator.generateKeyPair());
+// });
 
 // =====================================================================
 // [VITAL SIGN]

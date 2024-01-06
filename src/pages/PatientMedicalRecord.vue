@@ -6,10 +6,56 @@
         <AccessDenied v-if="is_access_denied"></AccessDenied>
 
         <Loader
-            :loading="!(is_verified && is_initiated) && !is_access_denied"
+            :loading="is_loading"
             class="w-4/5 z-30 absolute"
-            v-if="!(is_verified && is_initiated) && !is_access_denied"
+            v-if="is_loading"
         ></Loader>
+
+        <div v-if="is_add_record_type_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="max-h-[600px] overflow-y-auto bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <!-- Title -->
+                <div class="font-bold w-full text-center">
+                    {{ $t("add_record_type") }}
+                </div>
+
+                <!-- Form body -->
+                <div class="my-4 w-full">
+                    <!-- Current condition -->
+                    <div class="w-full font-bold text-left mt-3">
+                        {{ $t("record_name") }}
+                    </div>
+                    <input
+                        class="focus:outline-none p-2 text-center w-full bg-transparent border-b border-gray/50"
+                        type="text"
+                        v-model="added_record_type"
+                        maxlength="255"
+                        minlength="3"
+                    />
+                </div>
+
+                <!-- Buttons -->
+                <div class="w-full flex justify-end mt-2 items-center gap-2">
+                    <div
+                        class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                        @click="closeAddRecordTypeModal"
+                    >
+                        {{ $t("cancel") }}
+                    </div>
+                    <button
+                        class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                        @click.prevent="handleAddRecordType"
+                        type="button"
+                    >
+                        {{ $t("confirm") }}
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <div
             v-if="is_verified && is_initiated"
@@ -51,15 +97,98 @@
                         <div
                             class="w-full lg:max-w-[950px] p-2 flex flex-wrap gap-1"
                         >
+                            <div class="grid grid-cols-2 gap-2 w-full">
+                                <!-- Select Patient -->
+                                <div
+                                    class="resize-y overflow-y-auto min-h-[150px] max-h-[400px] h-24 bg-gray/10 w-full shadow shadow-gray/50"
+                                >
+                                    <!-- Search bar -->
+                                    <div
+                                        class="w-full p-2 flex justify-between gap-2 items-center h-[50px]"
+                                    >
+                                        <div class="text-[16px] pl-2">
+                                            {{ $t("patient") }}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            class="placeholder:text-gray/80 bg-white/80 h-full items-center flex px-3 p-0.5 text-[14px] focus:outline-none text-gray shadow shadow-gray/50"
+                                            placeholder="Patient ID"
+                                        />
+                                    </div>
+
+                                    <!-- patient row -->
+                                    <div
+                                        class="w-full grid grid-cols-1 gap-2 p-2"
+                                    >
+                                        <div
+                                            class="hover:bg-gray/30 cursor-pointer transition bg-gray/10 shadow shadow-gray/50 w-full h-full p-1 text-[14px] text-center"
+                                            v-for="p in patients"
+                                            :key="p.id"
+                                            @click="selectPatient(p.id)"
+                                            :class="{
+                                                'bg-red hover:bg-darkred':
+                                                    selected_patient_id ===
+                                                    p.id,
+                                            }"
+                                        >
+                                            {{ p.id }} || {{ p.name }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Select record type -->
+                                <div
+                                    class="flex flex-wrap gap-1 bg-gray/10 shadow shadow-gray/50 pb-2"
+                                >
+                                    <!-- Title -->
+                                    <div
+                                        class="w-full flex justify-between items-center p-4 py-2.5"
+                                    >
+                                        <div class="text-[16px] w-fit">
+                                            {{ $t("document_type") }}
+                                        </div>
+                                        <div
+                                            class="p-1 bg-red w-fit rounded-full cursor-pointer transition hover:bg-darkred"
+                                            @click="openAddRecordTypeModal"
+                                        >
+                                            <img
+                                                src="../assets/add.svg"
+                                                class="w-4 h-4"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full p-2 px-4">
+                                        <input
+                                            list="record_type"
+                                            v-model="selected_record_type"
+                                            class="w-full text-center text-[14px] p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                                        />
+                                        <datalist
+                                            id="record_type"
+                                            name="record_type"
+                                        >
+                                            <option
+                                                v-for="r in record_types"
+                                                :key="r"
+                                                :value="r.name"
+                                            >
+                                                {{ r.name }}
+                                            </option>
+                                        </datalist>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Add record title-->
-                            <div class="text-[16px] w-full">
+                            <div class="text-[16px] w-full mt-3">
                                 {{ $t("add_record") }}
                             </div>
 
                             <!-- Drag and drop -->
                             <div class="w-full">
                                 <div
-                                    class="p-3 bg-gray/10 border border-gray/20 shadow shadow-gray/30"
+                                    class="p-3 bg-gray/10 border border-gray/20 shadow shadow-gray/50"
                                     @dragover="dragover"
                                     @dragleave="dragleave"
                                     @drop="drop"
@@ -137,16 +266,7 @@
                                                     "
                                                     class="w-6 h-6 mr-1 ml-auto"
                                                 />
-                                                <img
-                                                    src="../assets/wordfile.png"
-                                                    v-if="
-                                                        isFileType(
-                                                            file.type,
-                                                            'docx'
-                                                        )
-                                                    "
-                                                    class="w-6 h-6 mr-1 ml-auto"
-                                                />
+
                                                 <img
                                                     src="../assets/file.png"
                                                     v-if="
@@ -234,86 +354,53 @@
                                 class="w-full border-b border-gray/40 my-2"
                             ></div>
 
-                            <!-- filter Patient -->
-                            <!-- Title -->
-                            <div class="text-[16px]">
-                                {{ $t("patient") }}
-                            </div>
+                            <!-- Choose Exact Document  -->
 
-                            <!-- Patient Listing -->
                             <div
-                                class="resize-y overflow-y-auto min-h-[60px] h-24 bg-gray/10 w-full shadow shadow-gray/50"
+                                class="p-2 shadow shadow-gray/50 text-[12px] flex flex-wrap bg-gray/10 w-full h-fit"
                             >
-                                <!-- Search bar -->
+                                <!-- Title -->
+                                <div class="text-[16px] h-fit mb-3 pl-2">
+                                    {{ $t("document_list") }}
+                                </div>
                                 <div
-                                    class="w-full p-2 flex justify-end gap-2 items-center h-[50px]"
+                                    v-for="r in filtered_records"
+                                    :key="r.id"
+                                    class="mb-1 grid grid-cols-8 bg-cool/20 shadow shadow-gray w-full p-2 py-1 cursor-pointer transition hover:bg-gray/30"
+                                    @click="retriveDocument(r.index)"
                                 >
-                                    <input
-                                        type="text"
-                                        class="placeholder:text-gray/80 bg-white/80 h-full items-center flex px-3 p-0.5 text-[16px] focus:outline-none text-gray shadow shadow-gray/50"
-                                        placeholder="Patient ID"
+                                    <div>{{ r.index }}</div>
+                                    <div class="col-span-4">
+                                        {{ r.data.file.originalname }}
+                                    </div>
+                                    <div>
+                                        {{
+                                            format(
+                                                "filesize",
+                                                null,
+                                                r.data.file.size
+                                            )
+                                        }}
+                                    </div>
+                                    <div class="col-span-2">
+                                        {{ format("date", r.timestamp) }}
+                                    </div>
+                                </div>
+
+                                <!-- Loading animation -->
+                                <div
+                                    v-if="is_document_retrieval_loading"
+                                    class="w-full flex flex-wrap justify-center"
+                                >
+                                    <img
+                                        src="../assets/img_loading.gif"
+                                        class="w-[64px] h-[64px]"
                                     />
-                                </div>
-
-                                <!-- patient row -->
-                                <div class="w-full grid grid-cols-2 gap-2 p-2">
                                     <div
-                                        class="hover:bg-cool transition cursor-pointer bg-gray text-white w-full h-full p-1 text-[16px] text-center"
-                                        v-for="p in patients"
-                                        :key="p.id"
-                                        @click="selectPatient(p.id)"
-                                        :class="{
-                                            'bg-red hover:bg-darkred':
-                                                selected_patient_id === p.id,
-                                        }"
+                                        class="w-full text-center text-gray/80 animate-pulse"
                                     >
-                                        {{ p.id }} || {{ p.name }}
+                                        {{ $t("fetching_documents") }}
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Choose Document Type and Exact Document  -->
-                            <div class="mt-4 grid grid-cols-2 gap-2 w-full">
-                                <div
-                                    class="flex flex-wrap gap-1 bg-gray/10 p-2 shadow shadow-gray"
-                                >
-                                    <!-- Title -->
-                                    <div class="text-[16px]">
-                                        {{ $t("document_type") }}
-                                    </div>
-
-                                    <!-- Nr * 2c -->
-                                    <div
-                                        class="grid grid-cols-2 gap-2 w-full"
-                                        v-if="record_type.length"
-                                    >
-                                        <div
-                                            class="w-full flex justify-between items-center hover:bg-gray/30 cursor-pointer transition bg-gray/10 shadow shadow-gray/50 pl-1.5 pr-2 p-1 text-[12px]"
-                                            v-for="(t, index) in record_type"
-                                            :key="index"
-                                        >
-                                            <img
-                                                src="../assets/document.svg"
-                                                class="w-5 h-5"
-                                            />
-                                            <!-- At least 2 unit gap -->
-                                            <div class="w-2"></div>
-                                            <div
-                                                class="truncate text-gray h-full flex items-center"
-                                            >
-                                                {{ t }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex flex-wrap gap-1">
-                                    <!-- Title -->
-                                    <div class="text-[16px] h-fit">
-                                        {{ $t("document_list") }}
-                                    </div>
-
-                                    <div class="bg-gray/10 w-full h-fit"></div>
                                 </div>
                             </div>
 
@@ -321,10 +408,32 @@
                             <div class="text-[16px] w-full mt-4">
                                 {{ $t("document_viewer") }}
                             </div>
-                            <DocumentViewer
-                                class="flex justify-center flex-wrap w-full resize-y bg-gray/10 h-[500px] min-h-[500px] max-h-[800px] overflow-hidden p-2 pt-10"
-                                src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
-                            ></DocumentViewer>
+                            <embed
+                                v-if="is_pdf"
+                                :src="showing_file"
+                                width="100%"
+                                class="min-h-[600px] h-full w-full"
+                            />
+
+                            <!-- img viewer -->
+                            <div v-if="is_img">
+                                <img :src="showing_file" />
+                            </div>
+
+                            <div
+                                v-if="is_document_viewer_loading"
+                                class="w-full flex flex-wrap justify-center"
+                            >
+                                <img
+                                    src="../assets/img_loading.gif"
+                                    class="w-[64px] h-[64px]"
+                                />
+                                <div
+                                    class="w-full text-center text-gray/80 animate-pulse"
+                                >
+                                    {{ $t("fetching_document_data") }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -342,38 +451,58 @@ export default {
                 name: null,
                 passcode: null,
             },
-            is_verified: true, // false in default
-            is_initiated: true, // false in default
+            is_pdf: false,
+            is_img: false,
+            is_verified: true,
+            is_initiated: true,
             is_access_denied: false,
             is_sidebar_expanding: false,
+            is_add_record_type_modal_shown: false,
+            is_loading: false,
+            is_document_retrieval_loading: false,
+            is_document_viewer_loading: false,
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
-            record_type: ["doctor_clinical_notes", "discussion_recording"],
-            record: [
-                {
-                    doctor_clinical_notes: [
-                        {
-                            timestamp: "2023-11-14",
-                            note: "Patient presented with flu-like symptoms. Prescribed antibiotics.",
-                        },
-                        {
-                            timestamp: "2023-11-16",
-                            note: "Follow-up visit. Symptoms improved. Advised rest and hydration.",
-                        },
-                    ],
-                    discussion_recording: [
-                        {
-                            content: "Discussion content here",
-                            witness: "Witness name",
-                            timestamp: "2023-11-14",
-                        },
-                    ],
-                },
-            ],
+            added_record_type: null,
             selected_patient_id: null,
             filelist: [],
             patients: null,
+            selected_record_type: null,
+            selected_record_type_id: null,
+            record_types: [],
+            records: [],
         };
+    },
+    watch: {
+        async selected_record_type(newVal, oldVal) {
+            if (!newVal || newVal == "") {
+                this.selected_record_type_id = null;
+                return;
+            } else {
+                const result = this.record_types.filter(
+                    (r) => this.capitaliseSentence(r.name) === newVal
+                )[0];
+                if (result && result.id)
+                    this.selected_record_type_id = result.id;
+                else this.selected_record_type_id = null;
+            }
+        },
+
+        async selected_patient_id(newVal, oldVal) {
+            if (newVal && newVal != oldVal) {
+                await this.fetchDocuments();
+            }
+        },
+    },
+    computed: {
+        filtered_records() {
+            if (this.is_document_retrieval_loading) return [];
+            else if (this.selected_record_type_id)
+                return this.records.filter((r) => {
+                    return r.data.type == this.selected_record_type_id;
+                });
+            else return this.records;
+        },
     },
     async created() {
         console.log("CREATED");
@@ -385,6 +514,62 @@ export default {
     },
 
     methods: {
+        openAddRecordTypeModal() {
+            this.is_add_record_type_modal_shown = true;
+            this.added_record_type = null;
+        },
+        closeAddRecordTypeModal() {
+            this.is_add_record_type_modal_shown = false;
+        },
+        async handleAddRecordType() {
+            if (
+                !this.added_record_type ||
+                this.added_record_type.length < 3 ||
+                this.added_record_type.length > 255
+            ) {
+                this.$swal({
+                    title: "Add Record Type",
+                    text: "Failed. The length of record type shall be in between 3 and 255. ",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                return;
+            }
+
+            const response = await this.axios.post(
+                this.api_url + "/medical-record-type/add",
+                {
+                    record_type: this.added_record_type,
+                },
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data.message) {
+                this.$swal({
+                    title: "Add Record Type",
+                    text: "Succeess.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                await this.fetch();
+            } else {
+                this.$swal({
+                    title: "Add Record Type",
+                    text: "Failed.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            }
+
+            this.closeAddRecordTypeModal();
+        },
         selectPatient(id) {
             this.selected_patient_id =
                 this.selected_patient_id === id ? null : id;
@@ -397,7 +582,71 @@ export default {
             });
 
             this.patients = response.data.message;
-            console.log(this.patients);
+
+            const response_rt = await this.axios.get(
+                this.api_url + "/medical-record-type",
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            this.record_types = response_rt.data.message;
+            this.record_types = this.record_types.map(({ id, name }) => ({
+                id,
+                name: this.capitaliseSentence(name),
+            }));
+        },
+
+        async fetchDocuments() {
+            console.log("FETCH DOCUMENTS");
+            this.is_document_retrieval_loading = true;
+
+            const response = await this.axios.get(
+                this.api_url + `/medical-record/${this.selected_patient_id}`,
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data && response.data.message)
+                this.records = Array.from(response.data.message);
+            this.is_document_retrieval_loading = false;
+        },
+        async retriveDocument(index) {
+            this.is_img = false;
+            this.is_pdf = false;
+            this.is_document_viewer_loading = true;
+
+            const response = await this.axios.get(
+                this.api_url + `/record/retrieve/${index}`,
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            this.is_document_viewer_loading = false;
+
+            const mimetype = this.records.filter(
+                (node) => node.index === index
+            )[0].data.file.mimetype;
+
+            this.is_img = mimetype.split("/")[0] === "image";
+            this.is_pdf = mimetype.split("/")[1] === "pdf";
+
+            this.showing_file = `data:${mimetype};base64,${response.data.message.buffer}`;
+        },
+        capitaliseSentence(sentence) {
+            const newSentence = sentence
+                .split("_")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+
+            return newSentence;
         },
         isFileType(fileType, expectedType) {
             const extension = fileType.split("/")[1];
@@ -465,17 +714,120 @@ export default {
             event.currentTarget.classList.add("bg-gray/20");
             event.currentTarget.classList.remove("bg-green/30");
         },
-        drop(event) {
+        async drop(event) {
             event.preventDefault();
-            this.$refs.file.files = event.dataTransfer.files;
-            this.onChange(); // Trigger the onChange event manually
 
+            const droppedFiles = Array.from(event.dataTransfer.files);
+
+            // Check if the dropped file is of the allowed types
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/jpg",
+                "application/pdf",
+            ];
+            const isFileTypeAllowed = Array.from(droppedFiles).every((file) =>
+                allowedTypes.includes(file.type)
+            );
+
+            if (isFileTypeAllowed) {
+                // Append dropped files to existing files
+                const existingFiles = Array.from(this.$refs.file.files);
+
+                const allFiles = [...existingFiles, ...droppedFiles];
+
+                // Create a Set to store unique files based on their names
+                const uniqueFileSet = new Set();
+
+                // Add files to the Set, using their names as unique identifiers
+                allFiles.forEach((file) => {
+                    uniqueFileSet.add(file.name);
+                });
+
+                // Create a new array from the Set
+                const uniqueFilesArray = Array.from(uniqueFileSet).map(
+                    (fileName) => {
+                        // Find the corresponding file in the allFiles array
+                        return allFiles.find((file) => file.name === fileName);
+                    }
+                );
+
+                this.$refs.file.files = this.arrayToFileList(uniqueFilesArray);
+                this.onChange();
+            }
             // Clean up
             event.currentTarget.classList.add("bg-gray/20");
             event.currentTarget.classList.remove("bg-green/30");
         },
-        upload() {
-            console.log(this.$refs.file.files);
+        async upload() {
+            if (!this.selected_patient_id || !this.selected_record_type_id) {
+                this.$swal({
+                    title: "Upload New Record",
+                    text: "Failed. Please select 1 patient and 1 document type.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+                return;
+            }
+            this.is_loading = true;
+            const formData = new FormData();
+
+            this.filelist.forEach((file, index) => {
+                formData.append("files", file); // Use "files" as the field name
+            });
+            formData.append("id", this.selected_patient_id);
+            formData.append("type", this.selected_record_type_id);
+
+            try {
+                const response = await this.axios.post(
+                    this.api_url + "/medical-record/upload",
+                    formData,
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+
+                if (response.data.message) {
+                    this.is_loading = false;
+                    this.$swal({
+                        title: "Medical Record",
+                        text: "Added Succesfully",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                    this.$refs.file.value = null;
+                    this.filelist = [];
+                    await this.fetch();
+                    await this.fetchDocuments();
+                } else {
+                    this.$swal({
+                        title: "Medical Record",
+                        text: "Adding Record Failed.",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            } catch (error) {
+                // Handle error
+                console.error(error);
+            } finally {
+                this.is_loading = false;
+            }
+        },
+        arrayToFileList(fileArray) {
+            const dataTransfer = new DataTransfer();
+
+            for (let i = 0; i < fileArray.length; i++) {
+                dataTransfer.items.add(fileArray[i]);
+            }
+
+            return dataTransfer.files;
         },
     },
 };

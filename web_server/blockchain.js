@@ -20,6 +20,15 @@ class Block {
         this.signature = "";
     }
 
+    loadBlock(index, timestamp, data, previousHash, hash, signature) {
+        this.index = index;
+        this.timestamp = timestamp;
+        this.data = data;
+        this.previousHash = previousHash;
+        this.hash = hash;
+        this.signature = signature;
+    }
+
     calculateHash() {
         return SHA256(
             this.index +
@@ -65,7 +74,17 @@ class Blockchain {
             const blockchainDoc = await collection.findOne();
 
             if (blockchainDoc) {
-                this.chain = blockchainDoc.chain;
+                this.chain = await blockchainDoc.chain;
+                this.chain.map((node) => {
+                    return new Block(null, null, null).loadBlock(
+                        node.index,
+                        node.timestamp,
+                        node.data,
+                        node.previousHash,
+                        node.hash,
+                        node.signature
+                    );
+                });
             } else {
                 // If no data is found, create the genesis block and save to MongoDB
                 const genesisBlock = this.createGenesisBlock();
@@ -102,22 +121,66 @@ class Blockchain {
         await this.saveToDatabase();
     }
 
-    async isChainValid() {
+    async isChainValid(publicKey) {
         await this.connectToDatabase();
+
         for (let i = 1; i < this.chain.length; i++) {
-            const currentBlock = this.chain[i];
-            const previousBlock = this.chain[i - 1];
+            const currentBlock = await this.chain[i];
+            const previousBlock = await this.chain[i - 1];
+
+            console.log(typeof currentBlock);
 
             if (
                 currentBlock.hash !== currentBlock.calculateHash() ||
                 currentBlock.previousHash !== previousBlock.hash ||
-                !currentBlock.verifySignature("public key here") // Replace with the public key of the sender
+                !currentBlock.verifySignature(publicKey) // Replace with the public key of the sender
             ) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    async getBlocks(patientId) {
+        await this.connectToDatabase();
+
+        let result = await this.chain.filter((node) => {
+            return node.data && node.data.id === patientId;
+        });
+
+        // Check if the result is not null or undefined
+        if (result) {
+            // Iterate over each node in the result and delete the 'file' property
+            result.forEach((node) => {
+                if (node.data && node.data.file) {
+                    delete node.data.file.buffer;
+                }
+            });
+
+            return result;
+        } else {
+            // Handle the case where the result is null or undefined
+            throw new Error("No blocks found for the specified ID.");
+        }
+    }
+
+    async getBlock(index) {
+        await this.connectToDatabase();
+
+        let result = await this.chain.filter((node) => {
+            return node && node.index == index;
+        });
+
+        // Check if the result is not null or undefined
+        if (result) {
+            result = { buffer: result[0].data.file.buffer };
+
+            return result;
+        } else {
+            // Handle the case where the result is null or undefined
+            throw new Error("No blocks found for the specified ID.");
+        }
     }
 }
 
@@ -140,11 +203,3 @@ class Key {
 }
 
 module.exports = { Blockchain, Block, Key };
-
-// Example usage:
-// const blockchain = new Blockchain();
-// const privateKey = "private key here"; // Replace with the private key of the sender
-// const newBlock = new Block(1, "2023-01-02", "path/to/another_document.pdf");
-// blockchain.addBlock(newBlock, privateKey);
-
-// console.log("Blockchain is valid:", blockchain.isChainValid());

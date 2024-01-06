@@ -118,23 +118,21 @@
                                     <!-- Tree bar -->
                                     <div class="pt-2">
                                         <details
-                                            v-for="(
-                                                record, recordKey
-                                            ) in records"
-                                            :key="recordKey"
+                                            v-for="(r, rKey) in records"
+                                            :key="rKey"
                                             class="text-[12px] pb-0.5 text-white w-full"
                                         >
                                             <summary
                                                 class="px-3 truncate hover:bg-white/20 cursor-pointer transition"
-                                                :title="$t(recordKey)"
+                                                :title="$t(getTypeName(rKey))"
                                             >
                                                 &#128193;
-                                                {{ $t(recordKey) }}
+                                                {{ $t(getTypeName(rKey)) }}
                                             </summary>
                                             <div
                                                 class="flex pl-9 hover:bg-white/20 cursor-pointer transition"
-                                                v-for="recordItem in record"
-                                                :key="recordItem.id"
+                                                v-for="recordItem in r"
+                                                :key="recordItem.index"
                                                 @click="
                                                     selectRecord(recordItem)
                                                 "
@@ -149,7 +147,7 @@
                                 <!-- View panel -->
 
                                 <div
-                                    class="col-span-4 h-full bg-gray/10 text-white overflow-y-auto"
+                                    class="w-full col-span-4 h-full bg-gray/10 text-white overflow-y-auto"
                                 >
                                     <!-- View Panel Title -->
                                     <div
@@ -165,7 +163,7 @@
                                         <div v-if="is_loading">
                                             <div class="w-full h-full p-4">
                                                 <div
-                                                    class="animate-pulse flex flex-wrap"
+                                                    class="animate-pulse flex flex-wrap w-full"
                                                 >
                                                     <div
                                                         class="h-[300px] rounded w-full bg-gray mb-4"
@@ -235,6 +233,22 @@
                                             </div>
                                         </div>
 
+                                        <!-- Loading animation -->
+                                        <div
+                                            v-if="is_document_retrieval_loading"
+                                            class="w-full h-[400px] flex-col items-center flex flex-wrap justify-center"
+                                        >
+                                            <img
+                                                src="../assets/img_loading.gif"
+                                                class="w-[64px] h-[64px]"
+                                            />
+                                            <div
+                                                class="w-full text-center text-gray/80 animate-pulse"
+                                            >
+                                                {{ $t("fetching_documents") }}
+                                            </div>
+                                        </div>
+
                                         <!-- pdf viewer -->
                                         <embed
                                             v-if="is_pdf"
@@ -285,8 +299,11 @@ export default {
             selected_record_item: null,
             api_url: "http://127.0.0.1:3000",
             records: null,
+            record_types: null,
+            is_document_retrieval_loading: false,
         };
     },
+    computed: {},
     async created() {
         console.log("CREATED");
         this.user = await JSON.parse(sessionStorage.getItem("user"));
@@ -295,24 +312,49 @@ export default {
         await this.fetch();
     },
     methods: {
-        convertToFormatedRecord(records) {
-            const resultObject = {};
-
-            records.forEach(({ _id, type, name }) => {
-                const typeKey = type;
-                const recordInfo = { _id, name };
-
-                if (!resultObject[typeKey]) {
-                    resultObject[typeKey] = [recordInfo];
-                } else {
-                    resultObject[typeKey].push(recordInfo);
-                }
+        getTypeName(type_id) {
+            return this.record_types.filter((r) => r.id == type_id)[0].name;
+        },
+        convertToFormattedRecords(records) {
+            records = records.map((r) => {
+                const rec = {
+                    index: r.index,
+                    type: r.data.type,
+                    name: r.data.file.originalname,
+                    mimetype: r.data.file.mimetype,
+                };
+                return rec;
             });
 
-            return resultObject;
+            const recordsBasedOnType = {};
+            this.record_types.forEach((rt) => (recordsBasedOnType[rt.id] = []));
+            records.forEach((r) =>
+                recordsBasedOnType[r.type].push({
+                    index: r.index,
+                    name: r.name,
+                    mimetype: r.mimetype,
+                })
+            );
+            return recordsBasedOnType;
         },
         async fetch() {
+            this.is_document_retrieval_loading = true;
             console.log("FETCH");
+            const response_rt = await this.axios.get(
+                this.api_url + "/medical-record-type",
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            this.record_types = response_rt.data.message;
+            this.record_types = this.record_types.map(({ id, name }) => ({
+                id,
+                name: this.capitaliseSentence(name),
+            }));
+
             const result = await this.axios.get(
                 `${this.api_url}/medical-record/${this.user.id}`,
                 {
@@ -322,13 +364,22 @@ export default {
                     data: {},
                 }
             );
-            console.log(result);
 
-            this.records = this.convertToFormatedRecord(result.data.message);
-            console.log(this.records);
+            this.records = await this.convertToFormattedRecords(
+                result.data.message
+            );
+            this.is_document_retrieval_loading = false;
         },
         updateSidebarExpansion(e) {
             this.is_sidebar_expanding = e;
+        },
+        capitaliseSentence(sentence) {
+            const newSentence = sentence
+                .split("_")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+
+            return newSentence;
         },
 
         clearRecord() {
@@ -340,55 +391,25 @@ export default {
             this.selected_record_item = r;
 
             // Download data if no buffer data
-            if (!r.buffer || !r.mimetype) {
-                this.is_loading = true;
-                const result = await this.axios.get(
-                    `${this.api_url}/medical-record/id/${r._id}`,
-                    {
-                        headers: {
-                            Authorization: this.user.passcode,
-                        },
-                    }
-                );
-                const resultData = result.data.message;
-                const newData = {
-                    buffer: resultData.buffer,
-                    mimetype: resultData.mimetype,
-                };
 
-                // Dynamically search and replace based on type and _id
-                r = await this.searchAndReplaceByObjectID(r._id, newData);
+            this.is_loading = true;
+            const response = await this.axios.get(
+                this.api_url + `/record/retrieve/${r.index}`,
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+            const resultData = response.data.message;
 
-                this.is_loading = false;
-            }
-
+            this.is_loading = false;
             this.is_img = r.mimetype.split("/")[0] === "image";
             this.is_pdf = r.mimetype.split("/")[1] === "pdf";
 
-            this.showing_file = `data:${r.mimetype};base64,${r.buffer}`;
+            this.showing_file = `data:${r.mimetype};base64,${resultData.buffer}`;
 
             console.log(this.showing_file);
-        },
-        searchAndReplaceByObjectID(_id, newData) {
-            // Iterate over the properties of this.records
-            for (const type in this.records) {
-                if (this.records[type] instanceof Array) {
-                    // Find the index of the object with the matching _id
-                    const index = this.records[type].findIndex(
-                        (item) => item._id === _id
-                    );
-
-                    if (index !== -1) {
-                        // Update the object with the new data
-                        this.records[type][index] = {
-                            ...this.records[type][index],
-                            ...newData,
-                        };
-
-                        return this.records[type][index];
-                    }
-                }
-            }
         },
     },
 };

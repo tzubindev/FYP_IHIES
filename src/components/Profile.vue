@@ -376,6 +376,8 @@ export default {
             if (!this.areObjectsEqual(this.edited, this.original_edited))
                 formData.append("edited", JSON.stringify(this.edited));
 
+            console.log("FORMDATA", formData);
+
             try {
                 const response = await this.axios.put(
                     this.api_url + "/profile/upload",
@@ -471,10 +473,6 @@ export default {
 
                     const file = droppedFiles[0];
                     this.image_url = await this.createObjectURL(file);
-
-                    // Clean up
-                    event.currentTarget.classList.add("bg-gray/20");
-                    event.currentTarget.classList.remove("bg-green/30");
                 } else {
                     // If file type is not allowed, show an error or give feedback to the user
                     this.$swal({
@@ -485,6 +483,10 @@ export default {
                         timer: 2000,
                     });
                 }
+
+                // Clean up
+                event.currentTarget.classList.add("bg-gray/20");
+                event.currentTarget.classList.remove("bg-green/30");
             } else {
                 // If filelist is not empty, show an error or give feedback to the user
                 this.$swal({
