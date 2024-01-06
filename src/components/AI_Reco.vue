@@ -281,6 +281,75 @@
                 </div>
             </div>
         </Transition>
+
+        <Transition>
+            <!-- Add Schedule Modal -->
+            <div v-if="is_add_schedule_modal_shown" class="">
+                <div
+                    class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                ></div>
+                <div
+                    class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+                >
+                    <form class="w-full px-2">
+                        <div class="font-bold w-full text-center">
+                            {{ $t("added_schedule") }}
+                        </div>
+                        <div class="my-4 w-full">
+                            <!-- 1. timestamp date (after tomorrow) -->
+                            <div class="w-full font-bold">
+                                {{ $t("date") }}
+                            </div>
+                            <input
+                                type="date"
+                                id="timestamp"
+                                name="timestamp"
+                                v-model="added_schedule.timestamp"
+                                class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                                :min="minDate"
+                                required
+                            />
+
+                            <!-- 1.1 time -->
+                            <div class="w-full font-bold mt-3">
+                                {{ $t("time") }}
+                            </div>
+                            <select
+                                id="time"
+                                name="time"
+                                v-model="added_schedule.time"
+                                class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                            >
+                                <option
+                                    v-for="timeSlot in timeSlots"
+                                    :key="timeSlot"
+                                    :value="timeSlot"
+                                >
+                                    {{ timeSlot }}
+                                </option>
+                            </select>
+                        </div>
+                        <div
+                            class="w-full flex justify-end mt-2 items-center gap-2"
+                        >
+                            <div
+                                class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                                @click="closeAddScheduleModal"
+                            >
+                                {{ $t("cancel") }}
+                            </div>
+                            <button
+                                class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                                @click.prevent="handleAddSchedule"
+                                type="button"
+                            >
+                                {{ $t("confirm") }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -335,7 +404,9 @@ export default {
             is_description_shown: false,
             is_postcode_modal_shown: false,
             necessity_for_hospitalisation: null,
+            is_add_schedule_modal_shown: false,
             api_url: "http://127.0.0.1:3000",
+            added_schedule: { timestamp: null, time: null },
         };
     },
 
@@ -346,6 +417,34 @@ export default {
             return this.predefined_symptoms.filter((symptom) =>
                 regex.test(symptom)
             );
+        },
+        timeSlots() {
+            const startTime = 9 * 60; // 09:00 in minutes
+            const endTime = 17 * 60; // 18:00 in minutes
+            const interval = 30; // 30 minutes interval
+
+            const timeSlots = [];
+
+            for (let time = startTime; time <= endTime; time += interval) {
+                const hours = Math.floor(time / 60);
+                const minutes = time % 60;
+                const formattedTime = `${hours
+                    .toString()
+                    .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+                timeSlots.push(formattedTime);
+            }
+
+            return timeSlots;
+        },
+        minDate() {
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() + 2); // Add two days
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1)
+                .toString()
+                .padStart(2, "0");
+            const day = currentDate.getDate().toString().padStart(2, "0");
+            return `${year}-${month}-${day}`;
         },
     },
 
@@ -423,7 +522,6 @@ export default {
             this.recommendations = response.data.message.filter(
                 (i) => i.is_hospital === this.necessity_for_hospitalisation
             );
-            console.log(this.recommendations);
 
             this.is_postcode_modal_shown = false;
             this.is_ai_loader_loading = false;
@@ -444,10 +542,66 @@ export default {
                 this.showing_description = null;
             }
         },
-        schedule(institution) {},
+        schedule(institution) {
+            this.is_add_schedule_modal_shown = true;
+            this.selected_institution_id = institution.id;
+        },
+
+        closeAddScheduleModal() {
+            this.is_add_schedule_modal_shown = false;
+        },
+        async handleAddSchedule() {
+            this.added_schedule.symptoms = this.symptoms.join(";");
+
+            this.added_schedule.timestamp =
+                this.added_schedule.timestamp +
+                " " +
+                this.added_schedule.time +
+                ":00";
+
+            this.added_schedule.institution_id = this.selected_institution_id;
+            this.added_schedule.patient_id = this.user.id;
+
+            const response = await this.axios.post(
+                `${this.api_url}/add-schedule`,
+                {
+                    data: this.added_schedule,
+                },
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            console.log(response);
+
+            if (response.data.message)
+                this.$swal({
+                    title: "Schedule",
+                    text: "New schedule apllied successfully.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            else {
+                this.$swal({
+                    title: "Schedule",
+                    text: "New schedule apllied failed.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            }
+
+            this.closeAddScheduleModal();
+        },
     },
     async created() {
         this.user.passcode = await sessionStorage.getItem("passcode");
+        const user = await JSON.parse(sessionStorage.getItem("user"));
+        this.user.id = user.id;
+        this.user.role = user.role;
         const response = await this.axios.get(this.api_url + "/symptoms", {
             headers: {
                 Authorization: this.user.passcode,

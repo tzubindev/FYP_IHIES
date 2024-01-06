@@ -859,7 +859,6 @@ app.post(
         try {
             const schedule_data = request.body.data;
 
-            if (request.user.role === "patient") return;
             const result = await scheduleController.add(
                 MySQLPool,
                 schedule_data

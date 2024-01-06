@@ -816,6 +816,15 @@ export default {
                     showConfirmButton: false,
                     timer: 2000,
                 });
+            else {
+                this.$swal({
+                    title: "Schedule",
+                    text: "New schedule added failed.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            }
 
             this.closeAddScheduleModal();
         },

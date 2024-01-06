@@ -54,9 +54,10 @@ class ScheduleController {
             const userId = requestUser.id;
 
             const query = `
-                    SELECT * 
+                    SELECT schedule.*
                     FROM schedule
-                    WHERE patient_id = ?;
+                    JOIN assignment ON schedule.id = assignment.schedule_id
+                    WHERE schedule.patient_id = ? AND assignment.is_denied <> true;
                   `;
             const [rows] = await connection.query(query, [userId]);
 
@@ -239,12 +240,19 @@ class ScheduleController {
             connection = await pool.getConnection();
 
             // [0] get institution id
-            const query_ins = `
+            let institution_id;
+
+            if (scheduleData.institution_id) {
+                institution_id = scheduleData.institution_id;
+            } else {
+                const query_ins = `
             SELECT institution_id FROM mp_profile where id = ?
             `;
-            const [rows_ins] = await connection.query(query_ins, [
-                scheduleData.mp_id,
-            ]);
+                const [rows_ins] = await connection.query(query_ins, [
+                    scheduleData.mp_id,
+                ]);
+                institution_id = rows_ins[0].institution_id;
+            }
 
             // [0.5] check if patient id exists
             const [rows_exist] = await connection.query(
@@ -261,7 +269,14 @@ class ScheduleController {
             `;
             const [rows] = await connection.query(query, [
                 scheduleData.timestamp,
-                rows_ins[0].institution_id,
+                institution_id,
+                scheduleData.patient_id,
+                scheduleData.symptoms,
+            ]);
+
+            console.log([
+                scheduleData.timestamp,
+                institution_id,
                 scheduleData.patient_id,
                 scheduleData.symptoms,
             ]);

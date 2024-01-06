@@ -247,7 +247,7 @@ export default {
         console.log("CALANDER CREATED");
         this.user.passcode = await sessionStorage.getItem("passcode");
 
-        this.fetch();
+        await this.fetch();
     },
 };
 </script>

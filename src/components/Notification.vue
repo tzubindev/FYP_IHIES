@@ -100,7 +100,7 @@ export default {
         },
         convert_timestamp(t) {
             const differenceInMilliseconds = new Date().getTime() - t;
-            console.log(t);
+
             const intervals = {
                 seconds: 1000,
                 minutes: 60 * 1000,
@@ -134,7 +134,6 @@ export default {
                         lowestPhrase = isChanged ? intervalName : lowestPhrase;
                         lowestVal = isChanged ? val : lowestVal;
                     }
-                    console.log(Math.floor(lowestVal), lowestPhrase);
                 }
             }
 
