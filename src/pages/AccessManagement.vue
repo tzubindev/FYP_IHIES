@@ -52,7 +52,13 @@
                             <div
                                 class="w-full flex justify-between items-center mb-2"
                             >
-                                <div>{{ $t("access_list") }}</div>
+                                <div class="grow">{{ $t("access_list") }}</div>
+
+                                <div
+                                    class="mr-2 hover:bg-red/80 cursor-pointer transition shadow shadow-gray p-1 px-2 bg-red text-white flex items-center text-[16px]"
+                                >
+                                    {{ $t("authorise_registrations") }}
+                                </div>
                                 <div
                                     class="hover:bg-green/80 cursor-pointer transition shadow shadow-gray p-1 px-2 bg-green text-gray flex items-center text-[16px]"
                                 >

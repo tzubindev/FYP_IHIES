@@ -1124,6 +1124,50 @@ app.post(
     }
 );
 
+app.post(
+    "/bed/reserve/:bed_id",
+    Authentication.verify_token,
+    async (request, response) => {
+        try {
+            const user = request.user;
+            if (user.role == "patient") return;
+            const { bed_id } = request.params;
+            const result = await patientTransferController.reserveBed(
+                MySQLPool,
+                user,
+                bed_id
+            );
+
+            await patientTransferController.accept(
+                MySQLPool,
+                user,
+                request.body.request_id
+            );
+
+            const logStr = Formatter.logJsonToString({
+                type: RequestType.RB,
+                from: {
+                    ID: request.user.id,
+                    IP: request.ip,
+                    Method: request.method,
+                    "Query Params": JSON.stringify(request.query),
+                    Cookies: JSON.stringify(request.cookies),
+                    URL: request.url,
+                    Path: request.path,
+                    "Host Name": request.hostname,
+                    Protocol: request.protocol,
+                    Result: result,
+                },
+            });
+            logger.log(logStr);
+            response.send(await Formatter.successMsg(result));
+        } catch (error) {
+            console.error("Error AI RECO:", error);
+            response.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+);
+
 app.get(
     "/patient-transfer/:type",
     Authentication.verify_token,

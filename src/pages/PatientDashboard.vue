@@ -45,7 +45,7 @@
                     'pl-[60px]': !is_sidebar_expanding,
                 }"
             >
-                <div class="pt-6 pb-4 px-10 w-full h-fit max-w-[90%]">
+                <div class="pt-6 pb-4 px-10 w-full h-fit max-w-[1140px]">
                     <!-- Path showing -->
                     <div
                         class="h-[40px] w-full font-extrabold p-2 text-xs flex justify-center"

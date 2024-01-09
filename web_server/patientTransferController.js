@@ -87,11 +87,68 @@ class PatientTransferController {
 
             // [2] user ins_id to get beds from beds table
             const query_b = `UPDATE beds
-            SET is_resolved = TRUE, patient_id = NULL
+            SET is_resolved = TRUE, is_reserved = FALSE patient_id = NULL
             WHERE institution_id = ? AND id = ?;`;
             const [r_b] = await connection.query(query_b, [
                 institution_id,
                 bedId,
+            ]);
+
+            return r_b.affectedRows > 0;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
+    async reserveBed(pool, requestUser, bedId) {
+        let connection;
+        try {
+            connection = await pool.getConnection();
+
+            // [1] get institution id
+            const query = `SELECT institution_id FROM mp_profile WHERE id = ?`;
+            const [r] = await connection.query(query, [requestUser.id]);
+            const institution_id = r[0].institution_id;
+
+            // [2] user ins_id to get beds from beds table
+            const query_b = `UPDATE beds
+            SET is_reserved = TRUE
+            WHERE institution_id = ? AND id = ?;`;
+            const [r_b] = await connection.query(query_b, [
+                institution_id,
+                bedId,
+            ]);
+
+            return r_b.affectedRows > 0;
+        } catch (error) {
+            console.error("Error retrieving schedule:", error);
+            throw error;
+        } finally {
+            // Release the MySQL connection back to the pool
+            if (connection) connection.release();
+        }
+    }
+
+    async accept(pool, requestUser, requestId) {
+        let connection;
+        try {
+            connection = await pool.getConnection();
+
+            // [1] get institution id
+            const query = `SELECT institution_id FROM mp_profile WHERE id = ?`;
+            const [r] = await connection.query(query, [requestUser.id]);
+            const institution_id = r[0].institution_id;
+
+            // [2] user ins_id to get beds from beds table
+            const query_b = `UPDATE patient_transfer_request
+            SET to_institution_id = ? WHERE id = ?;`;
+            const [r_b] = await connection.query(query_b, [
+                institution_id,
+                requestId,
             ]);
 
             return r_b.affectedRows > 0;
@@ -123,7 +180,7 @@ class PatientTransferController {
             const [r_ovw] = await connection.query(query_ovw, [patientId]);
 
             const query_b = `UPDATE beds
-            SET is_resolved = FALSE, patient_id = ?
+            SET is_resolved = FALSE, is_reserved = FALSE, patient_id = ?
             WHERE institution_id = ? AND id = ?;`;
             const [r_b] = await connection.query(query_b, [
                 patientId,

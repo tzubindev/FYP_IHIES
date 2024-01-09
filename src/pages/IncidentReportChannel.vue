@@ -71,6 +71,7 @@
         <div v-if="is_add_incident_modal_shown" class="">
             <div
                 class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+                @click="closeAddIncidentModal"
             ></div>
             <div
                 class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
@@ -113,15 +114,9 @@
 
                 <!-- Buttons -->
                 <div class="w-full flex justify-end mt-2 items-center gap-2">
-                    <div
-                        class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
-                        click="closeAddIncidentModal"
-                    >
-                        {{ $t("cancel") }}
-                    </div>
                     <button
                         class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
-                        @click.prevent="handleAddIncident"
+                        @click="handleAddIncident"
                         type="button"
                     >
                         {{ $t("confirm") }}
@@ -348,7 +343,7 @@
                                                 i.status === 'solved',
                                         }"
                                     >
-                                        {{ i.status }}
+                                        {{ $t(i.status) }}
                                     </div>
                                 </div>
                             </div>
@@ -358,6 +353,33 @@
                                 class="mt-4 text-[14px]"
                                 v-if="selected_tab === 1"
                             >
+                                <div
+                                    class="w-full flex justify-end items-center mb-2"
+                                >
+                                    <div
+                                        class="bg-gray text-white px-2 py-1 mr-2"
+                                    >
+                                        {{ $t("status_filter") }}
+                                    </div>
+                                    <input
+                                        list="filter_status"
+                                        v-model="filter_status"
+                                        class="w-fit text-center p-1 bg-transparent focus:outline-none border border-gray/50 cursor-pointer"
+                                    />
+                                    <datalist
+                                        id="filter_status"
+                                        name="filter_status"
+                                    >
+                                        <option
+                                            v-for="p in predefined_status"
+                                            :key="p"
+                                            :value="p"
+                                        >
+                                            {{ $t(p) }}
+                                        </option>
+                                    </datalist>
+                                </div>
+
                                 <!-- Headers -->
                                 <div class="grid grid-cols-3">
                                     <div class="col-span-2 grid grid-cols-3">
@@ -396,7 +418,7 @@
                                 <!--  Body -->
                                 <div
                                     class="hover:bg-gray/10 cursor-pointer transition grid grid-cols-3 slide-in-left-to-right py-2 border-b border-x border-gray/30"
-                                    v-for="(i, index) in incident"
+                                    v-for="(i, index) in filtered_incident"
                                     :key="index"
                                     :style="{
                                         'animation-delay': `${
@@ -476,7 +498,7 @@ export default {
             is_add_incident_modal_shown: false,
             selected_events: [],
             api_url: "http://127.0.0.1:3000",
-            records: [],
+
             incident_type: [],
             incident: [],
             selected_tab: 0,
@@ -485,6 +507,8 @@ export default {
                 type: null,
                 description: null,
             },
+            filter_status: null,
+            predefined_status: ["pending", "processing", "solved"],
         };
     },
     async created() {
@@ -495,6 +519,16 @@ export default {
         this.user.role = user.role;
 
         await this.fetch();
+    },
+    computed: {
+        filtered_incident() {
+            if (!this.filter_status) return this.incident;
+            else {
+                return this.incident.filter(
+                    (i) => i.status === this.filter_status
+                );
+            }
+        },
     },
 
     methods: {

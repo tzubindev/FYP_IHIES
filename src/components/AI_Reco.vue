@@ -151,7 +151,7 @@
                                     @mouseenter="showSymDescription(true, s)"
                                     @mouseleave="showSymDescription(false)"
                                 >
-                                    {{ s }}
+                                    {{ $t(s) }}
                                 </div>
                             </div>
                         </div>
@@ -189,7 +189,7 @@
                 }"
             >
                 <div class="text-xs font-semibold">
-                    {{ $t("recommendation") }}
+                    {{ $t("recommended_institution") }}
                 </div>
 
                 <Transition name="fade">

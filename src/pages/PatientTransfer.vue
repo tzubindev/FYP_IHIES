@@ -195,10 +195,6 @@
                     <!-- Buttons -->
                     <div
                         class="w-full flex justify-end mt-2 items-center gap-2"
-                        v-if="
-                            profile_picture_url &&
-                            profile_picture_url != 'loading'
-                        "
                     >
                         <div
                             class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
@@ -210,6 +206,67 @@
                             class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
                             @click.prevent="handlePlacePatient"
                             type="button"
+                            v-if="
+                                profile_picture_url &&
+                                profile_picture_url != 'loading'
+                            "
+                        >
+                            {{ $t("confirm") }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Complete Transfer Modal -->
+        <div v-if="is_complete_transfer_modal_shown" class="">
+            <div
+                class="absolute top-0 left-0 z-50 w-full h-full bg-gray/90"
+            ></div>
+            <div
+                class="bg-white/90 p-3 flex flex-wrap justify-center items-center text-[14px] absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px]"
+            >
+                <form class="w-full">
+                    <!-- Title -->
+                    <div class="font-bold w-full text-center">
+                        {{ $t("place_patient_to_reserved_bed") }}
+                    </div>
+
+                    <!-- Form body -->
+                    <div class="my-4 w-full">
+                        <div class="w-full font-bold text-left">
+                            {{ $t("patient") }}
+                        </div>
+
+                        <input
+                            list="patient_id"
+                            v-model="placed_patient"
+                            class="w-full text-center p-2 bg-transparent focus:outline-none border-b border-gray/50 cursor-pointer"
+                        />
+                        <datalist id="patient_id" name="patient_id">
+                            <option
+                                v-for="p in transferring"
+                                :key="p"
+                                :value="p.patient_id"
+                            ></option>
+                        </datalist>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div
+                        class="w-full flex justify-end mt-2 items-center gap-2"
+                    >
+                        <div
+                            class="p-2 py-1 cursor-pointer transition hover:text-red hover:underline"
+                            @click="closeCompleteTransferModal"
+                        >
+                            {{ $t("cancel") }}
+                        </div>
+                        <button
+                            class="bg-red p-2 py-1 text-white cursor-pointer transition hover:bg-darkred"
+                            @click.prevent="handleArrivedTransferringPatient"
+                            type="button"
+                            v-if="placed_patient"
                         >
                             {{ $t("confirm") }}
                         </button>
@@ -389,7 +446,9 @@
                                         <div class="text-[26px] pr-2">
                                             {{
                                                 ane_beds.filter(
-                                                    (b) => b.is_resolved == true
+                                                    (b) =>
+                                                        b.is_resolved &&
+                                                        !b.is_reserved
                                                 ).length
                                             }}
                                         </div>
@@ -498,8 +557,11 @@
                                                 :class="{
                                                     'bg-red text-white':
                                                         !bed.is_resolved,
-                                                    'bg-green ':
-                                                        bed.is_resolved,
+                                                    'bg-green':
+                                                        bed.is_resolved &&
+                                                        !bed.is_reserved,
+                                                    'bg-yellow':
+                                                        bed.is_reserved,
                                                 }"
                                             >
                                                 <!-- Bed info -->
@@ -529,7 +591,12 @@
 
                                                 <!-- Update bed info buttons -->
                                                 <div class="text-center">
-                                                    <div v-if="bed.is_resolved">
+                                                    <div
+                                                        v-if="
+                                                            bed.is_resolved &&
+                                                            !bed.is_reserved
+                                                        "
+                                                    >
                                                         <div
                                                             class="bg-darkgreen p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-mintage/80 transition"
                                                             @click="
@@ -541,6 +608,27 @@
                                                             {{
                                                                 $t(
                                                                     "place_patient"
+                                                                )
+                                                            }}
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        v-else-if="
+                                                            bed.is_resolved &&
+                                                            bed.is_reserved
+                                                        "
+                                                    >
+                                                        <div
+                                                            class="bg-darkyellow p-2 py-1 text-white shadow shadow-gray cursor-pointer hover:bg-darkyellow/80 transition"
+                                                            @click="
+                                                                completeTransfer(
+                                                                    bed.id
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                $t(
+                                                                    "patient_arrived"
                                                                 )
                                                             }}
                                                         </div>
@@ -660,9 +748,10 @@
                                                     h, index
                                                 ) in requested_headers"
                                                 :key="index"
-                                                class="w-full bg-gray py-1"
+                                                class="w-full h-full bg-gray py-1"
                                             >
                                                 <div
+                                                    class="h-full flex justify-center items-center"
                                                     :class="{
                                                         'border-r border-white/50':
                                                             index !==
@@ -769,6 +858,7 @@
                                                     0.1 + index * 0.2
                                                 }s`,
                                             }"
+                                            @click="acceptRequest(r)"
                                         >
                                             <div
                                                 class="flex items-center justify-between backdrop-blur p-2 py-1 border-b border-white/20"
@@ -937,8 +1027,10 @@ export default {
             patients: [],
             placing_bed_id: null,
             new_request: { note: null, reason: null, current_condition: null },
+            selected_bed: null,
         };
     },
+    computed: {},
     async created() {
         console.log("CREATED");
         this.user.passcode = await sessionStorage.getItem("passcode");
@@ -953,6 +1045,85 @@ export default {
         }, 15000);
     },
     methods: {
+        async handleArrivedTransferringPatient() {
+            const id = this.placed_patient;
+            const bedId = this.selected_bed;
+
+            const response = await this.axios.post(
+                this.api_url + `/bed/place/${bedId}/${id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: this.user.passcode,
+                    },
+                }
+            );
+
+            if (response.data.message)
+                this.$swal({
+                    title: "Bed",
+                    text: "The patient is placed successfully",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            await this.closeCompleteTransferModal();
+            await this.fetch();
+        },
+        closeCompleteTransferModal() {
+            this.selected_bed = null;
+            this.is_complete_transfer_modal_shown = false;
+        },
+        completeTransfer(bedId) {
+            this.selected_bed = bedId;
+            this.is_complete_transfer_modal_shown = true;
+        },
+        async acceptRequest(request) {
+            const available = Array.from(this.ane_beds).filter(
+                (b) => b.is_resolved
+            );
+            if (available.length > 0) {
+                const response = await this.axios.post(
+                    this.api_url + `/bed/reserve/${available[0].id}`,
+                    {
+                        request_id: request.id,
+                    },
+                    {
+                        headers: {
+                            Authorization: this.user.passcode,
+                        },
+                    }
+                );
+
+                if (response.data.message) {
+                    this.$swal({
+                        title: "Transfer Request",
+                        text: "Accepted and a bed is reserved.",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    await this.fetch();
+                } else {
+                    this.$swal({
+                        title: "Transfer Request",
+                        text: "Failed Acceptance.",
+                        icon: "error",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            } else {
+                this.$swal({
+                    title: "Capacity Overload",
+                    text: "Not enough available beds to accept transferred patient.",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                });
+            }
+        },
         async cancelRequest(request) {
             const isConfirmed = await this.$swal({
                 title: "Are you sure?",
@@ -1220,7 +1391,7 @@ export default {
                         },
                     }
                 );
-                console.log(response_transfer_request);
+
                 this.request = response_transfer_request.data.message;
 
                 // Institutions

@@ -5,7 +5,7 @@
             class="flex-wrap font-serif overflow-hidden h-screen flex-col flex justify-start items-center bg-gray"
         >
             <div
-                class="z-20 abs-centre w-full sm:w-3/5 sm:p-8 sm:pt-0 pt-0 backdrop-blur sm:bg-white/20 bg-gray/20 p-4 h-full sm:h-fit text-sm flex-wrap flex flex-col justify-center items-center"
+                class="z-20 abs-centre w-full sm:w-3/5 lg:w-1/3 sm:p-8 sm:pt-0 pt-0 backdrop-blur sm:bg-white/20 bg-gray/20 p-4 h-full sm:h-fit text-sm flex-wrap flex flex-col justify-center items-center"
             >
                 <img
                     src="../assets/login_cover_mobile.svg"

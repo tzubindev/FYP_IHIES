@@ -51,7 +51,7 @@
                         class="w-full h-fit justify-center grid grid-cols-2 gap-2"
                     >
                         <div
-                            class="h-full text-[12px] py-8 bg-gray text-white w-full flex text-center flex-wrap justify-center items-center"
+                            class="h-full text-[12px] py-8 bg-gray text-white w-full flex-col flex text-center flex-wrap justify-center items-center"
                         >
                             <img
                                 :src="profile_picture_url"
@@ -70,7 +70,7 @@
                             </div>
                         </div>
 
-                        <!-- View PMR & Create Vital Sign  -->
+                        <!-- View PMR, Update Patient Profile & Create Vital Sign  -->
                         <div class="grid grid-cols-1 gap-2">
                             <!-- View PMR -->
                             <div
@@ -89,6 +89,25 @@
                                     class="hover:bg-gray/40 transition text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[20px]"
                                 >
                                     {{ $t("view_patient_medical_record") }}
+                                </div>
+                            </div>
+                            <!-- Update Patient Profile -->
+                            <div
+                                class="h-[145px] cursor-pointer transition hover:shadow w-full shadow-gray/40 shadow-md overflow-hidden relative"
+                                @click="openVitalSignModal"
+                            >
+                                <img
+                                    src="../assets/vital_sign_bg.jpg"
+                                    class="h-full w-full object-cover"
+                                    alt="Medical Record"
+                                />
+                                <div
+                                    class="absolute inset-0 bg-gray opacity-80"
+                                ></div>
+                                <div
+                                    class="hover:bg-gray/60 transition text-center text-white absolute inset-0 flex justify-center items-center font-extrabold lg:text-[30px] text-[20px]"
+                                >
+                                    {{ $t("update_patient_profile") }}
                                 </div>
                             </div>
 
