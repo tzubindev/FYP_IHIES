@@ -1,5 +1,4 @@
 <template>
-    <!-- TRANSLATION -->
     <div
         class="font-serif bg-red/5 min-h-screen relative flex justify-center items-center"
     >

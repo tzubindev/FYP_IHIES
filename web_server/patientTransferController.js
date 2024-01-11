@@ -87,7 +87,7 @@ class PatientTransferController {
 
             // [2] user ins_id to get beds from beds table
             const query_b = `UPDATE beds
-            SET is_resolved = TRUE, is_reserved = FALSE patient_id = NULL
+            SET is_resolved = TRUE, is_reserved = FALSE, patient_id = NULL
             WHERE institution_id = ? AND id = ?;`;
             const [r_b] = await connection.query(query_b, [
                 institution_id,

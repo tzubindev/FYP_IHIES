@@ -292,7 +292,6 @@ app.put("/last-login", async (request, response) => {
     }
 });
 
-// Not completed
 app.put(
     "/lang/:language",
     Authentication.verify_token,

@@ -185,5 +185,9 @@
     "institution_id": "Institution ID",
     "is_assigned": "Assigned",
     "is_completed": "Completed",
-    "is_rescheduled": "Rescheduled"
+    "is_rescheduled": "Rescheduled",
+    "transferring_since": "Transferring Since",
+    "type_id": "Type ID",
+    "created_timestamp": "Created Timestamp",
+    "patient_arrived": "Patient Arrived"
 }

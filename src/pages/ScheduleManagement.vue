@@ -554,7 +554,10 @@
                                                         'border-none':
                                                             h.is_processing,
                                                     }"
-                                                    v-if="h.is_processing"
+                                                    v-if="
+                                                        h.is_processing &&
+                                                        !h.is_completed
+                                                    "
                                                 >
                                                     {{ $t("complete") }}
                                                 </div>
@@ -912,8 +915,6 @@ export default {
             this.schedule("reschedule", e);
         },
         async schedule(type, e) {
-            let refresh = false;
-
             const response = await this.axios.post(
                 `${this.api_url}/update-schedule/${type}/${e.schedule_id}`,
                 {},
@@ -923,9 +924,7 @@ export default {
                     },
                 }
             );
-            refresh = response.data.message;
-
-            if (refresh) await this.fetch();
+            await this.fetch();
         },
         async fetch() {
             try {

@@ -37,6 +37,17 @@ class ScheduleController {
             `;
             const [result] = await connection.query(updateQuery, [scheduleId]);
 
+            if (action === "complete") {
+                const cleanQuery = `
+                UPDATE assignment
+                SET is_processing = false
+                WHERE schedule_id = ?;
+            `;
+                const [result] = await connection.query(cleanQuery, [
+                    scheduleId,
+                ]);
+            }
+
             return result.affectedRows ? true : false;
         } catch (error) {
             console.error("Error updating assignment:", error);
